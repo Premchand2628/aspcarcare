@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Wishlist</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #f2f2f2; }
+    .navbar {
+      display: flex; justify-content: space-between; align-items: center;
+      background: #333; color: #fff; padding: 10px 20px;
+    }
+    .nav-left { font-weight: bold; font-size: 18px; color: #ff4081; }
+    .nav-right { display: flex; gap: 20px; align-items: center; }
+    .nav-right a { color: white; text-decoration: none; font-size: 16px; display: flex; align-items: center; gap: 6px; }
+    .nav-right img { width: 32px; height: 32px; cursor: pointer; }
+    .container { max-width: 1000px; margin: 20px auto; padding: 0 16px; }
+    .empty { height: 50vh; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #777; }
+    .wishlist-list { display: flex; flex-direction: column; gap: 16px; }
+    .item {
+      background: #fff; border-radius: 10px; padding: 16px;
+      display: grid; grid-template-columns: 28px 120px 1fr auto;
+      gap: 14px; align-items: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .thumb img { width: 120px; height: 120px; object-fit: cover; border-radius: 10px; }
+    .title { font-weight: 600; }
+    .desc { font-size: 13px; color: #555; }
+    .price { font-weight: bold; color: green; }
+    .actions { display: flex; flex-direction: column; gap: 8px; }
+    .btn { border: none; padding: 8px 12px; border-radius: 8px; color: #fff; cursor: pointer; }
+    .btn-add { background: #ff9800; } .btn-add:hover { background: #e68900; }
+    .btn-remove { background: #e53935; } .btn-remove:hover { background: #c62828; }
+    .refresh-btn { background: #2196F3; margin-bottom:10px; }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="nav-left">❤ My Wishlist</div>
+    <div class="nav-right">
+      <a href="index.html"><img src="Home.jpg" alt="Home"></a>
+      <a href="cart.html">🛒 Go to Cart</a>
+    </div>
+  </div>
+
+  <!-- Page -->
+  <div class="container">
+    <button class="btn refresh-btn" onclick="renderWishlist()">🔄 Refresh Wishlist</button>
+    <div id="emptyState" class="empty">No items in wishlist</div>
+    <div id="wishlistContainer" class="wishlist-list"></div>
+  </div>
+
+  <script>
+    function loadWishlist() {
+      return JSON.parse(localStorage.getItem("wishlistItems") || "[]");
+    }
+    function saveWishlist(w) {
+      localStorage.setItem("wishlistItems", JSON.stringify(w));
+    }
+    function loadCart() {
+      return JSON.parse(localStorage.getItem("cartItems") || "[]");
+    }
+    function saveCart(c) {
+      localStorage.setItem("cartItems", JSON.stringify(c));
+    }
+
+    function renderWishlist() {
+      const wishlist = loadWishlist();
+      const container = document.getElementById("wishlistContainer");
+      const empty = document.getElementById("emptyState");
+
+      if (wishlist.length === 0) {
+        empty.style.display = "flex";
+        container.innerHTML = "";
+        return;
+      }
+
+      empty.style.display = "none";
+      container.innerHTML = "";
+
+      wishlist.forEach((item, index) => {
+        const div = document.createElement("div");
+        div.className = "item";
+        div.innerHTML = `
+          <input type="checkbox">
+          <div class="thumb"><img src="${item.img}" alt="${item.title}"></div>
+          <div>
+            <div class="title">${item.title}</div>
+            <div class="desc">${item.desc}</div>
+            <div class="price">${item.price}</div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-add" onclick="addToCart(${index})">Add to Cart</button>
+            <button class="btn btn-remove" onclick="removeItem(${index})">Remove</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function addToCart(i) {
+      let wishlist = loadWishlist();
+      let item = wishlist[i];
+      let cart = loadCart();
+      let idx = cart.findIndex(c => c.title === item.title);
+
+      if (idx >= 0) {
+        cart[idx].qty++;
+      } else {
+        cart.push({ ...item, qty: 1, checked: false });
+      }
+      saveCart(cart);
+      alert(item.title + " added to cart 🛒");
+    }
+
+    function removeItem(i) {
+      let wishlist = loadWishlist();
+      wishlist.splice(i, 1);
+      saveWishlist(wishlist);
+      renderWishlist();
+    }
+
+    // Auto update when wishlist changes in other pages
+    window.addEventListener("storage", () => {
+      renderWishlist();
+    });
+
+    renderWishlist();
+  </script>
+</body>
+</html>

@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Review @Home Booking</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-page: #020617;
+      --bg-shell: #020617;
+      --primary: #0ea5e9;
+      --primary-soft: #22d3ee;
+      --accent: #22c55e;
+      --accent-soft: #bbf7d0;
+      --border-soft: #1e293b;
+      --text-main: #f9fafb;
+      --text-muted: #9ca3af;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, #0f172a 0, #000000 45%),
+        radial-gradient(circle at bottom right, #0b1120 0, #020617 60%);
+      color: var(--text-main);
+      min-height: 100vh;
+      width: 100vw;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .top-bar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 24px;
+      background: rgba(15, 23, 42, 0.98);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 1px 4px rgba(15,23,42,0.3);
+      gap: 16px;
+      flex-wrap: nowrap;
+    }
+
+    .logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 18px; color: #e5e7eb; letter-spacing: 0.03em; flex-shrink: 0; }
+
+    .logo-pill {
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 20% 20%, #38bdf8, #1d4ed8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: #f9fafb;
+      box-shadow: 0 0 0 1px rgba(191,219,254,0.7);
+      cursor: pointer;
+    }
+
+    .search-container { display: flex; align-items: center; flex: 1; gap: 12px; max-width: 520px; }
+    .search-box { flex: 1; position: relative; }
+
+    .search-box input {
+      width: 100%;
+      padding: 8px 30px 8px 30px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      font-size: 13px;
+      background: rgba(15,23,42,0.9);
+      color: #e5e7eb;
+      outline: none;
+    }
+    .search-box input::placeholder { color: #6b7280; }
+
+    .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 14px; color: #6b7280; cursor: pointer; }
+
+    .profile-area {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 999px;
+      transition: background 0.12s ease;
+      flex-shrink: 0;
+    }
+    .profile-area:hover { background: rgba(31,41,55,0.8); }
+
+    .profile-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 20% 20%, #22c55e, #16a34a);
+      color: #e5fdf4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 600;
+      box-shadow: 0 0 0 1px rgba(34,197,94,0.6);
+    }
+    #profileName { color: #e5e7eb; font-weight: 500; font-size: 13px; }
+
+    .profile-dropdown {
+      position: absolute;
+      right: 0;
+      top: 42px;
+      background: #020617;
+      border-radius: 14px;
+      box-shadow: 0 18px 45px rgba(15,23,42,0.9);
+      min-width: 170px;
+      display: none;
+      overflow: hidden;
+      z-index: 20;
+      border: 1px solid rgba(51,65,85,0.9);
+    }
+    .profile-dropdown button {
+      width: 100%;
+      padding: 10px 12px;
+      border: none;
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
+      font-size: 13px;
+      color: #e5e7eb;
+    }
+    .profile-dropdown button:hover { background: rgba(15,23,42,0.9); }
+
+    .content { flex: 1; display: flex; justify-content: center; align-items: flex-start; padding: 24px 0; }
+
+    .page {
+      width: 100%;
+      max-width: 1180px;
+      margin: 0 16px;
+      background: radial-gradient(circle at top right, #0f172a 0, #020617 45%, #000 90%);
+      border-radius: 30px;
+      box-shadow: 0 0 0 1px rgba(15,23,42,0.9), 0 40px 80px rgba(0,0,0,0.9);
+      padding: 20px 22px 22px;
+    }
+
+    .header-bar {
+      border-radius: 20px;
+      border: 1px solid rgba(148,163,184,0.4);
+      background: radial-gradient(circle at top left, #0f172a 0, #020617 60%);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .header-left { display: flex; flex-direction: column; gap: 4px; }
+    .step-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #e5e7eb;
+      background: rgba(15,23,42,0.8);
+    }
+    .step-pill span { display: inline-block; width: 4px; height: 4px; border-radius: 999px; background: var(--primary-soft); }
+    .header-title { font-size: 18px; font-weight: 600; }
+    .header-right { font-size: 13px; color: var(--text-muted); }
+    .header-right span { font-weight: 600; color: var(--primary-soft); }
+
+    .main-grid { display: grid; grid-template-columns: minmax(0, 2.1fr) minmax(0, 1.1fr); gap: 16px; }
+    .col-left { display: flex; flex-direction: column; gap: 14px; }
+
+    .panel {
+      border-radius: 20px;
+      padding: 14px 18px 12px;
+      border: 1px solid var(--border-soft);
+      background: radial-gradient(circle at top left, rgba(15,23,42,0.9), #020617 60%);
+      box-shadow: 0 20px 45px rgba(0,0,0,0.85);
+    }
+    .panel-header { font-size: 13px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: #e5e7eb; margin-bottom: 8px; }
+    .panel-header span { color: var(--primary-soft); }
+
+    .car-list { list-style: none; margin: 4px 0 0; padding-left: 0; font-size: 13px; color: var(--text-main); }
+
+    .car-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 8px 10px 7px;
+      border-radius: 12px;
+      background: rgba(15,23,42,0.85);
+      border: 1px solid rgba(51,65,85,0.9);
+      margin-bottom: 6px;
+    }
+    .car-item:last-child { margin-bottom: 0; }
+    .car-title-row { display: flex; align-items: center; gap: 6px; font-weight: 500; }
+    .car-dot { width: 6px; height: 6px; border-radius: 999px; background: #22c55e; box-shadow: 0 0 0 4px rgba(34,197,94,0.25); }
+    .car-address { font-size: 13px; color: #e5e7eb; }
+    .car-subline { color: var(--text-muted); font-size: 12px; }
+    .car-service { color: #e5e7eb; font-size: 12px; }
+    .car-amount { margin-top: 2px; font-size: 13px; font-weight: 600; color: var(--primary-soft); }
+
+    .contact-line { font-size: 13px; margin-top: 8px; color: var(--text-muted); }
+    .contact-highlight { color: #fb923c; font-weight: 600; }
+
+    .maps-link { font-size: 12px; margin-top: 6px; display: inline-flex; align-items: center; gap: 4px; color: var(--primary-soft); text-decoration: none; }
+    .maps-link:hover { text-decoration: underline; }
+    .maps-link::before { content: "📍"; font-size: 13px; }
+
+    .price-panel {
+      border-radius: 22px;
+      padding: 16px 18px 14px;
+      border: 1px solid rgba(59,130,246,0.7);
+      background: radial-gradient(circle at top, #0ea5e9 0, #020617 55%);
+      box-shadow: 0 0 35px rgba(56,189,248,0.9), 0 30px 60px rgba(0,0,0,0.9);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .price-header { font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; color: #e5e7eb; margin-bottom: 2px; }
+    .price-main { font-size: 30px; font-weight: 700; }
+    .price-sub { font-size: 12px; color: #e5e7eb; margin-bottom: 6px; }
+
+    .price-row { display: flex; justify-content: space-between; font-size: 13px; margin: 2px 0; }
+    .price-row span:last-child { min-width: 60px; text-align: right; }
+
+    .price-row.muted span:first-child { color: var(--text-muted); }
+    .price-row.muted span:last-child { color: #bef264; font-weight: 700; }
+
+    .price-row.strong span:first-child { font-weight: 600; }
+    .price-row.strong span:last-child { font-weight: 700; }
+
+    .divider { border: none; border-top: 1px dashed rgba(148,163,184,0.6); margin: 6px 0 4px; }
+
+    .saving-note { font-size: 12px; color: var(--accent-soft); margin-top: 4px; min-height: 16px; }
+
+    .actions { margin-top: 10px; display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background 0.15s ease, transform 0.08s ease, box-shadow 0.15s ease, filter 0.12s ease;
+    }
+
+    .btn-primary { background: #22c55e; color: #052e16; box-shadow: 0 12px 28px rgba(34,197,94,0.6); }
+    .btn-primary:hover { transform: translateY(-1px); filter: brightness(1.05); box-shadow: 0 16px 34px rgba(34,197,94,0.8); }
+
+    .btn-secondary { background: rgba(15,23,42,0.9); color: #e5e7eb; border: 1px solid rgba(148,163,184,0.7); }
+    .btn-secondary:hover { background: #030712; }
+
+    .empty-msg { margin-top: 18px; font-size: 14px; color: var(--text-muted); text-align: center; }
+
+    @media (max-width: 820px) { .main-grid { grid-template-columns: minmax(0, 1fr); } .price-panel { order: -1; } }
+    @media (max-width: 640px) { .page { padding: 16px 14px 18px; border-radius: 24px; } .header-bar { flex-direction: column; align-items: flex-start; } }
+    @media (max-width: 480px) { #profileName { display: none; } .top-bar { padding: 8px 10px; gap: 8px; } .search-box input { font-size: 12px; } }
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="logo">
+    <div class="logo-pill" onclick="goDashboard()">ASP</div>
+  </div>
+
+  <div class="search-container">
+    <div class="search-box">
+      <span class="search-icon" onclick="handleSearchNavigation()">🔍</span>
+      <input id="searchInput" type="text" placeholder="Search services, bookings…"
+        onkeydown="if(event.key === 'Enter'){ handleSearchNavigation(); }">
+    </div>
+  </div>
+
+  <div class="profile-area" id="profileArea">
+    <div class="profile-icon" id="profileIcon">U</div>
+    <div id="profileName">User</div>
+
+    <div class="profile-dropdown" id="profileDropdown">
+      <button onclick="goToEditProfile()">Edit Profile</button>
+      <button onclick="goToOrders()">My Bookings</button>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+  <div class="page">
+    <div class="header-bar">
+      <div class="header-left">
+        <div class="step-pill"><span></span> STEP 2 • REVIEW</div>
+        <div class="header-title">Review your @Home booking</div>
+      </div>
+      <div class="header-right">
+        Service: <span>Doorstep @Home</span>
+      </div>
+    </div>
+
+    <div class="main-grid">
+      <div class="col-left">
+        <section class="panel">
+          <div class="panel-header"><span>ADDRESS</span> &amp; CAR DETAILS</div>
+          <ul id="combinedList" class="car-list"></ul>
+          <div id="contactLine" class="contact-line"></div>
+          <a id="mapsLink" href="#" target="_blank" class="maps-link" style="display:none;">View in Maps</a>
+        </section>
+
+        <div id="emptyMessage" class="empty-msg" style="display:none;">
+          No pending bookings found. Please go back and create a booking from @Home page.
+        </div>
+      </div>
+
+      <aside class="price-panel">
+        <div class="price-header">PRICE SUMMARY</div>
+        <div id="totalAmount" class="price-main">₹0</div>
+        <div id="priceSub" class="price-sub"></div>
+
+        <div class="price-row">
+          <span>Bill amount</span>
+          <span id="billAmount">₹0</span>
+        </div>
+
+        <div id="membershipRow" class="price-row muted" style="display:none;">
+          <span id="membershipLabel">Membership</span>
+          <span id="membershipValue">-₹0</span>
+        </div>
+
+        <hr class="divider">
+
+        <div class="price-row strong">
+          <span>Payable amount</span>
+          <span id="payableAmount">₹0</span>
+        </div>
+
+        <div id="savingNote" class="saving-note"></div>
+
+        <div class="actions">
+          <button class="btn btn-secondary" onclick="goBack()">Back</button>
+          <button class="btn btn-primary" onclick="confirmBooking()">Proceed to payment</button>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ================================
+  // ✅ APIs (relative only)
+  // ================================
+  const API_USERS = "/users";
+
+  // ================================
+  // ✅ AUTH (STANDARD)
+  // ================================
+  const JWT_KEY = "jwt";
+  const PHONE_KEY = "phone";
+
+  function getJwt() { return (localStorage.getItem(JWT_KEY) || "").trim(); }
+  function getPhone() { return (localStorage.getItem(PHONE_KEY) || "").trim(); }
+
+  function getAuthHeaders() {
+    const t = getJwt();
+    return t ? { "Authorization": "Bearer " + t } : {};
+  }
+
+  function requireLogin(target) {
+    const p = getPhone();
+    const t = getJwt();
+    if (!p || !t) {
+      localStorage.setItem("pendingTarget", target || "/review");
+      window.location.href = "/SignuLogin?mode=login";
+      return false;
+    }
+    return true;
+  }
+
+  // ✅ Guard this page
+  if (!requireLogin("/review")) {
+    // stop executing further
+  }
+
+  const phone = getPhone();
+
+  // ================================
+  // UI refs
+  // ================================
+  const combinedListEl = document.getElementById("combinedList");
+  const contactLineEl  = document.getElementById("contactLine");
+  const mapsLinkEl     = document.getElementById("mapsLink");
+  const emptyMessageEl = document.getElementById("emptyMessage");
+
+  const totalAmountEl   = document.getElementById("totalAmount");
+  const priceSubEl      = document.getElementById("priceSub");
+  const billAmountEl    = document.getElementById("billAmount");
+
+  const membershipRowEl   = document.getElementById("membershipRow");
+  const membershipLabelEl = document.getElementById("membershipLabel");
+  const membershipValueEl = document.getElementById("membershipValue");
+
+  const payableAmountEl = document.getElementById("payableAmount");
+  const savingNoteEl    = document.getElementById("savingNote");
+
+  const profileArea     = document.getElementById("profileArea");
+  const profileDropdown = document.getElementById("profileDropdown");
+  const profileNameEl   = document.getElementById("profileName");
+  const profileIconEl   = document.getElementById("profileIcon");
+
+  // ================================
+  // Profile (✅ with Authorization)
+  // ================================
+  fetch(API_USERS + "/profile?phone=" + encodeURIComponent(phone), {
+    method: "GET",
+    headers: {
+      ...getAuthHeaders(),
+      "Content-Type": "application/json"
+    }
+  })
+    .then(res => res.ok ? res.json() : Promise.reject())
+    .then(user => {
+      const name = user.lastName || user.firstName || "User";
+      profileNameEl.textContent = name;
+      profileIconEl.textContent = name.charAt(0).toUpperCase();
+    })
+    .catch(() => {
+      profileNameEl.textContent = "User";
+      profileIconEl.textContent = "U";
+    });
+
+  // Dropdown
+  profileArea.onclick = (e) => {
+    e.stopPropagation();
+    if (!requireLogin("/review")) return;
+    profileDropdown.style.display = profileDropdown.style.display === "block" ? "none" : "block";
+  };
+  document.addEventListener("click", () => { profileDropdown.style.display = "none"; });
+
+  // Nav
+  function goDashboard() { window.location.href = "/aspcare"; }
+
+  function goToOrders() {
+    if (!requireLogin("/orders")) return;
+    window.location.href = "/orders";
+  }
+
+  function goToEditProfile() {
+    if (!requireLogin("/edit-profile")) return;
+    window.location.href = "/edit-profile";
+  }
+
+  function logout() {
+    if (!confirm("Are you sure you want to logout?")) return;
+
+    localStorage.removeItem(JWT_KEY);
+    localStorage.removeItem(PHONE_KEY);
+    localStorage.removeItem("pendingTarget");
+
+    window.location.href = "/mainpage";
+  }
+
+  function handleSearchNavigation() {
+    const input = document.getElementById("searchInput");
+    const query = (input?.value || "").trim().toLowerCase();
+    if (!query) return;
+
+    if (query === "orders" || query === "order" || query.includes("booking")) { goToOrders(); return; }
+    if (query.includes("dashboard") || query === "home") { goDashboard(); return; }
+    if (query.includes("self")) { window.location.href = "/selfdrive"; return; }
+    if (query.includes("home wash") || query.includes("homewash")) { window.location.href = "/homewash"; return; }
+
+    alert('No matching page. Try "orders", "dashboard", or "self drive".');
+  }
+
+  // Utilities
+  function formatDate(ymd) {
+    if (!ymd) return "";
+    const parts = ymd.split("-");
+    if (parts.length !== 3) return ymd;
+    const [y,m,d] = parts;
+    return `${d}-${m}-${y}`;
+  }
+
+  function safeParseJson(s, fallback=null){ try { return JSON.parse(s); } catch { return fallback; } }
+
+  // ✅ normalize + derive washType
+  function normalizeWashType(v){
+    const x = String(v || "").toUpperCase().trim();
+    if (x.includes("PREMIUM")) return "PREMIUM";
+    if (x.includes("FOAM")) return "FOAM";
+    if (x.includes("BASIC")) return "BASIC";
+    return "";
+  }
+
+  function deriveWashTypeFromBooking(b){
+    const direct = normalizeWashType(b?.washType);
+    if (direct) return direct;
+
+    const fromLabel = normalizeWashType(b?.serviceLabel);
+    if (fromLabel) return fromLabel;
+
+    const fromKey = normalizeWashType(b?.serviceKey);
+    if (fromKey) return fromKey;
+
+    return "BASIC";
+  }
+
+  // ✅ ensure washType exists & persist back to localStorage
+  function ensureWashType(bookings, draft){
+    let changed = false;
+
+    (bookings || []).forEach(b => {
+      const wt = deriveWashTypeFromBooking(b);
+      if (!b.washType || normalizeWashType(b.washType) !== wt) {
+        b.washType = wt;
+        changed = true;
+      }
+      if (!b.serviceLabel) {
+        b.serviceLabel = `${wt} @Home`;
+        changed = true;
+      }
+    });
+
+    if (draft && draft.bookings) {
+      draft.bookings = bookings;
+      changed = true;
+    }
+
+    if (changed) {
+      localStorage.setItem("pendingBookings", JSON.stringify(bookings));
+      if (draft) localStorage.setItem("asp_home_booking_draft", JSON.stringify(draft));
+    }
+
+    return { bookings, draft, changed };
+  }
+
+  function renderCars(bookings) {
+    combinedListEl.innerHTML = "";
+
+    if (!bookings || bookings.length === 0) {
+      emptyMessageEl.style.display = "block";
+      contactLineEl.textContent = "";
+      mapsLinkEl.style.display = "none";
+      return;
+    }
+
+    emptyMessageEl.style.display = "none";
+
+    const phoneForDisplay = (bookings[0].phone || phone || "").trim();
+    if (phoneForDisplay) {
+      contactLineEl.innerHTML = `Contact: <span class="contact-highlight">${phoneForDisplay}</span>`;
+    } else {
+      contactLineEl.textContent = "";
+    }
+
+    const mapsHolder = (bookings.find(b => b.mapsUrl) || {});
+    if (mapsHolder.mapsUrl) {
+      mapsLinkEl.href = mapsHolder.mapsUrl;
+      mapsLinkEl.style.display = "inline-flex";
+    } else {
+      mapsLinkEl.style.display = "none";
+    }
+
+    bookings.forEach((b, idx) => {
+      const li = document.createElement("li");
+      li.className = "car-item";
+
+      const titleRow = document.createElement("div");
+      titleRow.className = "car-title-row";
+
+      const dot = document.createElement("span");
+      dot.className = "car-dot";
+
+      const label = document.createElement("span");
+      label.textContent = `Car ${b.carIndex || (idx + 1)} – ${b.carType || "Car"} (${b.carNumber || "-"})`;
+
+      titleRow.appendChild(dot);
+      titleRow.appendChild(label);
+
+      const address = document.createElement("div");
+      address.className = "car-address";
+      address.textContent = (b.address || "").trim() || "-";
+
+      const schedule = document.createElement("div");
+      schedule.className = "car-subline";
+      const dateText = b.date ? formatDate(b.date) : "-";
+      const slot = b.timeSlot || "-";
+      schedule.textContent = `Schedule: ${dateText} · ${slot}`;
+
+      const svcLine = document.createElement("div");
+      svcLine.className = "car-service";
+
+      const wt = b.washType ? normalizeWashType(b.washType) : "";
+      const svcTxt = b.serviceLabel ? b.serviceLabel : "";
+      const suffix = wt ? ` (Wash: ${wt})` : "";
+      svcLine.textContent = svcTxt ? `Service: ${svcTxt}${suffix}` : (wt ? `Wash: ${wt}` : "");
+
+      const amount = document.createElement("div");
+      amount.className = "car-amount";
+      const base = Number(b.baseAmount || 0);
+      const freeA = Number(b.freeApplied || 0);
+      const discA = Number(b.discountApplied || 0);
+      const finalA = (b.finalAmount != null) ? Number(b.finalAmount) : Math.max(0, base - freeA - discA);
+      amount.textContent = `Amount: ₹${finalA}`;
+
+      li.appendChild(titleRow);
+      li.appendChild(address);
+      li.appendChild(schedule);
+      if (svcLine.textContent) li.appendChild(svcLine);
+      li.appendChild(amount);
+
+      combinedListEl.appendChild(li);
+    });
+  }
+
+  function renderPricingFromDraft(draft) {
+    const bookings = draft?.bookings || [];
+    renderCars(bookings);
+
+    priceSubEl.textContent = `${bookings.length} car${bookings.length > 1 ? "s" : ""} • Doorstep @Home service`;
+
+    const baseTotal = Number(draft?.pricing?.baseTotal || 0);
+    const freeApplied = Number(draft?.pricing?.freeApplied || 0);
+    const discountApplied = Number(draft?.pricing?.discountApplied || 0);
+    const payable = Number(draft?.pricing?.payable || 0);
+
+    billAmountEl.textContent = `₹${baseTotal}`;
+    totalAmountEl.textContent = `₹${payable}`;
+    payableAmountEl.textContent = `₹${payable}`;
+
+    const mem = draft?.membership;
+    const hasAnyBenefit = (freeApplied > 0 || discountApplied > 0);
+    if (mem && (hasAnyBenefit || (mem.status || "").toUpperCase() === "ACTIVE")) {
+      membershipRowEl.style.display = "flex";
+      const label = mem.plan ? mem.plan : "Membership";
+      const pctTxt = mem.discountPercent ? ` ${mem.discountPercent}%` : "";
+      membershipLabelEl.textContent = `Membership (${label}${pctTxt})`;
+      membershipValueEl.textContent = `-₹${(freeApplied + discountApplied)}`;
+    } else {
+      membershipRowEl.style.display = "none";
+      membershipLabelEl.textContent = "Membership";
+      membershipValueEl.textContent = "-₹0";
+    }
+
+    const notes = [];
+    if (freeApplied > 0) notes.push(`Free booking applied: saved ₹${freeApplied}.`);
+    if (discountApplied > 0) notes.push(`Discount applied: saved ₹${discountApplied}.`);
+    savingNoteEl.textContent = notes.join(" ");
+
+    // Keep payment keys consistent
+    localStorage.setItem("billAmount", String(baseTotal));
+    localStorage.setItem("payableAmount", String(payable));
+    localStorage.setItem("finalPayableAmount", String(payable));
+
+    if (freeApplied > 0 || discountApplied > 0) {
+      localStorage.setItem("reviewPaymentSummary", `Saved ₹${(freeApplied + discountApplied)} with membership.`);
+    } else {
+      localStorage.setItem("reviewPaymentSummary", "");
+    }
+  }
+
+  function renderFallbackFromPendingBookings() {
+    const bookings = safeParseJson(localStorage.getItem("pendingBookings"), []) || [];
+    renderCars(bookings);
+
+    let baseTotal = 0;
+    let payable = 0;
+    let freeApplied = 0;
+    let discountApplied = 0;
+
+    bookings.forEach(b => {
+      baseTotal += Number(b.baseAmount || 0);
+      freeApplied += Number(b.freeApplied || 0);
+      discountApplied += Number(b.discountApplied || 0);
+      if (b.finalAmount != null) payable += Number(b.finalAmount);
+      else payable += Math.max(0, Number(b.baseAmount||0) - Number(b.freeApplied||0) - Number(b.discountApplied||0));
+    });
+
+    priceSubEl.textContent = `${bookings.length} car${bookings.length > 1 ? "s" : ""} • Doorstep @Home service`;
+
+    billAmountEl.textContent = `₹${baseTotal}`;
+    totalAmountEl.textContent = `₹${payable}`;
+    payableAmountEl.textContent = `₹${payable}`;
+
+    if (freeApplied > 0 || discountApplied > 0) {
+      membershipRowEl.style.display = "flex";
+      membershipLabelEl.textContent = `Membership`;
+      membershipValueEl.textContent = `-₹${freeApplied + discountApplied}`;
+      savingNoteEl.textContent = `Saved ₹${freeApplied + discountApplied}.`;
+      localStorage.setItem("reviewPaymentSummary", `Saved ₹${(freeApplied + discountApplied)} with membership.`);
+    } else {
+      membershipRowEl.style.display = "none";
+      savingNoteEl.textContent = "";
+      localStorage.setItem("reviewPaymentSummary", "");
+    }
+
+    localStorage.setItem("billAmount", String(baseTotal));
+    localStorage.setItem("payableAmount", String(payable));
+    localStorage.setItem("finalPayableAmount", String(payable));
+  }
+
+  function goBack() { window.history.back(); }
+
+  // ✅ Protect payment navigation too
+  function confirmBooking() {
+    if (!requireLogin("/payment?serviceType=HOME")) return;
+    window.location.href = "/payment?serviceType=HOME";
+  }
+
+  // MAIN
+  (function init() {
+    const draft = safeParseJson(localStorage.getItem("asp_home_booking_draft"), null);
+    const pending = safeParseJson(localStorage.getItem("pendingBookings"), []) || [];
+
+    if (draft && draft.serviceType === "HOME") {
+      const ensured = ensureWashType(draft.bookings || pending, draft);
+      renderPricingFromDraft(ensured.draft);
+    } else {
+      ensureWashType(pending, null);
+      renderFallbackFromPendingBookings();
+    }
+  })();
+</script>
+</body>
+</html>

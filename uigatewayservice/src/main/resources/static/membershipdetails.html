@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>My Membership</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #e0f2fe, #eef2ff 40%, #f9fafb 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 32px 12px;
+    }
+    .card {
+      width: 100%;
+      max-width: 760px;
+      background: #0b1120;
+      color: #e5e7eb;
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(15,23,42,0.7);
+      padding: 20px 22px 18px;
+      border: 1px solid rgba(30,64,175,0.8);
+    }
+    h1 { margin: 0 0 6px; font-size: 20px; }
+    .sub { font-size: 13px; color: #9ca3af; margin-bottom: 14px; line-height: 1.35; }
+
+    .details {
+      background: radial-gradient(circle at top left, rgba(31,41,55,0.85), rgba(2,6,23,0.85) 60%);
+      border-radius: 16px;
+      border: 1px solid rgba(55,65,81,0.9);
+      padding: 12px 12px;
+    }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      margin: 6px 0;
+      font-size: 13px;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .label { color: #9ca3af; min-width: 160px; flex: 0 0 auto; }
+    .value { font-weight: 600; text-align: right; word-break: break-word; max-width: 60%; }
+    .divider { height: 1px; background: rgba(55,65,81,0.9); margin: 10px 0; }
+
+    .status-active { color: #4ade80; font-weight: 800; text-align: right; }
+    .status-hold   { color: #fb923c; font-weight: 900; text-align: right; }
+    .status-other  { color: #cbd5e1; font-weight: 800; text-align: right; }
+
+    .pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 10px; border-radius: 999px; font-size: 11px; font-weight: 800;
+      border: 1px solid rgba(148,163,184,0.35);
+      background: rgba(15,23,42,0.65);
+      color: #e5e7eb;
+      white-space: nowrap;
+    }
+    .pill .dot { width: 7px; height: 7px; border-radius: 999px; background: #94a3b8; }
+    .pill.active .dot { background: #22c55e; }
+    .pill.hold .dot   { background: #fb923c; }
+    .pill.other .dot  { background: #cbd5e1; }
+
+    .msg { font-size: 12px; margin-top: 10px; min-height: 16px; color: #9ca3af; }
+    .msg.error { color: #fca5a5; }
+    .msg.success { color: #bbf7d0; }
+
+    .link-row { margin-top: 12px; font-size: 13px; text-align: center; color: #9ca3af; }
+    a { color: #93c5fd; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    @media (max-width: 640px) {
+      body { padding: 20px 10px; }
+      .card { padding: 16px; border-radius: 18px; }
+      h1 { font-size: 18px; }
+      .row { font-size: 12px; }
+      .label { min-width: 130px; }
+      .value { max-width: 62%; }
+      .link-row { font-size: 12px; }
+    }
+  </style>
+</head>
+
+<body>
+<div class="card">
+  <h1>Membership Details</h1>
+  <div class="sub">
+    View your membership information. If status is <b>HOLD</b>, discount will be applied only after it becomes <b>ACTIVE</b>.
+  </div>
+
+  <div id="detailsBody" class="details">
+    <div class="row"><div class="label">Loading</div><div class="value">Please wait…</div></div>
+  </div>
+
+  <div class="link-row">
+    <a href="/membership">Upgrade / change membership</a> •
+    <a href="/aspcare">Back to Dashboard</a>
+  </div>
+
+  <div class="msg" id="statusMsg"></div>
+</div>
+
+<script>
+  // ✅ RELATIVE APIs (works in prod + localhost)
+  const API_USERS = "/users";
+  const API_MEMBERSHIPS = "/memberships";
+
+  // ✅ AUTH (STANDARD) -> jwt + phone
+  const JWT_KEY = "jwt";
+  const PHONE_KEY = "phone";
+
+  function getJwt() { return (localStorage.getItem(JWT_KEY) || "").trim(); }
+  function getPhone() { return (localStorage.getItem(PHONE_KEY) || "").trim(); }
+
+  function getAuthHeaders() {
+    const t = getJwt();
+    return t ? { "Authorization": `Bearer ${t}` } : {};
+  }
+
+  const msgEl = document.getElementById("statusMsg");
+  const detailsBody = document.getElementById("detailsBody");
+
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;").replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function formatDateTime(dtStr) {
+    if (!dtStr) return "-";
+    const s = String(dtStr);
+    const [datePart, timePartRaw] = s.split("T");
+    if (!timePartRaw) return esc(s);
+    const [y, m, d] = datePart.split("-");
+    const timePart = timePartRaw.substring(0, 5);
+    if (!y || !m || !d) return esc(s);
+    return `${d}-${m}-${y} ${timePart}`;
+  }
+
+  function statusClass(status) {
+    const s = (status || "").toUpperCase();
+    if (s === "ACTIVE") return "status-active";
+    if (s === "HOLD") return "status-hold";
+    return "status-other";
+  }
+
+  function pillClass(status) {
+    const s = (status || "").toUpperCase();
+    if (s === "ACTIVE") return "pill active";
+    if (s === "HOLD") return "pill hold";
+    return "pill other";
+  }
+
+  function setMessage(text, cls) {
+    msgEl.textContent = text || "";
+    msgEl.className = "msg" + (cls ? " " + cls : "");
+  }
+
+  function buildUserName(user) {
+    if (!user) return "User";
+    const first = (user.firstName || "").trim();
+    const last  = (user.lastName || "").trim();
+    const full  = (first + " " + last).trim();
+    return full || first || last || "User";
+  }
+
+  async function loadMembership() {
+    const jwt = getJwt();
+    const phone = getPhone();
+
+    // 🔐 Require login
+    if (!jwt || !phone) {
+      localStorage.setItem("pendingTarget", "/membershipdetails");
+      window.location.href = "/SignuLogin?mode=login";
+      return;
+    }
+
+    setMessage("Loading membership…", "");
+
+    const profileUrl = API_USERS + "/profile?phone=" + encodeURIComponent(phone);
+    const membershipUrl = API_MEMBERSHIPS + "/by-phone?phone=" + encodeURIComponent(phone);
+
+    let user = null;
+    let membership = null;
+
+    try {
+      const [userRes, memRes] = await Promise.all([
+        fetch(profileUrl, {
+          method: "GET",
+          headers: {
+            ...getAuthHeaders(),
+            "Content-Type": "application/json"
+          }
+        }).then(r => r.ok ? r.json() : null).catch(() => null),
+
+        fetch(membershipUrl, {
+          method: "GET",
+          headers: {
+            ...getAuthHeaders(),
+            "Content-Type": "application/json"
+          }
+        }).then(async (res) => {
+          if (res.status === 404) return null;
+          if (res.status === 401 || res.status === 403) {
+            localStorage.setItem("pendingTarget", "/membershipdetails");
+            window.location.href = "/SignuLogin?mode=login";
+            return null;
+          }
+          if (!res.ok) throw new Error("Membership lookup failed");
+          return res.json();
+        }).catch(() => null)
+      ]);
+
+      user = userRes;
+      membership = memRes;
+
+    } catch (e) {
+      console.error(e);
+    }
+
+    if (!membership) {
+      detailsBody.innerHTML =
+        "<p style='font-size:13px; margin:0;'>No membership found for this phone. " +
+        "You can <a href='/membership' style='color:#93c5fd;'>join membership</a>.</p>";
+      setMessage("", "");
+      return;
+    }
+
+    const name = buildUserName(user);
+
+    const st = membership.status || "-";
+    const plan = membership.planName || membership.planCode || "-";
+    const mid = membership.membershipId || "-";
+    const txn = membership.transactionId || "-";
+
+    const start = formatDateTime(membership.startDate);
+    const end = formatDateTime(membership.endDate);
+
+    const discPct = (membership.discountPercent != null) ? (membership.discountPercent + "%") : "-";
+    const discWindow = (membership.discountStartDate && membership.discountEndDate)
+      ? (formatDateTime(membership.discountStartDate) + " → " + formatDateTime(membership.discountEndDate))
+      : "-";
+
+    const priceStored = (membership.price != null) ? ("₹" + membership.price) : "-";
+
+    const foamRem = (membership.freeFoamRemaining != null) ? membership.freeFoamRemaining : "-";
+    const premRem = (membership.freePremiumRemaining != null) ? membership.freePremiumRemaining : "-";
+
+    const isUpgrade = !!membership.isUpgrade;
+    const prevPlanCode = membership.previousPlanCode || "-";
+    const upgradeDiff = (membership.upgradeDifferenceAmount != null) ? ("₹" + membership.upgradeDifferenceAmount) : "-";
+    const upgradeAt = formatDateTime(membership.upgradeCreatedAt);
+    const upgradedFromId = (membership.upgradedFromMembershipId != null) ? membership.upgradedFromMembershipId : "-";
+
+    detailsBody.innerHTML = `
+      <div class="row">
+        <div class="label">Status</div>
+        <div class="${statusClass(st)}">
+          ${esc(st)}
+          <div style="margin-top:6px;">
+            <span class="${pillClass(st)}"><span class="dot"></span>${esc(st)}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="row"><div class="label">Name</div><div class="value">${esc(name)}</div></div>
+      <div class="row"><div class="label">Phone</div><div class="value">${esc(membership.phone || phone)}</div></div>
+      <div class="row"><div class="label">Membership ID</div><div class="value">${esc(mid)}</div></div>
+      <div class="row"><div class="label">Plan</div><div class="value">${esc(plan)}</div></div>
+      <div class="row"><div class="label">Price (Plan)</div><div class="value">${esc(priceStored)}</div></div>
+      <div class="row"><div class="label">Transaction ID</div><div class="value">${esc(txn)}</div></div>
+
+      <div class="row"><div class="label">Discount %</div><div class="value">${esc(discPct)}</div></div>
+      <div class="row"><div class="label">Discount Window</div><div class="value">${esc(discWindow)}</div></div>
+
+      <div class="divider"></div>
+
+      <div class="row"><div class="label">Free Foam Remaining</div><div class="value">${esc(foamRem)}</div></div>
+      <div class="row"><div class="label">Free Premium Remaining</div><div class="value">${esc(premRem)}</div></div>
+
+      <div class="divider"></div>
+
+      ${isUpgrade ? `
+        <div class="row"><div class="label">Upgrade</div><div class="value">Yes ✅</div></div>
+        <div class="row"><div class="label">Previous Plan</div><div class="value">${esc(prevPlanCode)}</div></div>
+        <div class="row"><div class="label">Upgrade Difference</div><div class="value">${esc(upgradeDiff)}</div></div>
+        <div class="row"><div class="label">Upgraded From (DB ID)</div><div class="value">${esc(upgradedFromId)}</div></div>
+        <div class="row"><div class="label">Upgrade Date</div><div class="value">${esc(upgradeAt)}</div></div>
+        <div class="divider"></div>
+      ` : ""}
+
+      <div class="row"><div class="label">Start Date</div><div class="value">${esc(start)}</div></div>
+      <div class="row"><div class="label">End Date</div><div class="value">${esc(end)}</div></div>
+    `;
+
+    const upper = String(st).toUpperCase();
+    if (upper === "HOLD") {
+      setMessage("Your membership is on HOLD. Discount will start after it becomes ACTIVE.", "");
+    } else if (upper === "ACTIVE") {
+      setMessage("Membership is ACTIVE. Free washes & discount are applicable on bookings.", "success");
+    } else {
+      setMessage("", "");
+    }
+  }
+
+  loadMembership();
+</script>
+</body>
+</html>

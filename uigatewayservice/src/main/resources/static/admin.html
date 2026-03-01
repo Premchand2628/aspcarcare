@@ -1,0 +1,1905 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Console - CarWash</title>
+
+  <!-- Important for mobile responsiveness -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Optional: Google Font for a more modern look -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-soft: #eff6ff;
+      --primary-strong: #1d4ed8;
+      --bg-page: #f3f4fb;
+      --bg-card: #ffffff;
+      --border-subtle: #e5e7eb;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --danger: #dc2626;
+      --success: #16a34a;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+                   sans-serif;
+      background: var(--bg-page);
+      margin: 0;
+      padding: 0;
+      color: var(--text-main);
+    }
+
+    /* Top app bar */
+    .top-bar {
+      height: 56px;
+      background: #ffffff;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
+      border-bottom: 1px solid #e5e7eb;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .top-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .top-logo-badge {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #38bdf8, #2563eb);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: white;
+      font-weight: 700;
+    }
+
+    .top-bar-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .top-bar-right {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .top-bar-right strong {
+      color: var(--text-main);
+    }
+
+    .page {
+      max-width: 1200px;
+      margin: 18px auto 24px;
+      padding: 0 16px 16px;
+    }
+
+    /* ===== LAYOUT WITH LEFT SIDEBAR ===== */
+    .layout {
+      display: flex;
+      gap: 18px;
+      align-items: flex-start;
+    }
+
+    .side-nav {
+      flex: 0 0 210px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .side-nav-title {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 2px;
+    }
+
+    .side-nav-card {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 10px 10px 12px;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+      border: 1px solid #e5e7eb;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .side-nav-btn {
+      width: 100%;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      background: #f9fafb;
+      color: #111827;
+      justify-content: flex-start;
+      transition: background 0.15s ease, border-color 0.15s ease,
+                  box-shadow 0.15s ease, transform 0.08s ease;
+    }
+
+    .side-nav-btn span.icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      background: #e5edff;
+      color: #1d4ed8;
+      font-weight: 600;
+    }
+
+    .side-nav-btn:hover {
+      background: #eef2ff;
+      border-color: #bfdbfe;
+    }
+
+    .side-nav-btn.active {
+      background: #ffffff;
+      border-color: #2563eb;
+      box-shadow:
+        0 0 0 1px #bfdbfe,
+        0 10px 30px rgba(37, 99, 235, 0.35);
+      transform: translateY(-1px);
+    }
+
+    .side-nav-btn.active span.icon {
+      background: #2563eb;
+      color: #ffffff;
+    }
+
+    .main-column {
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* ===== HEADER CARD / TOP WIDGET AREA ===== */
+    .header-card {
+      background: var(--bg-card);
+      padding: 24px 32px 26px;
+      border-radius: 32px;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 24px;
+      flex-wrap: wrap;
+      border: 1px solid rgba(226, 232, 240, 0.9);
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: 0.01em;
+    }
+
+    .small-text {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    /* Pill buttons */
+    .btn {
+      padding: 10px 18px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s ease, transform 0.08s ease,
+                  box-shadow 0.15s ease, opacity 0.08s ease;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #fff;
+      box-shadow: 0 12px 30px rgba(37, 99, 235, 0.65);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 36px rgba(37, 99, 235, 0.75);
+    }
+
+    .btn-secondary {
+      background: #ffffff;
+      color: #111827;
+      border: 1px solid #e5e7eb;
+    }
+
+    .btn-secondary:hover {
+      background: #f9fafb;
+    }
+
+    .btn-danger {
+      background: #ffe4e6;
+      color: var(--danger);
+      border: 1px solid #fecaca;
+    }
+
+    .btn-danger:hover {
+      background: #fecdd3;
+    }
+
+    .btn-success {
+      background: #dcfce7;
+      color: var(--success);
+      border: 1px solid #bbf7d0;
+    }
+
+    .btn-success:hover {
+      background: #bbf7d0;
+    }
+
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    /* Filter row */
+    .filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+      font-size: 13px;
+      margin-top: 18px;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .filter-group label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .filter-row input {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      font-size: 13px;
+      min-width: 190px;
+      outline: none;
+      transition: border-color 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+      background: #f9fafb;
+    }
+
+    .filter-row input::placeholder {
+      color: #9ca3af;
+    }
+
+    .filter-row input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.18);
+      background: #ffffff;
+    }
+
+    /* Dashboard stat cards */
+    .stat-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      min-width: 260px;
+    }
+
+    .stat-card {
+      flex: 1 1 180px;
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 16px 18px 18px;
+      border: 1px solid #e5e7eb;
+      cursor: pointer;
+      transition: box-shadow 0.18s, transform 0.1s, border-color 0.15s,
+                  background 0.15s;
+      min-width: 180px;
+      position: relative;
+    }
+
+    .stat-card:hover {
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .stat-card.active {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 1px #bfdbfe,
+                  0 20px 50px rgba(37, 99, 235, 0.35);
+    }
+
+    .stat-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .stat-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .stat-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .stat-chat .btn {
+      margin-top: 10px;
+      width: 100%;
+      justify-content: center;
+      font-size: 12px;
+      padding: 8px 10px;
+    }
+
+    /* Table wrappers */
+    .table-wrapper {
+      background: var(--bg-card);
+      border-radius: 16px;
+      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06);
+      padding: 10px 10px 14px;
+      overflow-x: auto;
+      margin-top: 18px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .table-wrapper::-webkit-scrollbar {
+      height: 7px;
+    }
+    .table-wrapper::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 999px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      color: #111827;
+    }
+
+    thead {
+      background: #f9fafb;
+      color: #4b5563;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    th {
+      padding: 10px 8px;
+      text-align: left;
+      font-weight: 600;
+      border-bottom: 1px solid #e5e7eb;
+      white-space: nowrap;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    tbody tr:hover td {
+      background: #f3f4f6;
+    }
+
+    th:first-child {
+      position: sticky;
+      left: 0;
+      background: #f9fafb;
+      z-index: 2;
+    }
+
+    td:first-child {
+      position: sticky;
+      left: 0;
+      background: #ffffff;
+      z-index: 1;
+    }
+
+    td {
+      padding: 9px 8px;
+      border-bottom: 1px solid #f1f5f9;
+      white-space: nowrap;
+      background: #ffffff;
+    }
+
+    tr:nth-child(even) td {
+      background: #f9fafb;
+    }
+
+    .status-pill {
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .status-PENDING   { background: #fef9c3; color: #854d0e; }
+    .status-CONFIRMED { background: #dcfce7; color: #166534; }
+    .status-CANCELLED { background: #fee2e2; color: #991b1b; }
+    .status-REFUNDED  { background: #e0f2fe; color: #075985; }
+
+    .pay-PENDING  { background: #fee2e2; color: #991b1b; }
+    .pay-SUCCESS  { background: #dcfce7; color: #166534; }
+    .pay-REFUNDED { background: #e0f2fe; color: #075985; }
+
+    .ticket-status-OPEN     { background:#dbeafe; color:#1d4ed8; }
+    .ticket-status-CLOSED   { background:#dcfce7; color:#166534; }
+    .ticket-status-RESOLVED { background:#dcfce7; color:#166534; }
+
+    .view-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin: 8px 4px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(15, 23, 42, 0.45);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-box {
+      background: #ffffff;
+      padding: 20px 20px 16px;
+      border-radius: 20px;
+      width: 380px;
+      max-width: 95vw;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.4);
+      font-size: 14px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .modal-row {
+      margin: 4px 0;
+      font-size: 13px;
+    }
+
+    .modal-btn-row {
+      margin-top: 16px;
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .modal-box .small-text {
+      margin-top: 8px;
+      color: var(--text-muted);
+    }
+
+    /* ---- Live / Closed chat blocks ---- */
+    .chat-sections {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 10px;
+    }
+
+    .chat-column {
+      flex: 1 1 260px;
+      min-width: 260px;
+    }
+
+    .chat-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .chat-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 11px;
+      border-radius: 12px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background 0.12s ease, border-color 0.12s ease,
+                  transform 0.08s ease;
+    }
+
+    .chat-item:hover {
+      background: #edf2ff;
+      border-color: #c7d2fe;
+      transform: translateY(-1px);
+    }
+
+    .chat-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .chat-name {
+      font-weight: 600;
+    }
+
+    .chat-phone {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .chat-status-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-align: right;
+    }
+
+    .chat-status-new {
+      color:#92400e;
+    }
+
+    .chat-status-active {
+      color:#166534;
+    }
+
+    .chat-status-closed {
+      color:#e5e7eb;
+    }
+
+    .empty-text {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .chat-item.fade-out {
+      animation: chatFadeOut 0.35s ease-out forwards;
+    }
+
+    @keyframes chatFadeOut {
+      from { opacity: 1; transform: translateY(0); }
+      to   { opacity: 0; transform: translateY(4px); }
+    }
+
+    /* CLOSED CHAT EXTRA INFO */
+    .closed-info {
+      font-size: 11px;
+      color: #e5e7eb;
+      margin-top: 4px;
+      line-height: 1.3em;
+    }
+
+    .chat-item.closed {
+      flex-direction: column;
+      align-items: flex-start;
+      border-left: 4px solid #b91c1c;
+      background: #111827;
+      color: #e5e7eb;
+    }
+
+    .chat-item.closed .chat-name {
+      color: #f9fafb;
+    }
+
+    .chat-item.closed .chat-phone {
+      color: #9ca3af;
+    }
+
+    /* CLOSED CHAT FILTER ROW */
+    .chat-filter-row {
+      margin-top: 6px;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .chat-filter-input {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      font-size: 12px;
+      min-width: 150px;
+      outline: none;
+      background: #f9fafb;
+    }
+
+    .chat-filter-input::placeholder {
+      color: #9ca3af;
+    }
+
+    .chat-filter-input:focus {
+      border-color: var(--primary);
+      background: #ffffff;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.18);
+    }
+
+    .chat-filter-date {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      font-size: 12px;
+      outline: none;
+      background: #f9fafb;
+    }
+
+    .chat-filter-date:focus {
+      border-color: var(--primary);
+      background: #ffffff;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.18);
+    }
+
+    /* ---- QUOTATION ADMIN ---- */
+
+    .quote-input {
+      width: 100%;
+      padding: 4px 5px;
+      border-radius: 6px;
+      border: 1px solid #d1d5db;
+      font-size: 12px;
+      background: #f9fafb;
+      outline: none;
+    }
+
+    .quote-input:focus {
+      border-color: var(--primary);
+      background: #ffffff;
+      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.15);
+    }
+
+    .quote-status {
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* ====== RESPONSIVE BREAKPOINTS ====== */
+
+    /* Tablet: stack layout, side-nav row, header-card adjusts */
+    @media (max-width: 900px) {
+      .layout {
+        flex-direction: column;
+      }
+
+      .side-nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .side-nav-card {
+        flex: 1;
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+
+      .header-card {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 20px 18px 22px;
+        border-radius: 24px;
+      }
+
+      .stat-grid {
+        width: 100%;
+      }
+    }
+
+    /* Mobile: tighter padding, full-width buttons, stacked filters & chats */
+    @media (max-width: 768px) {
+      .top-bar {
+        height: auto;
+        padding: 8px 12px;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: flex-start;
+      }
+
+      .top-bar-right {
+        width: 100%;
+        text-align: left;
+        font-size: 11px;
+      }
+
+      .page {
+        padding: 0 10px 12px;
+      }
+
+      .header-card {
+        padding: 18px 14px 18px;
+        border-radius: 20px;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+
+      .filter-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .filter-row input {
+        min-width: 0;
+        width: 100%;
+      }
+
+      .filter-row .btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .stat-card {
+        min-width: 0;
+      }
+
+      .chat-sections {
+        flex-direction: column;
+      }
+
+      .chat-column {
+        min-width: 0;
+      }
+
+      .btn-primary,
+      .btn-secondary,
+      .btn-danger,
+      .btn-success {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .filter-row > div[style*="margin-top:18px"] {
+        margin-top: 4px !important;
+      }
+    }
+
+    /* Very small devices */
+    @media (max-width: 480px) {
+      .top-logo-badge {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+      }
+
+      .header-card {
+        padding: 14px 10px 16px;
+      }
+
+      table {
+        font-size: 11px;
+      }
+
+      th {
+        font-size: 10px;
+      }
+
+      .modal-box {
+        width: 100%;
+        max-width: 94vw;
+        padding: 16px 14px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top app bar -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <div class="top-logo-badge">CW</div>
+      <div>
+        <div>CarWash Admin</div>
+        <div class="top-bar-sub">Bookings · Tickets · Live Chat</div>
+      </div>
+    </div>
+    <div class="top-bar-right">
+      Logged in as <strong>Admin</strong>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="layout">
+      <!-- LEFT WIDGETS / SIDEBAR -->
+      <aside class="side-nav">
+        <div class="side-nav-title">Navigation</div>
+        <div class="side-nav-card">
+          <button id="navBookings" class="side-nav-btn" onclick="navBookings()">
+            <span class="icon">B</span>
+            <span>Bookings</span>
+          </button>
+          <button id="navTickets" class="side-nav-btn" onclick="navTickets()">
+            <span class="icon">T</span>
+            <span>Tickets</span>
+          </button>
+          <button id="navChats" class="side-nav-btn" onclick="navChats()">
+            <span class="icon">C</span>
+            <span>Chats</span>
+          </button>
+          <button id="navQuotation" class="side-nav-btn" onclick="navQuotation()">
+            <span class="icon">Q</span>
+            <span>Quotation</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- MAIN COLUMN -->
+      <div class="main-column">
+        <div class="header-card">
+          <div>
+            <h2>Admin Console</h2>
+            <div class="small-text">
+              Manage all bookings (Orders), support tickets and live chat. Refunds follow your hours &amp; percentage rules.
+            </div>
+
+            <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
+              <button id="btnCancel" class="btn btn-danger" disabled onclick="cancelSelected()">
+                Cancel Selected
+              </button>
+              <button id="btnRefund" class="btn btn-success" disabled onclick="initiateRefund()">
+                Initiate Refund
+              </button>
+              <button class="btn btn-primary" onclick="reloadData()">Refresh</button>
+              <button class="btn btn-secondary" onclick="goDashboard()">Dashboard</button>
+            </div>
+
+            <div class="filter-row">
+              <div class="filter-group">
+                <label for="filterPhone">Phone</label>
+                <input type="text" id="filterPhone" placeholder="Phone contains..." />
+              </div>
+
+              <div class="filter-group">
+                <label for="filterCar">Car Number</label>
+                <input type="text" id="filterCar" placeholder="Car # contains..." />
+              </div>
+
+              <div class="filter-group">
+                <label for="filterService">Service Type</label>
+                <input type="text" id="filterService" placeholder="HOME / SELF_DRIVE ..." />
+              </div>
+
+              <div style="display:flex; flex-direction:column; gap:4px; margin-top:18px;">
+                <button class="btn btn-secondary" onclick="applyFilter()">Search</button>
+                <button class="btn btn-secondary" onclick="clearFilter()">Clear</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- STAT CARDS (ORDERS / TICKETS / LIVE CHAT) -->
+          <div class="stat-grid">
+            <div id="cardOrders" class="stat-card" onclick="setView('orders')">
+              <div class="stat-title">Orders</div>
+              <div id="ordersCount" class="stat-value">0</div>
+              <div class="stat-sub">Total bookings</div>
+            </div>
+
+            <div id="cardTickets" class="stat-card" onclick="setView('tickets')">
+              <div class="stat-title">Tickets</div>
+              <div id="ticketsCount" class="stat-value">0</div>
+              <div class="stat-sub">Support tickets</div>
+            </div>
+
+            <!-- Live Chat card -->
+            <div class="stat-card stat-chat" onclick="setView('chats')">
+              <div class="stat-title">Live Chat</div>
+              <div class="stat-value">Agent Console</div>
+              <div class="stat-sub">Connect with customers in real time.</div>
+              <button type="button" class="btn btn-primary" onclick="openAdminChat(); event.stopPropagation();">
+                Open Admin Chat
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live / Closed chat blocks (hidden until Chats selected) -->
+        <div id="chatSections" class="chat-sections" style="display:none;">
+          <div class="table-wrapper chat-column">
+            <div class="view-label">Live chat requests</div>
+            <div id="liveChatList" class="chat-list"></div>
+            <div id="liveChatEmpty" class="empty-text">No active chat requests.</div>
+          </div>
+
+          <div class="table-wrapper chat-column">
+            <div class="view-label">Closed chats</div>
+
+            <!-- Filter for closed chats: phone + date range -->
+            <div class="chat-filter-row">
+              <input
+                type="text"
+                id="closedPhone"
+                class="chat-filter-input"
+                placeholder="Search closed chats by phone..."
+              />
+              <input
+                type="date"
+                id="closedFromDate"
+                class="chat-filter-date"
+              />
+              <input
+                type="date"
+                id="closedToDate"
+                class="chat-filter-date"
+              />
+              <button class="btn btn-secondary" type="button" onclick="searchClosedChats()">Search</button>
+              <button class="btn btn-secondary" type="button" onclick="clearClosedChats()">Clear</button>
+            </div>
+
+            <div id="closedChatList" class="chat-list"></div>
+            <div id="closedChatEmpty" class="empty-text">
+              Use search to load closed chats by phone or date range.
+            </div>
+          </div>
+        </div>
+
+        <div class="view-label" id="currentViewLabel">
+          Select a section to view.
+        </div>
+
+        <!-- ORDERS / BOOKINGS SECTION -->
+        <div id="ordersSection" class="table-wrapper" style="display:none;">
+          <table>
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)" /></th>
+                <th>ID</th>
+                <th>Phone</th>
+                <th>Car #</th>
+                <th>Car Type</th>
+                <th>Service Type</th>
+                <th>Address</th>
+                <th>Booking Date</th>
+                <th>Time Slot</th>
+                <th>Car Index</th>
+                <th>Status</th>
+                <th>Payment</th>
+                <th>Created At</th>
+              </tr>
+            </thead>
+            <tbody id="bookingsBody"></tbody>
+          </table>
+        </div>
+
+        <!-- TICKETS SECTION -->
+        <div id="ticketsSection" class="table-wrapper" style="display:none;">
+          <table>
+            <thead>
+              <tr>
+                <th>Ticket #</th>
+                <th>User</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Issue Type</th>
+                <th>Booking ID</th>
+                <th>Status</th>
+                <th>Created At</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody id="ticketsBody"></tbody>
+          </table>
+        </div>
+
+        <!-- QUOTATION SECTION -->
+        <div id="quotationSection" class="table-wrapper" style="display:none;">
+          <div class="view-label">Service quotation (editable)</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Vehicle</th>
+                <th>Interior</th>
+                <th>Exterior</th>
+                <th>Interior+Exterior</th>
+                <th>Teflon</th>
+                <th>Exterior+Teflon</th>
+                <th>Int+Ext+Teflon</th>
+                <th>Save (Ext+Teflon)</th>
+                <th>Save (Full)</th>
+              </tr>
+            </thead>
+            <tbody id="quotationBody"></tbody>
+          </table>
+          <div style="margin-top:10px; display:flex; justify-content:flex-end; gap:8px; flex-wrap:wrap;">
+            <button class="btn btn-secondary" onclick="loadQuotations()">Reset</button>
+            <button class="btn btn-primary" onclick="saveQuotations()">Save Changes</button>
+          </div>
+          <div id="quotationStatus" class="quote-status"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Refund modal -->
+  <div class="modal-overlay" id="refundModal">
+    <div class="modal-box">
+      <div class="modal-title">Refund Preview</div>
+      <div class="modal-row" id="refundBookingInfo"></div>
+      <div class="modal-row" id="refundHoursRow"></div>
+      <div class="modal-row" id="refundPercentRow"></div>
+      <div class="modal-row" id="refundAmountRow"></div>
+
+      <div class="small-text">
+        No refund is given if remaining time is less than 6 hours.
+      </div>
+
+      <div class="modal-btn-row">
+        <button class="btn btn-secondary" onclick="closeRefundModal()">Close</button>
+        <button class="btn btn-success" onclick="confirmRefund()">Confirm Refund</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  // ---- CHAT STATE ----
+  // liveChats: phone -> { phone, username, status: 'new'|'active' }
+  const liveChats = new Map();
+  // closedSearchResults: array of ChatSession from /sessions/closed/search
+  let closedSearchResults = [];
+
+  let chatPollStarted = false;
+const API_BASE = window.location.origin;
+  const API_BOOKINGS   = "${API_BASE}/bookings";
+  const API_TICKETS    = "${API_BASE}/tickets";
+  const API_AGENT_CHAT = "${API_BASE}/agent-chat";
+  const API_QUOTATIONS = "${API_BASE}/quotations";
+  const API_CHAT       = "${API_BASE}/chat";
+
+  let allBookings = [];
+  const selectedIds = new Set();
+
+  let currentRefundBookingId = null;
+  let currentRefundQuote     = null;
+
+  let allTickets = [];
+  let currentView = null; // 'orders' | 'tickets' | 'chats' | 'quotation'
+
+  // Quotation state
+  let quotationRows = [];
+  const vehicleOrder = ["Hatchback","Sedan","SUV","MPV","Pickup","Bike"];
+
+  function formatDate(iso) {
+    if (!iso) return "";
+    if (iso.length === 10 && iso.indexOf("T") === -1) return iso;
+    try {
+      const d = new Date(iso);
+      if (isNaN(d.getTime())) return iso;
+      return d.toLocaleString();
+    } catch (e) {
+      return iso;
+    }
+  }
+
+  /* ------ SIDEBAR NAV ACTIVE STATE ------ */
+  function setNavActive(which) {
+    const ids = ["navBookings", "navTickets", "navChats", "navQuotation"];
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove("active");
+    });
+
+    if (which === "orders" || which === "bookings") {
+      const el = document.getElementById("navBookings");
+      if (el) el.classList.add("active");
+    } else if (which === "tickets") {
+      const t = document.getElementById("navTickets");
+      if (t) t.classList.add("active");
+    } else if (which === "chats") {
+      const c = document.getElementById("navChats");
+      if (c) c.classList.add("active");
+    } else if (which === "quotation") {
+      const q = document.getElementById("navQuotation");
+      if (q) q.classList.add("active");
+    }
+  }
+
+  function navBookings() {
+    setView("orders");
+    const el = document.getElementById("ordersSection");
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function navTickets() {
+    setView("tickets");
+    const el = document.getElementById("ticketsSection");
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function navChats() {
+    setView("chats");
+    const el = document.getElementById("chatSections");
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function navQuotation() {
+    setView("quotation");
+    const el = document.getElementById("quotationSection");
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function ensureChatPolling() {
+    if (!chatPollStarted) {
+      chatPollStarted = true;
+      pollAgentChatNotifications();
+      setInterval(pollAgentChatNotifications, 5000);
+    }
+  }
+
+  // Load ONLY active sessions from backend
+  async function loadActiveSessions() {
+    try {
+      const res = await fetch(API_CHAT + "/sessions/active");
+      if (!res.ok) return;
+      const list = await res.json();
+
+      liveChats.clear();
+      list.forEach(s => {
+        const phone = s.phone;
+        if (!phone) return;
+        const status = (s.status === "NEW") ? "new" : "active";
+        liveChats.set(phone, {
+          phone,
+          username: s.username || "Customer",
+          status
+        });
+      });
+
+      // Closed list comes ONLY from search, so don't touch closedSearchResults
+      renderChatLists();
+    } catch (e) {
+      console.error("Failed to load active sessions", e);
+    }
+  }
+
+  /* ----------------- VIEW SWITCH ----------------- */
+  async function setView(view) {
+    currentView = view;
+
+    const ordersSection    = document.getElementById("ordersSection");
+    const ticketsSection   = document.getElementById("ticketsSection");
+    const chatSections     = document.getElementById("chatSections");
+    const quotationSection = document.getElementById("quotationSection");
+    const viewLabel        = document.getElementById("currentViewLabel");
+
+    const cardOrders  = document.getElementById("cardOrders");
+    const cardTickets = document.getElementById("cardTickets");
+
+    ordersSection.style.display    = "none";
+    ticketsSection.style.display   = "none";
+    chatSections.style.display     = "none";
+    quotationSection.style.display = "none";
+
+    cardOrders.classList.remove("active");
+    cardTickets.classList.remove("active");
+
+    if (view === "orders") {
+      ordersSection.style.display = "block";
+      viewLabel.textContent = "Viewing: Orders (Bookings)";
+      cardOrders.classList.add("active");
+      setNavActive("orders");
+      reloadBookings();
+    } else if (view === "tickets") {
+      ticketsSection.style.display = "block";
+      viewLabel.textContent = "Viewing: Tickets";
+      cardTickets.classList.add("active");
+      setNavActive("tickets");
+      loadTickets();
+    } else if (view === "chats") {
+      chatSections.style.display = "flex";
+      viewLabel.textContent = "Viewing: Chats";
+      setNavActive("chats");
+      await loadActiveSessions();   // live chats only
+      ensureChatPolling();
+      renderChatLists();
+    } else if (view === "quotation") {
+      quotationSection.style.display = "block";
+      viewLabel.textContent = "Viewing: Quotation (Pricing)";
+      setNavActive("quotation");
+      loadQuotations();
+    }
+  }
+
+  /* ----------------- BOOKINGS: LOAD & RENDER ----------------- */
+
+  async function reloadBookings() {
+    try {
+      const res = await fetch(API_BOOKINGS + "/admin/all");
+      if (!res.ok) {
+        alert("Failed to load bookings from server.");
+        return;
+      }
+      allBookings = await res.json();
+      selectedIds.clear();
+      const selAll = document.getElementById("selectAll");
+      if (selAll) selAll.checked = false;
+      updateActionButtons();
+      renderBookingsTable(allBookings);
+
+      document.getElementById("ordersCount").textContent = allBookings.length;
+    } catch (e) {
+      console.error(e);
+      alert("Error contacting server.");
+    }
+  }
+
+  function addCell(tr, val) {
+    const td = document.createElement("td");
+    td.textContent = val == null ? "" : val;
+    tr.appendChild(td);
+  }
+
+  function renderBookingsTable(list) {
+    const tbody = document.getElementById("bookingsBody");
+    tbody.innerHTML = "";
+
+    if (!list || list.length === 0) {
+      const tr = document.createElement("tr");
+      const td = document.createElement("td");
+      td.colSpan = 13;
+      td.textContent = "No bookings found.";
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+      return;
+    }
+
+    list.forEach(b => {
+      const tr = document.createElement("tr");
+
+      const tdCheck = document.createElement("td");
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.className = "row-check";
+      cb.value = b.id;
+      cb.checked = selectedIds.has(b.id);
+      cb.onclick = onRowCheckboxClick;
+      tdCheck.appendChild(cb);
+      tr.appendChild(tdCheck);
+
+      addCell(tr, b.id);
+      addCell(tr, b.phone);
+      addCell(tr, b.carNumber);
+      addCell(tr, b.carType);
+      addCell(tr, b.serviceType);
+      addCell(tr, b.address);
+      addCell(tr, formatDate(b.bookingDate));
+      addCell(tr, b.timeSlot);
+      addCell(tr, b.carIndex);
+
+      const statusTd = document.createElement("td");
+      const statusSpan = document.createElement("span");
+      const statusVal = (b.status || "").toUpperCase();
+      statusSpan.className = "status-pill status-" + statusVal;
+      statusSpan.textContent = b.status || "";
+      statusTd.appendChild(statusSpan);
+      tr.appendChild(statusTd);
+
+      const payTd = document.createElement("td");
+      const paySpan = document.createElement("span");
+      const payVal = (b.paymentStatus || "").toUpperCase();
+      paySpan.className = "status-pill pay-" + payVal;
+      paySpan.textContent = b.paymentStatus || "";
+      payTd.appendChild(paySpan);
+      tr.appendChild(payTd);
+
+      addCell(tr, formatDate(b.createdAt));
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  /* ----------------- BOOKINGS: FILTERS ----------------- */
+  function applyFilter() {
+    const phoneVal   = document.getElementById("filterPhone").value.trim().toLowerCase();
+    const carVal     = document.getElementById("filterCar").value.trim().toLowerCase();
+    const serviceVal = document.getElementById("filterService").value.trim().toLowerCase();
+
+    let filtered = allBookings;
+
+    if (phoneVal) {
+      filtered = filtered.filter(b => (b.phone || "").toLowerCase().includes(phoneVal));
+    }
+    if (carVal) {
+      filtered = filtered.filter(b => (b.carNumber || "").toLowerCase().includes(carVal));
+    }
+    if (serviceVal) {
+      filtered = filtered.filter(b => (b.serviceType || "").toLowerCase().includes(serviceVal));
+    }
+
+    renderBookingsTable(filtered);
+  }
+
+  function clearFilter() {
+    document.getElementById("filterPhone").value   = "";
+    document.getElementById("filterCar").value     = "";
+    document.getElementById("filterService").value = "";
+    renderBookingsTable(allBookings);
+  }
+
+  /* ----------------- BOOKINGS: SELECTION ----------------- */
+  function onRowCheckboxClick(e) {
+    const id = Number(e.target.value);
+    if (e.target.checked) selectedIds.add(id);
+    else {
+      selectedIds.delete(id);
+      const selAll = document.getElementById("selectAll");
+      if (selAll) selAll.checked = false;
+    }
+    updateActionButtons();
+  }
+
+  function toggleSelectAll(master) {
+    const checked = master.checked;
+    const tbody = document.getElementById("bookingsBody");
+    const cbs = tbody.querySelectorAll("input.row-check");
+    selectedIds.clear();
+    cbs.forEach(cb => {
+      cb.checked = checked;
+      if (checked) selectedIds.add(Number(cb.value));
+    });
+    updateActionButtons();
+  }
+
+  function updateActionButtons() {
+    const hasSelection = selectedIds.size > 0;
+    document.getElementById("btnCancel").disabled = !hasSelection;
+    document.getElementById("btnRefund").disabled = !hasSelection;
+  }
+
+  /* ----------------- BOOKINGS: CANCEL ----------------- */
+  async function cancelSelected() {
+    if (selectedIds.size === 0) return;
+    if (!confirm("Cancel selected bookings?")) return;
+
+    try {
+      for (const id of selectedIds) {
+        await fetch(API_BOOKINGS + "/" + id + "/cancel", { method: "PUT" });
+      }
+      alert("Selected bookings cancelled (where possible).");
+      await reloadBookings();
+    } catch (e) {
+      console.error(e);
+      alert("Error cancelling bookings.");
+    }
+  }
+
+  /* ----------------- BOOKINGS: REFUND FLOW ----------------- */
+  async function initiateRefund() {
+    if (selectedIds.size !== 1) {
+      alert("Select exactly one booking for refund.");
+      return;
+    }
+    const bookingId = Array.from(selectedIds)[0];
+
+    try {
+      const res = await fetch(`${API_BOOKINGS}/${bookingId}/refund-quote`);
+      if (!res.ok) {
+        alert("Failed to get refund quote.");
+        return;
+      }
+      const data = await res.json();
+      if (!data.eligible) {
+        alert(data.message || "No refund allowed.");
+        return;
+      }
+
+      currentRefundBookingId = bookingId;
+      currentRefundQuote     = data;
+
+      document.getElementById("refundBookingInfo").textContent =
+        `Booking ID: ${bookingId}`;
+      document.getElementById("refundHoursRow").textContent =
+        `Hours remaining: ${data.hoursRemaining.toFixed(2)} hours`;
+      document.getElementById("refundPercentRow").textContent =
+        `Refund percent: ${data.refundPercent.toFixed(2)} %`;
+      document.getElementById("refundAmountRow").textContent =
+        `Booking amount: ${data.bookingAmount.toFixed(2)} | Refund amount: ${data.refundAmount.toFixed(2)}`;
+
+      document.getElementById("refundModal").style.display = "flex";
+
+    } catch (e) {
+      console.error(e);
+      alert("Error while calculating refund.");
+    }
+  }
+
+  function closeRefundModal() {
+    document.getElementById("refundModal").style.display = "none";
+    currentRefundBookingId = null;
+    currentRefundQuote     = null;
+  }
+
+  async function confirmRefund() {
+    if (!currentRefundBookingId) return;
+
+    if (!confirm("Confirm refund for this booking?")) return;
+
+    try {
+      const res = await fetch(`${API_BOOKINGS}/${currentRefundBookingId}/refund-initiate`, {
+        method: "POST"
+      });
+      if (!res.ok) {
+        let msg = "Failed to initiate refund.";
+        try {
+          const err = await res.json();
+          if (err && err.message) msg = err.message;
+        } catch (e) {}
+        alert(msg);
+        return;
+      }
+      const data = await res.json();
+      alert(data.message || "Refund initiated.");
+      closeRefundModal();
+      await reloadBookings();
+    } catch (e) {
+      console.error(e);
+      alert("Error while initiating refund.");
+    }
+  }
+
+  /* ----------------- TICKETS: LOAD & RENDER ----------------- */
+  async function loadTickets() {
+    try {
+      const res = await fetch(API_TICKETS + "/admin/all");
+      if (!res.ok) {
+        console.warn("Failed to load tickets.");
+        return;
+      }
+      allTickets = await res.json();
+      renderTicketsTable(allTickets);
+
+      document.getElementById("ticketsCount").textContent = allTickets.length;
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  function renderTicketsTable(list) {
+    const tbody = document.getElementById("ticketsBody");
+    tbody.innerHTML = "";
+
+    if (!list || list.length === 0) {
+      const tr = document.createElement("tr");
+      const td = document.createElement("td");
+      td.colSpan = 9;
+      td.textContent = "No tickets found.";
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+      return;
+    }
+
+    list.forEach(t => {
+      const tr = document.createElement("tr");
+
+      addCell(tr, t.ticketNumber || "");
+      addCell(tr, t.username || "");
+      addCell(tr, t.phone || "");
+      addCell(tr, t.email || "");
+      addCell(tr, t.issueType || "");
+      addCell(tr, t.bookingId == null ? "" : t.bookingId);
+
+      const statusTd = document.createElement("td");
+      const s = (t.status || "OPEN").toUpperCase();
+      const span = document.createElement("span");
+      span.className = "status-pill ticket-status-" + s;
+      span.textContent = s;
+      statusTd.appendChild(span);
+      tr.appendChild(statusTd);
+
+      addCell(tr, formatDate(t.createdAt));
+
+      const descTd = document.createElement("td");
+      descTd.textContent = t.description || "";
+      tr.appendChild(descTd);
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  /* ----------------- LIVE CHAT HELPERS ----------------- */
+
+  function renderChatLists() {
+    const liveList    = document.getElementById("liveChatList");
+    const closedList  = document.getElementById("closedChatList");
+    const liveEmpty   = document.getElementById("liveChatEmpty");
+    const closedEmpty = document.getElementById("closedChatEmpty");
+
+    if (!liveList || !closedList) return;
+
+    liveList.innerHTML   = "";
+    closedList.innerHTML = "";
+
+    const liveArray = Array.from(liveChats.values());
+
+    // ---- LIVE CHATS ----
+    if (liveArray.length === 0) {
+      liveEmpty.style.display = "block";
+    } else {
+      liveEmpty.style.display = "none";
+      liveArray.forEach(chat => {
+        const item = document.createElement("div");
+        item.className = "chat-item";
+        item.dataset.phone = chat.phone;
+
+        const meta = document.createElement("div");
+        meta.className = "chat-meta";
+
+        const nameDiv = document.createElement("div");
+        nameDiv.className = "chat-name";
+        nameDiv.textContent = chat.username || "Customer";
+        const phoneDiv = document.createElement("div");
+        phoneDiv.className = "chat-phone";
+        phoneDiv.textContent = chat.phone || "";
+        meta.appendChild(nameDiv);
+        meta.appendChild(phoneDiv);
+
+        const statusDiv = document.createElement("div");
+        statusDiv.className =
+          "chat-status-label " +
+          (chat.status === "new" ? "chat-status-new" : "chat-status-active");
+        statusDiv.textContent =
+          chat.status === "new" ? "New chat is requested" : "Chat is in progress";
+
+        item.appendChild(meta);
+        item.appendChild(statusDiv);
+
+        item.addEventListener("click", () => openChatWindow(chat));
+
+        liveList.appendChild(item);
+      });
+    }
+
+    // ---- CLOSED CHATS (from last search) ----
+    if (!closedSearchResults || closedSearchResults.length === 0) {
+      closedEmpty.style.display = "block";
+    } else {
+      closedEmpty.style.display = "none";
+      closedSearchResults.forEach(chat => {
+        const item = document.createElement("div");
+        item.className = "chat-item closed";
+
+        const meta = document.createElement("div");
+        meta.className = "chat-meta";
+
+        const nameDiv = document.createElement("div");
+        nameDiv.className = "chat-name";
+        nameDiv.textContent = chat.username || "Customer";
+
+        const phoneDiv = document.createElement("div");
+        phoneDiv.className = "chat-phone";
+        phoneDiv.textContent = chat.phone || "";
+
+        meta.appendChild(nameDiv);
+        meta.appendChild(phoneDiv);
+
+        const statusDiv = document.createElement("div");
+        statusDiv.className = "chat-status-label chat-status-closed";
+        statusDiv.textContent = "Chat ended";
+
+        const started = chat.startedAt ? formatDate(chat.startedAt) : "-";
+        const last    = chat.lastActivityAt ? formatDate(chat.lastActivityAt) : "-";
+        const endedBy = chat.endedBy ? chat.endedBy : "-";
+
+        const closedInfo = document.createElement("div");
+        closedInfo.className = "closed-info";
+        closedInfo.innerHTML = `
+          <div><b>Started:</b> ${started}</div>
+          <div><b>Last Activity:</b> ${last}</div>
+          <div><b>Ended By:</b> ${endedBy}</div>
+        `;
+
+        item.appendChild(meta);
+        item.appendChild(statusDiv);
+        item.appendChild(closedInfo);
+
+        closedList.appendChild(item);
+      });
+    }
+  }
+
+  // Poll backend for new chat requests – add/update active chats
+  async function pollAgentChatNotifications() {
+    try {
+      const res = await fetch(API_AGENT_CHAT + "/pending");
+      if (!res.ok) return;
+
+      const list = await res.json();
+      if (!Array.isArray(list)) return;
+
+      list.forEach(raw => {
+        const phone    = raw.phone || "";
+        const username = raw.username || "Customer";
+        if (!phone) return;
+        let chat = liveChats.get(phone);
+        if (!chat) {
+          chat = { phone, username, status: "new" };
+          liveChats.set(phone, chat);
+        } else {
+          chat.username = username;
+          if (chat.status !== "active") chat.status = "new";
+        }
+      });
+
+      renderChatLists();
+    } catch (e) {
+      console.error("Error polling agent chat notifications", e);
+    }
+  }
+
+  // Open admin-chat window for a specific chat
+  function openChatWindow(chat) {
+    if (!chat || !chat.phone) return;
+
+    chat.status = "active";
+
+    // Tell backend this session is active now
+    fetch(`${API_CHAT}/sessions/activate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone: chat.phone })
+    }).catch(e => console.error("activate error", e));
+
+    const url =
+      `/admin-chat?phone=${encodeURIComponent(chat.phone)}&username=${encodeURIComponent(chat.username || "Customer")}`;
+    window.open(url, "_blank");
+
+    renderChatLists();
+  }
+
+  // Generic "Admin chat" button: open without auto-binding to a specific phone
+  function openAdminChat() {
+    window.open("/admin-chat", "_blank");
+  }
+
+  // Called by admin-chat.html when chat is ended
+  function markChatClosed(phone) {
+    if (!phone) return;
+
+    // Remove from live list; do NOT auto-add into closed list
+    if (liveChats.has(phone)) {
+      liveChats.delete(phone);
+    }
+    renderChatLists();
+  }
+
+  /* ---- CLOSED CHAT SEARCH ---- */
+  async function searchClosedChats() {
+    const phone = document.getElementById("closedPhone").value.trim();
+    const from  = document.getElementById("closedFromDate").value;
+    const to    = document.getElementById("closedToDate").value;
+
+    if (!phone && !from && !to) {
+      alert("Enter phone or date range to search closed chats.");
+      return;
+    }
+
+    const params = new URLSearchParams();
+    if (phone) params.append("phone", phone);
+    if (from)  params.append("fromDate", from);
+    if (to)    params.append("toDate", to);
+
+    try {
+      const res = await fetch(`${API_CHAT}/sessions/closed/search?` + params.toString());
+if (!res.ok) {
+  console.error("Closed search failed:", res.status, res.statusText);
+  alert("Failed to load closed chats.");
+  return;
+}
+      closedSearchResults = await res.json();
+      renderChatLists();
+    } catch (e) {
+      console.error("Error searching closed chats", e);
+      alert("Error searching closed chats.");
+    }
+  }
+
+  function clearClosedChats() {
+    document.getElementById("closedPhone").value    = "";
+    document.getElementById("closedFromDate").value = "";
+    document.getElementById("closedToDate").value   = "";
+    closedSearchResults = [];
+    renderChatLists();
+  }
+
+  /* ----------------- QUOTATION ADMIN ----------------- */
+
+  function valueOrBlank(v) {
+    return v == null ? "" : v;
+  }
+
+  async function loadQuotations() {
+    const body   = document.getElementById("quotationBody");
+    const status = document.getElementById("quotationStatus");
+    if (!body) return;
+
+    status.textContent = "Loading quotation data...";
+    body.innerHTML = "";
+
+    try {
+      const res = await fetch(API_QUOTATIONS);
+      let list = [];
+      if (res.ok) {
+        list = await res.json();
+      }
+
+      const map = {};
+      list.forEach(q => {
+        if (q.vehicleType) map[q.vehicleType] = q;
+      });
+
+      quotationRows = vehicleOrder.map(v => map[v] || {
+        id: null,
+        vehicleType: v,
+        interior: null,
+        exterior: null,
+        interiorExterior: null,
+        teflon: null,
+        exteriorTeflon: null,
+        interiorExteriorTeflon: null,
+        saveExteriorTeflon: null,
+        saveFull: null
+      });
+
+      renderQuotationTable();
+      status.textContent = "";
+    } catch (e) {
+      console.error(e);
+      status.textContent = "Failed to load quotation data.";
+    }
+  }
+
+  function renderQuotationTable() {
+    const body = document.getElementById("quotationBody");
+    body.innerHTML = "";
+
+    quotationRows.forEach((row, idx) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${row.vehicleType}</td>
+        <td><input class="quote-input" value="${valueOrBlank(row.interior)}"
+                   onchange="onQuoteChange(${idx}, 'interior', this.value)" /></td>
+        <td><input class="quote-input" value="${valueOrBlank(row.exterior)}"
+                   onchange="onQuoteChange(${idx}, 'exterior', this.value)" /></td>
+        <td><input class="quote-input" value="${valueOrBlank(row.interiorExterior)}"
+                   onchange="onQuoteChange(${idx}, 'interiorExterior', this.value)" /></td>
+        <td><input class="quote-input" value="${valueOrBlank(row.teflon)}"
+                   onchange="onQuoteChange(${idx}, 'teflon', this.value)" /></td>
+        <td><input class="quote-input" value="${valueOrBlank(row.exteriorTeflon)}"
+                   onchange="onQuoteChange(${idx}, 'exteriorTeflon', this.value)" /></td>
+        <td><input class="quote-input" value="${valueOrBlank(row.interiorExteriorTeflon)}"
+                   onchange="onQuoteChange(${idx}, 'interiorExteriorTeflon', this.value)" /></td>
+        <td><input class="quote-input" value="${valueOrBlank(row.saveExteriorTeflon)}"
+                   onchange="onQuoteChange(${idx}, 'saveExteriorTeflon', this.value)" /></td>
+        <td><input class="quote-input" value="${valueOrBlank(row.saveFull)}"
+                   onchange="onQuoteChange(${idx}, 'saveFull', this.value)" /></td>
+      `;
+      body.appendChild(tr);
+    });
+  }
+
+  function onQuoteChange(idx, field, value) {
+    quotationRows[idx][field] = value === "" ? null : Number(value);
+  }
+
+  async function saveQuotations() {
+    const status = document.getElementById("quotationStatus");
+    status.textContent = "Saving changes...";
+
+    try {
+      const res = await fetch(API_QUOTATIONS + "/admin/bulk", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(quotationRows)
+      });
+
+      if (!res.ok) {
+        status.textContent = "Failed to save quotation data.";
+        return;
+      }
+
+      const saved = await res.json();
+      quotationRows = saved;
+      status.textContent = "Quotation updated successfully.";
+    } catch (e) {
+      console.error(e);
+      status.textContent = "Error while saving quotation data.";
+    }
+  }
+
+  /* ----------------- MISC ----------------- */
+  function goDashboard() {
+    window.location.href = "/aspcare";
+  }
+
+  async function reloadData() {
+    await reloadBookings();
+    await loadTickets();
+    if (currentView === "quotation") {
+      await loadQuotations();
+    }
+  }
+
+  // Initial load – everything hidden until section clicked
+  (function init() {})();
+
+  // expose functions
+  window.applyFilter      = applyFilter;
+  window.clearFilter      = clearFilter;
+  window.toggleSelectAll  = toggleSelectAll;
+  window.cancelSelected   = cancelSelected;
+  window.initiateRefund   = initiateRefund;
+  window.closeRefundModal = closeRefundModal;
+  window.confirmRefund    = confirmRefund;
+  window.goDashboard      = goDashboard;
+  window.setView          = setView;
+  window.reloadData       = reloadData;
+  window.openAdminChat    = openAdminChat;
+  window.markChatClosed   = markChatClosed;
+
+  window.navBookings   = navBookings;
+  window.navTickets    = navTickets;
+  window.navChats      = navChats;
+  window.navQuotation  = navQuotation;
+
+  window.onQuoteChange   = onQuoteChange;
+  window.loadQuotations  = loadQuotations;
+  window.saveQuotations  = saveQuotations;
+
+  window.searchClosedChats = searchClosedChats;
+  window.clearClosedChats  = clearClosedChats;
+</script>
+</body>
+</html>

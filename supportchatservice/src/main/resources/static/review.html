@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><title>Order Review</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin:0; background:#f2f2f2; }
+    .navbar{background:#333;color:#fff;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;}
+    .navbar-right img{width:32px;height:32px;cursor:pointer;}
+    .container{max-width:900px;margin:30px auto;background:white;border-radius:10px;box-shadow:0 4px 8px rgba(0,0,0,.1);padding:20px;}
+    .proceed-btn{background:#28a745;color:#fff;border:none;padding:10px 20px;border-radius:6px;cursor:pointer;font-size:16px;}
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <h2>Review Your Order</h2>
+    <div class="navbar-right"><a href="index.html"><img src="Home.jpg" alt="Home"></a></div>
+  </div>
+
+  <div class="container" id="reviewContainer"><p>Loading...</p></div>
+
+  <script>
+    const cont = document.getElementById("reviewContainer");
+    const items = JSON.parse(localStorage.getItem("checkoutItems") || "[]");
+    if (items.length === 0) {
+      cont.innerHTML = `<h3 style="text-align:center;color:#777;">No items selected for checkout</h3>`;
+    } else {
+      const total = items.reduce((s,i)=>s+i.price*i.qty,0);
+      let rows = items.map(i => `
+        <tr style="border-bottom:1px solid #ddd;">
+          <td>${i.title}</td><td>${i.qty}</td><td>$${i.price.toFixed(2)}</td><td>$${(i.price*i.qty).toFixed(2)}</td>
+        </tr>`).join("");
+
+      cont.innerHTML = `
+        <h3>Order Summary</h3>
+        <table style="width:100%;border-collapse:collapse;">
+          <tr style="background:#eee;"><th>Product</th><th>Qty</th><th>Unit Price</th><th>Subtotal</th></tr>
+          ${rows}
+        </table>
+        <div style="margin-top:20px;text-align:right;">
+          <h3>Total: $${total.toFixed(2)}</h3>
+          <label><input type="checkbox" id="terms"> I accept the <a href="#">Terms & Conditions</a></label><br><br>
+          <button class="proceed-btn" onclick="proceed(${total.toFixed(2)})">Proceed to Checkout</button>
+        </div>`;
+    }
+
+    function proceed(total) {
+      if (!document.getElementById("terms").checked) { alert("Please accept Terms & Conditions"); return; }
+      const name = localStorage.getItem("userName") || "Guest User";
+      fetch("http://localhost:8082/api/payment/create", {
+        method:"POST", headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ amount: total, name })
+      })
+      .then(r=>r.json())
+      .then(d=>{
+        if (!d.paymentUrl) { alert("Server error"); return; }
+        alert("✅ Order confirmed! Proceeding to payment...");
+        window.location.href = `${d.paymentUrl}&amount=${total}`;
+      })
+      .catch(e=>{ console.error(e); alert("Failed to initialize payment"); });
+    }
+  </script>
+</body>
+</html>

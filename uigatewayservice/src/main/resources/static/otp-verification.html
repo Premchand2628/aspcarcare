@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OTP Verification - ASP Car Care</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body{
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-family:Inter,system-ui;
+      background:radial-gradient(circle at 20% 10%,#1d4ed8,#020617 60%);
+      color:#e5e7eb;
+      padding:16px;
+    }
+    .card{
+      width:100%;
+      max-width:480px;
+      background:rgba(2,6,23,.8);
+      border:1px solid rgba(148,163,184,.25);
+      border-radius:22px;
+      padding:20px;
+      box-shadow:0 30px 80px rgba(0,0,0,.6);
+    }
+    h1{margin:0 0 6px;font-size:22px;font-weight:800}
+    p{margin:0 0 16px;font-size:13px;color:#94a3b8}
+    .otp-row{
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      margin:16px 0;
+    }
+    .otp{
+      width:46px;height:52px;
+      border-radius:12px;
+      border:1px solid rgba(148,163,184,.35);
+      background:rgba(15,23,42,.6);
+      color:#fff;
+      font-size:18px;
+      font-weight:800;
+      text-align:center;
+    }
+    .otp:focus{outline:none;border-color:#60a5fa}
+    .btn{
+      width:100%;
+      border:none;
+      border-radius:999px;
+      padding:12px;
+      font-weight:800;
+      background:linear-gradient(to right,#2563eb,#1d4ed8);
+      color:#fff;
+      cursor:pointer;
+      margin-top:10px;
+    }
+    .btn[disabled]{opacity:.6;cursor:not-allowed}
+    .links{
+      display:flex;
+      justify-content:space-between;
+      margin-top:12px;
+      font-size:13px;
+    }
+    .link{color:#93c5fd;cursor:pointer;font-weight:700}
+    .alert{
+      display:none;
+      margin-top:12px;
+      padding:10px;
+      border-radius:12px;
+      font-size:13px;
+    }
+    .alert.show{display:block}
+    .err{background:#3b0a0a;color:#fecaca;border:1px solid #7f1d1d}
+    .ok{background:#052e1a;color:#bbf7d0;border:1px solid #166534}
+  </style>
+</head>
+
+<body>
+<div class="card">
+  <h1>Verify OTP</h1>
+  <p id="subText">Enter the 6-digit OTP</p>
+
+  <div class="otp-row">
+    <input class="otp" maxlength="1">
+    <input class="otp" maxlength="1">
+    <input class="otp" maxlength="1">
+    <input class="otp" maxlength="1">
+    <input class="otp" maxlength="1">
+    <input class="otp" maxlength="1">
+  </div>
+
+  <button class="btn" onclick="verifyOtp()">Verify OTP</button>
+
+  <div class="links">
+    <span>Didn’t get OTP?</span>
+    <span class="link" onclick="resendOtp()">Resend</span>
+  </div>
+
+  <div id="errBox" class="alert err"></div>
+  <div id="okBox" class="alert ok"></div>
+</div>
+
+<script>
+/* =========================
+   CONFIG
+========================= */
+const AUTH_BASE = "/auth"; // same as your dashboard
+const OTP_VERIFY_API = AUTH_BASE + "/verify-otp";
+
+/* =========================
+   STATE
+========================= */
+const params = new URLSearchParams(window.location.search);
+const phone = params.get("phone") || localStorage.getItem("phone") || "";
+const type  = params.get("type") || "login"; // login | signup | guest
+
+document.getElementById("subText").innerText =
+  `Enter the 6-digit OTP sent to ${phone}`;
+
+/* =========================
+   HELPERS
+========================= */
+const inputs = [...document.querySelectorAll(".otp")];
+const errBox = document.getElementById("errBox");
+const okBox  = document.getElementById("okBox");
+
+inputs.forEach((el,i)=>{
+  el.addEventListener("input",()=>{
+    el.value = el.value.replace(/\D/g,"");
+    if(el.value && i < inputs.length-1) inputs[i+1].focus();
+  });
+  el.addEventListener("keydown",(e)=>{
+    if(e.key==="Backspace" && !el.value && i>0) inputs[i-1].focus();
+    if(e.key==="Enter") verifyOtp();
+  });
+});
+
+function getOtp(){
+  return inputs.map(i=>i.value).join("");
+}
+function showErr(msg){
+  errBox.innerText = msg;
+  errBox.classList.add("show");
+  okBox.classList.remove("show");
+}
+function showOk(msg){
+  okBox.innerText = msg;
+  okBox.classList.add("show");
+  errBox.classList.remove("show");
+}
+
+/* =========================
+   VERIFY OTP
+========================= */
+async function verifyOtp(){
+  errBox.classList.remove("show");
+
+  if(!phone){
+    showErr("Phone number missing");
+    return;
+  }
+
+  const otp = getOtp();
+  if(otp.length !== 6){
+    showErr("Enter 6-digit OTP");
+    return;
+  }
+
+  try{
+    const res = await fetch(OTP_VERIFY_API,{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({
+        mobileNumber: phone,
+        otp: otp
+      })
+    });
+
+    const data = await res.json();
+
+    if(!res.ok || !data.token){
+      showErr(data.message || "Invalid OTP");
+      return;
+    }
+
+    /* ✅ JWT STANDARD STORAGE */
+    localStorage.setItem("jwt", data.token);
+    localStorage.setItem("phone", phone);
+
+    showOk("OTP verified. Redirecting…");
+
+    setTimeout(()=>{
+      window.location.href = "/aspcare";
+    },1200);
+
+  }catch(e){
+    console.error(e);
+    showErr("Network error");
+  }
+}
+
+/* =========================
+   RESEND OTP
+========================= */
+async function resendOtp(){
+  try{
+    const api =
+      (type === "signup" || type === "guest")
+      ? AUTH_BASE + "/signup/send-otp"
+      : AUTH_BASE + "/login/send-otp";
+
+    const payload =
+      (type === "signup" || type === "guest")
+      ? { phone: phone }
+      : { mobileNumber: phone };
+
+    const res = await fetch(api,{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify(payload)
+    });
+
+    if(!res.ok){
+      showErr("Unable to resend OTP");
+      return;
+    }
+
+    inputs.forEach(i=>i.value="");
+    inputs[0].focus();
+    showOk("OTP resent successfully");
+
+  }catch(e){
+    console.error(e);
+    showErr("Network error");
+  }
+}
+
+inputs[0].focus();
+</script>
+</body>
+</html>

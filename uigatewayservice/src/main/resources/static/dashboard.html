@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>CarWash Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-soft: #eff6ff;
+      --primary-strong: #1d4ed8;
+      --text-main: #0f172a;
+      --text-muted: #6b7280;
+      --card-bg: #ffffff;
+      --border-soft: rgba(148, 163, 184, 0.4);
+    }
+    *{ box-sizing:border-box; }
+
+    body{
+      font-family:"Inter",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      margin:0;
+      min-height:100vh;
+      width:100vw;
+      overflow-x:hidden;
+      background: radial-gradient(circle at top left, #e0f2fe, #eef2ff 40%, #f9fafb 100%);
+      color: var(--text-main);
+      display:flex;
+      flex-direction:column;
+    }
+
+    .top-bar{
+      position:sticky; top:0; z-index:10;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:10px 24px;
+      background: rgba(15, 23, 42, 0.98);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 1px 4px rgba(15,23,42,0.3);
+      gap:16px;
+      flex-wrap:nowrap;
+    }
+
+    .logo{
+      display:flex; align-items:center; gap:8px;
+      font-weight:800; font-size:18px; color:#e5e7eb;
+      letter-spacing:0.03em;
+      flex-shrink:0;
+      cursor:pointer;
+    }
+    .logo-pill{
+      width:30px;height:30px;border-radius:999px;
+      background: radial-gradient(circle at 20% 20%, #38bdf8, #1d4ed8);
+      display:flex; align-items:center; justify-content:center;
+      font-size:14px; color:#fff;
+      box-shadow:0 0 0 1px rgba(191,219,254,0.7);
+      flex-shrink:0;
+    }
+
+    .search-container{ display:flex; align-items:center; flex:1; gap:12px; max-width:520px; }
+    .search-box{ flex:1; position:relative; }
+    .search-box input{
+      width:100%;
+      padding:8px 30px 8px 30px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.6);
+      font-size:13px;
+      background: rgba(15,23,42,0.9);
+      color:#e5e7eb;
+      outline:none;
+    }
+    .search-box input::placeholder{ color:#6b7280; }
+    .search-icon{
+      position:absolute;
+      left:10px; top:50%;
+      transform:translateY(-50%);
+      font-size:14px; color:#6b7280;
+      cursor:pointer;
+    }
+
+    .profile-area{
+      position:relative;
+      display:flex; align-items:center; gap:8px;
+      cursor:pointer;
+      padding:4px 8px;
+      border-radius:999px;
+      transition: background .12s ease;
+      flex-shrink:0;
+    }
+    .profile-area:hover{ background: rgba(31,41,55,0.8); }
+    .profile-icon{
+      width:32px;height:32px;border-radius:50%;
+      background: radial-gradient(circle at 20% 20%, #22c55e, #16a34a);
+      color:#e5fdf4;
+      display:flex; align-items:center; justify-content:center;
+      font-size:15px; font-weight:800;
+      box-shadow:0 0 0 1px rgba(34,197,94,0.6);
+    }
+    #profileName{ color:#e5e7eb; font-weight:600; font-size:13px; }
+
+    .profile-dropdown{
+      position:absolute;
+      right:0; top:42px;
+      background:#020617;
+      border-radius:14px;
+      box-shadow: 0 18px 45px rgba(15,23,42,0.9);
+      min-width:180px;
+      display:none;
+      overflow:hidden;
+      z-index:20;
+      border:1px solid rgba(51,65,85,0.9);
+    }
+    .profile-dropdown button{
+      width:100%;
+      padding:10px 12px;
+      border:none;
+      background:transparent;
+      text-align:left;
+      cursor:pointer;
+      font-size:13px;
+      color:#e5e7eb;
+    }
+    .profile-dropdown button:hover{ background: rgba(15,23,42,0.9); }
+
+    .content{
+      flex:1;
+      padding:0 16px 40px;
+      display:flex;
+      justify-content:center;
+    }
+    .content-shell{
+      width:100%;
+      max-width:1120px;
+      background:#fff;
+      border-radius:0 0 24px 24px;
+      box-shadow: 0 20px 50px rgba(15,23,42,0.18);
+      border:1px solid rgba(148,163,184,0.25);
+      overflow:hidden;
+    }
+
+    .hero-banner{ position:relative; height:340px; overflow:hidden; }
+    .hero-video{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+    .hero-video-overlay{
+      position:absolute; inset:0;
+      background: radial-gradient(circle at top left,
+        rgba(15,23,42,0.88),
+        rgba(30,64,175,0.70),
+        rgba(15,23,42,0.95));
+      mix-blend-mode:multiply;
+    }
+    .hero-content{
+      position:relative; z-index:2; height:100%;
+      padding:32px 40px;
+      display:flex; flex-direction:column;
+      justify-content:center; gap:10px;
+      color:#f9fafb;
+      max-width:780px;
+    }
+    .hero-location{ font-size:52px; font-weight:900; margin:0; }
+    .hero-heading-line{ font-size:18px; font-weight:700; color:#e5e7eb; margin-top:6px; }
+
+    .hero-cta-row{ display:flex; flex-wrap:wrap; gap:12px; margin-top:18px; }
+    .hero-btn{
+      padding:10px 24px;
+      border-radius:999px;
+      border:none;
+      font-size:13px;
+      font-weight:800;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      box-shadow: 0 12px 28px rgba(15,23,42,0.6);
+      transition: transform .1s ease, box-shadow .1s ease, filter .1s ease;
+      white-space:nowrap;
+    }
+    .hero-btn-primary{ background: linear-gradient(135deg, #3b82f6, #1d4ed8); color:#fff; }
+    .hero-btn-secondary{ background: linear-gradient(135deg, #fb7185, #e11d48); color:#fff; }
+    .hero-btn:hover{ transform: translateY(-1px); box-shadow: 0 16px 36px rgba(15,23,42,0.9); filter:brightness(1.05); }
+
+    .section-title{
+      margin:10px 0 12px;
+      text-align:center;
+      font-size:12px;
+      letter-spacing:0.18em;
+      text-transform:uppercase;
+      color: var(--text-muted);
+    }
+
+    .services-wrapper{
+      padding:8px 24px 24px;
+      background:#f9fafb;
+      border-top:1px solid rgba(229,231,235,0.9);
+    }
+    .services-list{
+      max-width:820px;
+      margin:0 auto;
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+    }
+
+    .service-card{
+      position:relative;
+      cursor:pointer;
+      border-radius:18px;
+      overflow:hidden;
+      padding:18px 20px;
+      background:#020617;
+      color:#f9fafb;
+      box-shadow: 0 10px 30px rgba(15,23,42,0.18);
+      transition: transform .1s ease, box-shadow .1s ease, border-color .1s ease;
+      border:1px solid rgba(15,23,42,0.8);
+    }
+    .service-card:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 18px 40px rgba(59,130,246,0.35);
+      border-color: rgba(59,130,246,0.7);
+    }
+    .service-visual-video{ position:absolute; inset:0; z-index:0; }
+    .service-visual-video video{ width:100%; height:100%; display:block; object-fit:cover; filter:brightness(0.6); }
+
+    .service-card::before{
+      content:"";
+      position:absolute; inset:0;
+      background: radial-gradient(circle at top left,
+        rgba(15,23,42,0.9),
+        rgba(30,64,175,0.7),
+        rgba(15,23,42,0.96));
+      mix-blend-mode:multiply;
+      z-index:1;
+    }
+    .service-content{ position:relative; z-index:2; display:flex; flex-direction:column; gap:6px; max-width:520px; }
+    .service-header-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .service-title{ font-weight:700; font-size:16px; display:flex; align-items:center; gap:8px; }
+    .service-icon-pill{
+      width:26px;height:26px;border-radius:999px;
+      background: rgba(239,246,255,0.18);
+      border:1px solid rgba(191,219,254,0.7);
+      display:flex; align-items:center; justify-content:center;
+      font-size:14px;
+      flex-shrink:0;
+    }
+    .service-tag{
+      font-size:11px;
+      color:#bfdbfe;
+      background: rgba(30,64,175,0.9);
+      padding:3px 8px;
+      border-radius:999px;
+      border:1px solid rgba(191,219,254,0.9);
+      white-space:nowrap;
+    }
+    .service-desc{ font-size:13px; color:#e5e7eb; line-height:1.5; }
+    .service-footer{ margin-top:4px; font-size:11px; color:#cbd5f5; display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+    .service-footer span.highlight{ color:#facc15; font-weight:700; }
+
+    /* Quotation modal */
+    .modal-backdrop{
+      position:fixed; inset:0;
+      background: rgba(15,23,42,0.78);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:30;
+    }
+    .modal-card{
+      width:min(720px, 94vw);
+      max-height:90vh;
+      background:#020617;
+      color:#e5e7eb;
+      border-radius:20px;
+      padding:20px 22px 18px;
+      box-shadow:0 25px 60px rgba(0,0,0,0.7);
+      border:1px solid rgba(51,65,85,0.9);
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .modal-header{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:6px; }
+    .modal-title{ font-size:16px; font-weight:800; }
+    .modal-close{ cursor:pointer; border:none; background:transparent; color:#9ca3af; font-size:18px; padding:2px 6px; }
+    .modal-close:hover{ color:#e5e7eb; }
+
+    .modal-body{ font-size:13px; overflow:auto; }
+    .modal-row{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:10px; }
+    .modal-row label{ font-size:12px; color:#9ca3af; }
+    .modal-row select{
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid rgba(75,85,99,0.9);
+      background:#020617;
+      color:#e5e7eb;
+      font-size:13px;
+      outline:none;
+    }
+    .modal-row select:focus{ border-color:#3b82f6; }
+    .badge-soft{
+      font-size:11px;
+      padding:2px 8px;
+      border-radius:999px;
+      background: rgba(59,130,246,0.15);
+      border:1px solid rgba(59,130,246,0.6);
+      color:#bfdbfe;
+    }
+    .quote-table{ width:100%; border-collapse:collapse; margin-top:6px; font-size:12px; }
+    .quote-table th, .quote-table td{ border:1px solid rgba(55,65,81,0.8); padding:6px 8px; text-align:left; }
+    .quote-table th{ background: rgba(15,23,42,0.9); position:sticky; top:0; z-index:1; }
+    .quote-table tbody tr:nth-child(even){ background: rgba(15,23,42,0.7); }
+    .quote-table tbody tr:nth-child(odd){ background: rgba(15,23,42,0.5); }
+    .modal-footer{ margin-top:10px; font-size:11px; color:#9ca3af; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+    .btn-pill{
+      padding:7px 14px;
+      border-radius:999px;
+      border:none;
+      font-size:12px;
+      font-weight:700;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+    }
+    .btn-ghost{ background:transparent; border:1px solid rgba(75,85,99,0.9); color:#e5e7eb; }
+    .btn-ghost:hover{ background: rgba(15,23,42,0.8); }
+
+    /* Footer */
+    .footer{ background:#0b1120; color:#e5e7eb; padding:14px 20px 18px; margin-top:8px; }
+    .footer-inner{ max-width:1120px; margin:0 auto; text-align:center; }
+    .contact-title{ font-size:12px; margin-bottom:10px; letter-spacing:0.16em; text-transform:uppercase; color:#9ca3af; }
+    .contact-row{ display:flex; justify-content:center; gap:26px; align-items:center; flex-wrap:wrap; font-size:13px; }
+
+    .contact-item{
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(31,41,55,0.9);
+      background: rgba(15,23,42,0.9);
+      transition: background .12s, transform .08s, border-color .12s;
+      color:#e5e7eb;
+      text-decoration:none;
+    }
+    .contact-item span.icon{ font-size:14px; }
+    .contact-item:hover{ background: rgba(30,64,175,0.85); border-color:#60a5fa; transform: translateY(-1px); }
+
+    .legal-row{ margin-top:12px; font-size:11px; color:#9ca3af; display:flex; justify-content:center; gap:18px; flex-wrap:wrap; }
+    .legal-row a{ color:#9ca3af; text-decoration:none; }
+    .legal-row a:hover{ color:#e5e7eb; text-decoration:underline; }
+
+    /* Responsive */
+    @media (max-width: 900px){
+      .hero-banner{ height:280px; }
+      .hero-content{ padding:24px 20px; max-width:100%; }
+      .hero-location{ font-size:40px; }
+      .hero-heading-line{ font-size:16px; }
+    }
+    @media (max-width: 768px){
+      .top-bar{ padding:8px 10px; gap:8px; }
+      .search-container{ max-width:none; }
+      .content{ padding:0 10px 32px; }
+      .content-shell{ border-radius:0 0 18px 18px; }
+      .services-wrapper{ padding:8px 16px 18px; }
+      .services-list{ gap:14px; }
+      .service-card{ padding:14px 14px; }
+      .service-title{ font-size:15px; }
+      .service-desc{ font-size:12px; }
+      .service-footer{ font-size:10px; }
+      .hero-banner{ height:260px; }
+      .hero-content{ padding:18px 16px 20px; justify-content:flex-end; }
+      .hero-cta-row{ margin-top:10px; }
+      .modal-card{ width:94vw; }
+    }
+    @media (max-width: 480px){
+      #profileName{ display:none; }
+      .hero-banner{ height:220px; }
+      .hero-location{ font-size:32px; }
+      .hero-heading-line{ font-size:15px; }
+      .hero-cta-row{ flex-direction:column; }
+      .hero-btn{ width:100%; justify-content:center; }
+      .search-box input{ font-size:12px; }
+    }
+  </style>
+</head>
+
+<body>
+<div class="top-bar">
+  <div class="logo" onclick="goDashboard()">
+    <div class="logo-pill">ASP</div>
+  </div>
+
+  <div class="search-container">
+    <div class="search-box">
+      <span class="search-icon" onclick="handleSearchNavigation()">🔍</span>
+      <input id="searchInput" type="text" placeholder="Search services, bookings…"
+             onkeydown="if(event.key==='Enter'){ handleSearchNavigation(); }">
+    </div>
+  </div>
+
+  <div class="profile-area" id="profileArea">
+    <div class="profile-icon" id="profileIcon">U</div>
+    <div id="profileName">User</div>
+
+    <div class="profile-dropdown" id="profileDropdown">
+      <button onclick="goToEditProfile()">Edit Profile</button>
+      <button onclick="goToOrders()">My Bookings</button>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+  <div class="content-shell">
+    <section class="hero-banner">
+      <video class="hero-video" src="images/ASPCare.mp4" autoplay muted loop playsinline></video>
+      <div class="hero-video-overlay"></div>
+
+      <div class="hero-content">
+        <h1 class="hero-location">ASP</h1>
+        <div class="hero-heading-line">Premium Car Care. Anytime. Anywhere.</div>
+
+        <div class="hero-cta-row">
+          <button class="hero-btn hero-btn-primary" onclick="scrollToServices()">Services →</button>
+          <button id="membershipBtn" class="hero-btn hero-btn-secondary" onclick="handleManageMembership()">Join Membership →</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="services-wrapper">
+      <div id="servicesSection" class="section-title">Book a service</div>
+
+      <div class="services-list">
+        <div class="service-card" onclick="goToSelfDriveBooking('Self Drive')">
+          <div class="service-visual-video">
+            <video src="images/Selfservice.mp4" autoplay muted loop playsinline></video>
+          </div>
+          <div class="service-content">
+            <div class="service-header-row">
+              <div class="service-title"><div class="service-icon-pill">🚗</div><h2 style="margin:0;">Self Drive</h2></div>
+              <div class="service-tag">Drive-in centre</div>
+            </div>
+            <div class="service-desc">Drop your car at our centre and pick it up shining. Ideal for routine washes and deep cleaning.</div>
+            <div class="service-footer"><span>Best for: Weekly maintenance</span><span class="highlight">★ Popular choice</span></div>
+          </div>
+        </div>
+
+        <div class="service-card" onclick="goToASPcareBooking('ASP Care')">
+          <div class="service-visual-video">
+            <video src="images/ASPCare.mp4" autoplay muted loop playsinline></video>
+          </div>
+          <div class="service-content">
+            <div class="service-header-row">
+              <div class="service-title"><div class="service-icon-pill">🛠️</div><h2 style="margin:0;">ASP Care</h2></div>
+              <div class="service-tag">Partner network</div>
+            </div>
+            <div class="service-desc">Authorized partner care with inspection. Perfect before road trips or after long drives.</div>
+            <div class="service-footer"><span>Includes: Visual inspection</span><span>Slot-based arrival</span></div>
+          </div>
+        </div>
+
+        <div class="service-card" onclick="goToHomeBooking('@Home')">
+          <div class="service-visual-video">
+            <video src="images/HSimage.mp4" autoplay muted loop playsinline></video>
+          </div>
+          <div class="service-content">
+            <div class="service-header-row">
+              <div class="service-title"><div class="service-icon-pill">🏡</div><h2 style="margin:0;">@Home</h2></div>
+              <div class="service-tag">Doorstep service</div>
+            </div>
+            <div class="service-desc">Professional wash at your parking location. No queues, no driving — we come to you.</div>
+            <div class="service-footer"><span>Best for: Busy schedules</span><span>Water &amp; power needed on-site</span></div>
+          </div>
+        </div>
+
+        <div class="service-card" onclick="openQuotation()">
+          <div class="service-visual-video">
+            <video src="images/offers.mp4" autoplay muted loop playsinline></video>
+          </div>
+          <div class="service-content">
+            <div class="service-header-row">
+              <div class="service-title"><div class="service-icon-pill">💰</div><h2 style="margin:0;">Quotation</h2></div>
+              <div class="service-tag">Transparent pricing</div>
+            </div>
+            <div class="service-desc">Pick a vehicle type to see Interior, Exterior, Teflon and combo prices as per your rate card.</div>
+            <div class="service-footer"><span>Compare: Interior · Exterior · Teflon</span><span class="highlight">Check combos &amp; savings</span></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- QUOTATION MODAL -->
+<div id="quotationModal" class="modal-backdrop">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Service Quotation</div>
+        <div style="font-size:11px;color:#9ca3af;margin-top:2px;">View fixed prices. Values are read-only.</div>
+      </div>
+      <button class="modal-close" onclick="closeQuotationModal()">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="modal-row">
+        <label for="vehicleSelect">Vehicle type</label>
+        <select id="vehicleSelect" onchange="onVehicleChange()">
+          <option value="">Select vehicle type…</option>
+        </select>
+        <span class="badge-soft" id="quoteStatus">Loading latest prices…</span>
+      </div>
+      <div id="quoteTableWrapper"></div>
+    </div>
+
+    <div class="modal-footer">
+      <span>Prices are fetched live from DB.</span>
+      <button class="btn-pill btn-ghost" onclick="closeQuotationModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="contact-title">Contact &amp; Support</div>
+    <div class="contact-row">
+      <a class="contact-item" href="tel:+919010340125" onclick="showPhone(event)">
+        <span class="icon">📞</span><span>Contact Us</span>
+      </a>
+
+      <div class="contact-item" onclick="goInsta()"><span class="icon">📸</span><span>Instagram</span></div>
+      <div class="contact-item" onclick="openChat()"><span class="icon">💬</span><span>Chat with Us</span></div>
+      <div class="contact-item" onclick="showLocation()"><span class="icon">📍</span><span>Location</span></div>
+    </div>
+
+    <div class="legal-row">
+      <span>© 2025 ASP Car Care</span>
+      <a href="/aboutUs">About Us</a>
+      <a href="/privacypolicy">Privacy Policy</a>
+      <a href="/refundpolicy">Refund Policy</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ✅ Gateway paths (NO hardcoded origin, NO ports, works in prod + localhost)
+  const API_USERS       = "/users";
+  const API_RATES       = "/rates/all";
+  const API_MEMBERSHIPS = "/memberships";
+
+  // ===== AUTH (STANDARD) =====
+  // ✅ Keep ONE naming everywhere: localStorage.jwt
+  const JWT_KEY   = "jwt";
+  const PHONE_KEY = "phone";
+
+  function getJwt() {
+    return (localStorage.getItem(JWT_KEY) || "").trim();
+  }
+
+  function getAuthHeaders() {
+    const t = getJwt();
+    return t ? { "Authorization": `Bearer ${t}` } : {};
+  }
+
+  const jwt   = getJwt();
+  const phone = (localStorage.getItem(PHONE_KEY) || "").trim();
+
+  // ✅ Your /users/profile API needs phone query param, so require both
+  const isLoggedIn = !!(jwt && phone);
+
+  const dropdown       = document.getElementById("profileDropdown");
+  const profileArea    = document.getElementById("profileArea");
+  const profileNameEl  = document.getElementById("profileName");
+  const profileIconEl  = document.getElementById("profileIcon");
+
+  let hasMembership = false;
+
+  function updateMembershipButton() {
+    const btn = document.getElementById("membershipBtn");
+    if (!btn) return;
+    btn.textContent = hasMembership ? "Manage Membership 	→" : "Join Membership →";
+  }
+
+  function checkMembershipForPhone(phoneVal) {
+    const btn = document.getElementById("membershipBtn");
+    if (!btn) return;
+    btn.textContent = "Checking membership…";
+
+    fetch(
+      API_MEMBERSHIPS + "/by-phone?phone=" + encodeURIComponent(phoneVal),
+      {
+        method: "GET",
+        headers: {
+          ...getAuthHeaders(),
+          "Content-Type": "application/json"
+        }
+      }
+    )
+      .then(res => {
+        if (res.status === 404) return null;
+        if (!res.ok) throw new Error("Membership lookup failed");
+        return res.json();
+      })
+      .then(data => {
+        hasMembership = !!data;
+        updateMembershipButton();
+      })
+      .catch(err => {
+        console.error("checkMembershipForPhone error:", err);
+        hasMembership = false;
+        updateMembershipButton();
+      });
+  }
+
+  async function isUserSignedUp(phoneVal) {
+    if (!phoneVal) return false;
+
+    try {
+      const res = await fetch(
+        API_USERS + "/profile?phone=" + encodeURIComponent(phoneVal),
+        {
+          method: "GET",
+          headers: {
+            ...getAuthHeaders(),
+            "Content-Type": "application/json"
+          }
+        }
+      );
+
+      if (res.status === 404) return false;
+      if (!res.ok) return false;
+
+      const u = await res.json();
+      return !!u;
+    } catch (e) {
+      console.error("isUserSignedUp error:", e);
+      return false;
+    }
+  }
+
+  // Populate profile
+  (function initProfile() {
+    if (isLoggedIn) {
+      fetch(
+        API_USERS + "/profile?phone=" + encodeURIComponent(phone),
+        {
+          method: "GET",
+          headers: {
+            ...getAuthHeaders(),
+            "Content-Type": "application/json"
+          }
+        }
+      )
+        .then(res => (res.ok ? res.json() : Promise.reject(res)))
+        .then(user => {
+          const name = user.lastName || user.firstName || "User";
+          profileNameEl.textContent = name;
+          profileIconEl.textContent = name.charAt(0).toUpperCase();
+
+          if (user.email) localStorage.setItem("email", user.email);
+
+          // membership check
+          checkMembershipForPhone(phone);
+        })
+        .catch(async (errRes) => {
+          try {
+            if (errRes && errRes.json) {
+              const body = await errRes.json();
+              console.error("Profile fetch failed:", errRes.status, body);
+            } else {
+              console.error("Profile fetch failed:", errRes);
+            }
+          } catch (_) {}
+
+          const ln = localStorage.getItem("lastName") || "";
+          const fn = localStorage.getItem("firstName") || "User";
+          const fallbackName = ln || fn || "User";
+          profileNameEl.textContent = fallbackName;
+          profileIconEl.textContent = fallbackName.charAt(0).toUpperCase();
+          updateMembershipButton();
+        });
+    } else {
+      profileNameEl.textContent = "Login / Signup";
+      profileIconEl.textContent = "G";
+      updateMembershipButton();
+    }
+  })();
+
+  // Profile dropdown
+  profileArea.onclick = (e) => {
+    e.stopPropagation();
+    if (!isLoggedIn) {
+      window.location.href = "/SignuLogin?mode=login";
+      return;
+    }
+    dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+  };
+  document.onclick = () => dropdown.style.display = "none";
+
+  // ✅ Keep pretty URL (controller forwards /aspcare -> dashboard.html)
+  function goDashboard() { window.location.href = "/aspcare"; }
+
+  function scrollToServices() {
+    const el = document.getElementById("servicesSection");
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function requireLoginAndNavigate(targetUrl) {
+    const t = getJwt();
+    const p = (localStorage.getItem(PHONE_KEY) || "").trim();
+    if (!t || !p) {
+      localStorage.setItem("pendingTarget", targetUrl);
+      window.location.href = "/SignuLogin?mode=login";
+      return;
+    }
+    window.location.href = targetUrl;
+  }
+
+  function goToASPcareBooking(service) { requireLoginAndNavigate("/ASPcareservice?service=" + encodeURIComponent(service)); }
+  function goToSelfDriveBooking(service) { requireLoginAndNavigate("/selfdrive?service=" + encodeURIComponent(service)); }
+  function goToHomeBooking(service) { requireLoginAndNavigate("/homewash?service=" + encodeURIComponent(service)); }
+
+
+
+  function goToEditProfile() { requireLoginAndNavigate("/edit-profile"); }
+  function goToOrders() { requireLoginAndNavigate("/orders"); }
+
+  function logout() {
+    localStorage.clear();
+    window.location.href = "/mainpage";
+  }
+
+  function showPhone(e) {
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if (!isMobile) {
+      if (e) e.preventDefault();
+      alert("📞 Contact Us: +91 90103 40125");
+    }
+  }
+  function goInsta() { window.open("https://www.instagram.com/asp_carcare/", "_blank"); }
+  function showLocation() { alert("📍 Kondapur, Hyderabad - 500092"); }
+  function openChat() { requireLoginAndNavigate("/support-chat"); }
+
+  function handleSearchNavigation() {
+    const input = document.getElementById("searchInput");
+    const query = (input.value || "").trim().toLowerCase();
+    if (!query) return;
+
+    if (query === "orders" || query.includes("booking")) { goToOrders(); return; }
+    if (query === "home" || query.includes("home")) { goToHomeBooking("@Home"); return; }
+    if (query.includes("self")) { goToSelfDriveBooking("Self Drive"); return; }
+
+    alert('No matching page. Try: "orders", "home", "self drive".');
+  }
+
+async function handleManageMembership() {
+  const btn = document.getElementById("membershipBtn");
+  if (btn) btn.disabled = true;
+
+  try {
+    const jwt = (localStorage.getItem(JWT_KEY) || "").trim();
+    const phone = (localStorage.getItem(PHONE_KEY) || "").trim();
+
+    // 🔐 Not logged in
+    if (!jwt || !phone) {
+      localStorage.setItem("pendingTarget", "/membership");
+      window.location.href = "/SignuLogin?mode=login";
+      return;
+    }
+
+    // 👤 Not signed up
+    const signedUp = await isUserSignedUp(phone);
+    if (!signedUp) {
+      alert("Please signup to access membership.");
+      window.location.href = "/SignuLogin?mode=signup";
+      return;
+    }
+
+    // ✅ All good
+    window.location.href = "/membership";
+
+  } catch (e) {
+    console.error("handleManageMembership error:", e);
+    alert("Something went wrong. Please try again.");
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+/* =========================================================
+   OTHER DASHBOARD NAVIGATIONS (JWT PROTECTED)
+========================================================= */
+function goToOrders() {
+  protectAndGo("/orders");
+}
+
+function goToProfile() {
+  protectAndGo("/profile");
+}
+
+function goToSelfDrive() {
+  protectAndGo("/selfdrive");
+}
+
+function goToHomeWash() {
+  protectAndGo("/homewash");
+}
+
+function protectAndGo(target) {
+  const jwt = localStorage.getItem(JWT_KEY);
+  const phone = localStorage.getItem(PHONE_KEY);
+
+  if (!jwt || !phone) {
+    localStorage.setItem("pendingTarget", target);
+    window.location.href = "/SignuLogin?mode=login";
+    return;
+  }
+
+  window.location.href = target;
+}
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+function logout() {
+  if (!confirm("Are you sure you want to logout?")) return;
+
+  localStorage.removeItem(JWT_KEY);
+  localStorage.removeItem(PHONE_KEY);
+  localStorage.removeItem("pendingTarget");
+
+  window.location.href = "/";
+}
+
+/* =========================================================
+   PAGE GUARD (ON LOAD)
+========================================================= */
+(function protectDashboard() {
+  const jwt = (localStorage.getItem(JWT_KEY) || "").trim();
+  const phone = (localStorage.getItem(PHONE_KEY) || "").trim();
+
+  console.log("[DASHBOARD] jwt?", !!jwt, "phone?", phone);
+
+  // ✅ Don't redirect automatically.
+  // Just show guest state; buttons will require login when clicked.
+  if (!jwt || !phone) {
+    profileNameEl.textContent = "Login / Signup";
+    profileIconEl.textContent = "G";
+    hasMembership = false;
+    updateMembershipButton();
+    return;
+  }
+
+  // Logged-in state continues normally (initProfile already runs)
+})();
+
+</script>

@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ASP Car Care – Main</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg: #ffffff;
+      --bg-soft: #f6f8fc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #6b7280;
+      --muted2:#94a3b8;
+      --line: rgba(148,163,184,.28);
+
+      --primary:#2563eb;
+      --primary2:#1d4ed8;
+      --green:#16a34a;
+      --orange:#f97316;
+      --shadow: 0 18px 55px rgba(2,6,23,.10);
+      --shadow2: 0 10px 24px rgba(2,6,23,.08);
+
+      --r: 22px;
+      --r2: 16px;
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+      color: var(--text);
+      background: linear-gradient(180deg, #ffffff, #ffffff);
+      display:flex;
+      flex-direction:column;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    :focus-visible{
+      outline: 2px solid rgba(37,99,235,.95);
+      outline-offset: 3px;
+      border-radius: 12px;
+    }
+    @media (prefers-reduced-motion: reduce){
+      *{ animation:none !important; transition:none !important; scroll-behavior:auto !important; }
+    }
+
+    /* ---------- HEADER ---------- */
+/* ---------- HEADER ---------- */
+.topbar-wrap{
+  position: sticky;
+  top:0;
+  z-index: 50;
+  background: rgba(255,255,255,.92);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(148,163,184,.22);
+}
+
+.page-header{
+  padding: 12px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  max-width: 1180px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* brand area */
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  cursor:pointer;
+  user-select:none;
+  min-width: 0;
+  flex: 1 1 auto;             /* ✅ allow brand to keep space */
+}
+
+/* ✅ LOGO FIX: no fixed W/H, no clipping */
+.logo-pill{
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid rgba(148,163,184,.30);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow: 0 10px 22px rgba(2,6,23,.08);
+  padding: 6px 10px;          /* ✅ space around logo */
+  overflow: visible;          /* ✅ DON'T CLIP */
+  flex: 0 0 auto;
+}
+
+.logo-pill img{
+  height: 34px;               /* ✅ stable height */
+  width: auto;                /* ✅ keep aspect ratio */
+  max-width: 140px;           /* ✅ prevent huge */
+  display:block;
+  object-fit: contain;
+}
+
+/* right area */
+.header-right{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-shrink:0;
+}
+
+.auth-buttons{
+  display:none;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+/* ✅ MOBILE WRAP FIX */
+@media (max-width: 620px){
+  .page-header{
+    flex-wrap: wrap;          /* ✅ wrap into 2 lines */
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .brand{
+    flex: 1 1 100%;           /* ✅ logo row full width */
+  }
+
+  .header-right{
+    flex: 1 1 100%;           /* ✅ buttons row full width */
+    justify-content: flex-end;
+  }
+
+  .auth-buttons{
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+
+    .brand-text{
+      display:flex;
+      flex-direction:column;
+      line-height:1.1;
+      min-width: 0;
+    }
+    .brand-text .name{
+      font-weight: 900;
+      letter-spacing:.02em;
+      font-size: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .brand-text .tag{
+      font-size:12px;
+      color: var(--muted);
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Mobile-only dancing text near brand (not separate header) */
+    .mobile-asp-dance{ display:none; }
+
+    .header-right{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-shrink:0;
+    }
+
+    .auth-buttons{
+      display:none;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .btn{
+      border:none;
+      cursor:pointer;
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-weight: 800;
+      font-size: 13px;
+      color: #fff;
+      transition: transform .12s ease, opacity .12s ease;
+      box-shadow: 0 10px 22px rgba(2,6,23,.12);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      white-space:nowrap;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn:hover{ transform: translateY(-1px); }
+    .btn:active{ transform: translateY(0px); opacity:.95; }
+
+    .btn-primary{ background: linear-gradient(90deg, var(--primary), var(--primary2)); }
+    .btn-orange{ background: linear-gradient(90deg, var(--orange), #ea580c); }
+    .btn-ghost{
+      background: #ffffff;
+      color: var(--text);
+      border: 1px solid rgba(148,163,184,.35);
+      box-shadow: none;
+    }
+
+    .signup-stack{
+      display:flex;
+      flex-direction:column;
+      line-height:1.05;
+      text-align:left;
+    }
+    .signup-stack .sub{
+      font-size: 11px;
+      font-weight: 800;
+      opacity: .95;
+    }
+
+    /* PROFILE */
+    .profile-area{
+      display:none;
+      position:relative;
+      align-items:center;
+      gap:10px;
+      cursor:pointer;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #ffffff;
+      border: 1px solid rgba(148,163,184,.30);
+      box-shadow: var(--shadow2);
+      user-select:none;
+    }
+    .profile-icon{
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 20% 20%, #22c55e, #16a34a);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:900;
+      color:#07210f;
+      flex: 0 0 auto;
+    }
+    #profileName{
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text);
+      max-width: 120px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .caret{ opacity:.75; font-size: 12px; color: var(--muted); }
+
+    .profile-dropdown{
+      position:absolute;
+      right: 0;
+      top: 52px;
+      min-width: 180px;
+      border-radius: 16px;
+      overflow:hidden;
+      display:none;
+      z-index: 60;
+      background: #ffffff;
+      border: 1px solid rgba(148,163,184,.30);
+      box-shadow: var(--shadow);
+    }
+    .profile-dropdown button{
+      width:100%;
+      padding: 12px 12px;
+      border:none;
+      text-align:left;
+      cursor:pointer;
+      background: transparent;
+      color: var(--text);
+      font-weight:800;
+      font-size: 13px;
+    }
+    .profile-dropdown button:hover{ background: rgba(148,163,184,.14); }
+
+    /* ---------- MAIN ---------- */
+    .page-main{
+      padding: 16px 16px 40px;
+      display:flex;
+      justify-content:center;
+      flex:1;
+      background: var(--bg-soft);
+    }
+    .shell{
+      width:100%;
+      max-width:1180px;
+      border-radius: var(--r);
+      padding: 18px;
+      background: #ffffff;
+      border: 1px solid rgba(148,163,184,.22);
+      box-shadow: var(--shadow);
+    }
+
+    /* ---------- HERO ---------- */
+    .hero-video-wrapper{
+      position:relative;
+      height: 360px;
+      border-radius: var(--r);
+      overflow:hidden;
+      border: 1px solid rgba(148,163,184,.22);
+      box-shadow: 0 16px 50px rgba(2,6,23,.12);
+      isolation: isolate;
+      background: #000;
+    }
+    .hero-video{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      transform: scale(1.02);
+      filter: contrast(1.03) saturate(1.04);
+    }
+    .hero-overlay{
+      position:absolute;
+      inset:0;
+      z-index: 1;
+      background:
+        radial-gradient(900px 460px at 20% 30%, rgba(2,6,23,.60), transparent 60%),
+        linear-gradient(90deg, rgba(2,6,23,.72), rgba(2,6,23,.35), rgba(2,6,23,.10));
+    }
+
+    .hero-inner{
+      position:absolute;
+      inset:0;
+      padding: 22px;
+      z-index: 2;
+      display:grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.9fr);
+      gap: 18px;
+      align-items: center;
+      color: #fff;
+    }
+
+    .hero-main{
+      max-width: 620px;
+      display:flex;
+      flex-direction:column;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .kicker{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
+      border: 1px solid rgba(255,255,255,.22);
+      width: fit-content;
+      font-size: 12px;
+      color: rgba(255,255,255,.92);
+      backdrop-filter: blur(6px);
+    }
+    .pulse{
+      width:8px; height:8px; border-radius:999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 0 rgba(34,197,94,.55);
+      animation: pulse 1.4s infinite;
+    }
+    @keyframes pulse{
+      0%{ box-shadow:0 0 0 0 rgba(34,197,94,.55); }
+      70%{ box-shadow:0 0 0 10px rgba(34,197,94,0); }
+      100%{ box-shadow:0 0 0 0 rgba(34,197,94,0); }
+    }
+
+    .hero-title{
+      font-size: 38px;
+      font-weight: 900;
+      letter-spacing:-.03em;
+      line-height: 1.10;
+      margin:0;
+    }
+    .hero-sub{
+      font-size: 14px;
+      color: rgba(255,255,255,.88);
+      line-height: 1.65;
+      max-width: 560px;
+    }
+
+    .hero-cta-row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top: 4px;
+    }
+
+    .btn-light{
+      background: rgba(255,255,255,.18);
+      border: 1px solid rgba(255,255,255,.28);
+      color:#fff;
+      box-shadow: none;
+      backdrop-filter: blur(6px);
+    }
+
+    .hero-side{
+      border-radius: var(--r2);
+      padding: 14px 14px 16px;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.22);
+      backdrop-filter: blur(8px);
+    }
+    .hero-side h3{ margin:0 0 4px; font-size: 16px; font-weight: 900; }
+    .hero-side p{ margin:0 0 12px; font-size: 12px; color: rgba(255,255,255,.88); line-height: 1.55; }
+    .side-badges{ display:flex; flex-wrap:wrap; gap:8px; }
+    .side-badge{
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 11px;
+      color: rgba(255,255,255,.92);
+      background: rgba(2,6,23,.20);
+      border: 1px solid rgba(255,255,255,.18);
+      font-weight: 800;
+    }
+
+    /* ---------- PANELS ---------- */
+    .row2{
+      display:grid;
+      grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.4fr);
+      gap: 14px;
+      margin: 16px 0 18px;
+    }
+    .panel{
+      border-radius: var(--r2);
+      padding: 14px;
+      background: #ffffff;
+      border: 1px solid rgba(148,163,184,.22);
+      box-shadow: var(--shadow2);
+    }
+    .panel-title{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom: 8px;
+    }
+    .panel-title .h{
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing:.02em;
+      color: var(--text);
+    }
+    .badge{
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: 900;
+      border: 1px solid rgba(249,115,22,.35);
+      background: rgba(249,115,22,.10);
+      color: #9a3412;
+      text-transform: uppercase;
+      letter-spacing: .10em;
+    }
+    .badge.ok{
+      border-color: rgba(34,197,94,.35);
+      background: rgba(34,197,94,.10);
+      color:#166534;
+    }
+    .panel ul{
+      margin:0;
+      padding-left: 16px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.8;
+    }
+
+    /* ---------- SERVICES ---------- */
+    .section-title{
+      margin: 4px 2px 10px;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      color: var(--muted2);
+    }
+
+    .services-grid{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .service-card{
+      border-radius: 20px;
+      padding: 16px;
+      background: #ffffff;
+      border: 1px solid rgba(148,163,184,.22);
+      box-shadow: var(--shadow2);
+      cursor:pointer;
+      transition: transform .14s ease, border-color .14s ease, box-shadow .14s ease;
+      min-height: 210px;
+      display:flex;
+      flex-direction:column;
+    }
+    .service-card:hover{
+      transform: translateY(-3px);
+      border-color: rgba(37,99,235,.35);
+      box-shadow: 0 18px 50px rgba(2,6,23,.12);
+    }
+
+    .service-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .service-left{
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      min-width: 0;
+    }
+    .icon{
+      width: 42px; height: 42px;
+      border-radius: 14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size: 18px;
+      background: rgba(37,99,235,.10);
+      border: 1px solid rgba(37,99,235,.18);
+      flex: 0 0 auto;
+    }
+    .service-name{
+      font-size: 16px;
+      font-weight: 900;
+      margin:0;
+      line-height: 1.1;
+      color: var(--text);
+    }
+    .service-sub{
+      font-size:12px;
+      color: var(--muted);
+      font-weight: 700;
+      margin-top: 2px;
+    }
+    .service-tag{
+      font-size: 11px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(37,99,235,.22);
+      background: rgba(37,99,235,.08);
+      color: #1d4ed8;
+      font-weight: 900;
+      white-space:nowrap;
+      flex: 0 0 auto;
+    }
+
+    .service-desc{
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.65;
+      margin: 0 0 12px;
+    }
+
+    .service-meta{
+      display:flex;
+      gap: 10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      margin-top: auto;
+    }
+
+    .meta-left{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      color: var(--muted);
+      font-size: 11.5px;
+    }
+    .pill{
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: rgba(148,163,184,.12);
+      border: 1px solid rgba(148,163,184,.24);
+      font-weight: 900;
+      color: #334155;
+    }
+
+    .cta{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: rgba(37,99,235,.10);
+      border: 1px solid rgba(37,99,235,.20);
+      color: #1d4ed8;
+      font-weight: 900;
+      font-size: 12px;
+    }
+    .cta .arrow{ font-size: 14px; }
+
+    /* ---------- GUEST ---------- */
+    .guest-section{
+      margin-top: 18px;
+      border-top: 1px solid rgba(148,163,184,.22);
+      padding-top: 16px;
+    }
+
+    .guest-card{
+      border-radius: 20px;
+      background: #ffffff;
+      border: 1px solid rgba(148,163,184,.22);
+      box-shadow: var(--shadow2);
+      overflow:hidden;
+    }
+    .guest-head{
+      padding: 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .guest-head .title{
+      font-size: 13px;
+      font-weight: 900;
+      margin:0;
+      color: var(--text);
+    }
+    .guest-head .sub{
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .guest-panel{
+      display:none;
+      padding: 14px;
+      border-top: 1px solid rgba(148,163,184,.18);
+      background: rgba(148,163,184,.08);
+    }
+
+    .guest-form-grid{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px 14px;
+      margin-bottom: 10px;
+    }
+
+    .guest-form-field label{
+      display:block;
+      font-size: 11px;
+      color: #334155;
+      margin-bottom: 5px;
+      font-weight: 900;
+      letter-spacing:.02em;
+    }
+
+    .guest-form-field input{
+      width:100%;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(148,163,184,.35);
+      background: #ffffff;
+      color: var(--text);
+      font-size: 13px;
+      outline:none;
+    }
+    .guest-form-field input:focus{
+      border-color: rgba(37,99,235,.55);
+      box-shadow: 0 0 0 3px rgba(37,99,235,.14);
+    }
+
+    .guest-actions{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      flex-wrap:wrap;
+    }
+
+    .guest-error{
+      min-height: 16px;
+      font-size: 12px;
+      color: #dc2626;
+      font-weight: 900;
+    }
+
+    .spinner{
+      width: 14px; height: 14px;
+      border-radius: 999px;
+      border: 2px solid rgba(255,255,255,.85);
+      border-top-color: transparent;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin{ to{ transform:rotate(360deg); } }
+
+    /* ---------- CONTACT ---------- */
+    .contact-section{
+      margin-top: 18px;
+      border-top: 1px solid rgba(148,163,184,.22);
+      padding-top: 14px;
+      text-align:center;
+    }
+    .contact-title{
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      color: var(--muted2);
+      margin-bottom: 10px;
+    }
+    .contact-row{
+      display:flex;
+      justify-content:center;
+      gap: 12px;
+      flex-wrap:wrap;
+    }
+    .contact-item{
+      text-decoration:none;
+      color: var(--text);
+      background: #ffffff;
+      border: 1px solid rgba(148,163,184,.30);
+      padding: 10px 12px;
+      border-radius: 999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      cursor:pointer;
+      transition: transform .12s, background .12s, border-color .12s;
+      font-weight: 900;
+      font-size: 12px;
+      box-shadow: 0 10px 22px rgba(2,6,23,.06);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .contact-item:hover{
+      transform: translateY(-1px);
+      border-color: rgba(37,99,235,.35);
+    }
+
+    /* ---------- FOOTER ---------- */
+    .footer{
+      padding: 16px 16px 18px;
+      border-top: 1px solid rgba(148,163,184,.22);
+      background: #ffffff;
+    }
+    .footer-inner{
+      max-width: 1180px;
+      margin: 0 auto;
+      text-align:center;
+      color: var(--muted);
+      font-size: 12px;
+      display:flex;
+      flex-direction:column;
+      gap: 8px;
+    }
+    .legal-row{
+      display:flex;
+      justify-content:center;
+      gap: 18px;
+      flex-wrap:wrap;
+      line-height: 1.8;
+    }
+    .legal-row a{
+      color: var(--muted);
+      text-decoration:none;
+      font-weight: 900;
+    }
+    .legal-row a:hover{ color: var(--text); text-decoration: underline; }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 980px){
+      .hero-inner{ grid-template-columns: 1fr; }
+      .hero-side{ display:none; }
+      .hero-video-wrapper{ height: 320px; }
+      .row2{ grid-template-columns: 1fr; }
+      .services-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .guest-form-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 620px){
+      .page-main{ padding: 12px 12px 28px; }
+
+      /* ✅ Keep header clean and prevent logo break */
+      .brand-text .tag{ display:none; }
+
+      /* show ASP CARE dancing text under brand (only mobile) */
+      .mobile-asp-dance{
+        display:block;
+        font-weight: 900;
+        font-size: 14px;
+        letter-spacing: .22em;
+        text-transform: uppercase;
+        margin-top: 6px;
+        background: linear-gradient(90deg,#f97316,#ec4899,#8b5cf6,#22c55e,#38bdf8,#f97316);
+        background-size: 300% 300%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        animation: aspDance 2.6s infinite ease-in-out;
+      }
+      @keyframes aspDance{
+        0% { transform: translateY(0); background-position: 0% 50%; }
+        25% { transform: translateY(-2px) rotate(-0.8deg); }
+        50% { transform: translateY(0) rotate(0.8deg); background-position: 100% 50%; }
+        75% { transform: translateY(2px) rotate(-0.8deg); }
+        100% { transform: translateY(0); background-position: 0% 50%; }
+      }
+
+      .hero-video-wrapper{ height: 300px; }
+      .hero-inner{ padding: 16px; }
+      .hero-title{ font-size: 28px; line-height: 1.12; }
+      .hero-sub{ font-size: 13px; }
+
+      .services-grid{ grid-template-columns: 1fr; gap: 12px; }
+
+      .guest-form-grid{ grid-template-columns: 1fr; }
+      .guest-actions{ flex-direction: column; align-items: stretch; }
+      #guestGenerateBtn{ width: 100%; }
+
+      .contact-item{ width: 100%; justify-content: center; max-width: 360px; }
+    }
+
+    @media (max-width: 420px){
+      .logo-pill{ width: 58px; height: 44px; }
+      .hero-video-wrapper{ height: 280px; }
+      .hero-title{ font-size: 26px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <div class="topbar-wrap">
+    <header class="page-header">
+      <div class="brand" onclick="goDashboard()">
+        <div class="logo-pill">
+          <img src="images/logo.png" alt="ASP Car Care">
+        </div>
+        <div class="brand-text">
+          <div class="name">ASP Car Care</div>
+          <div class="tag">Premium car care · Hyderabad</div>
+          <div class="mobile-asp-dance">ASP CARE</div>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <!-- when NOT logged in -->
+        <div id="authButtons" class="auth-buttons">
+          <button class="btn btn-primary" onclick="goLogin()">🔐 Login</button>
+
+          <button class="btn btn-orange" onclick="goSignup()">
+            ✨ Signup
+            <span class="signup-stack">
+              <span class="sub" id="signupOfferText">15% off</span>
+            </span>
+          </button>
+
+          <button class="btn btn-ghost" onclick="scrollToGuest()">👤 Guest</button>
+        </div>
+
+        <!-- when logged in -->
+        <div class="profile-area" id="profileArea">
+          <div class="profile-icon" id="profileIcon">U</div>
+          <div id="profileName">User</div>
+          <div class="caret">▾</div>
+
+          <div class="profile-dropdown" id="profileDropdown">
+            <button onclick="goToEditProfile()">Edit Profile</button>
+            <button onclick="logout()">Logout</button>
+          </div>
+        </div>
+      </div>
+    </header>
+  </div>
+
+  <main class="page-main">
+    <div class="shell">
+
+      <!-- HERO -->
+      <section class="hero-video-wrapper">
+        <video class="hero-video" autoplay muted loop playsinline>
+          <source src="images/Selfservice.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+
+        <div class="hero-overlay"></div>
+
+        <div class="hero-inner">
+          <div class="hero-main">
+            <div class="kicker"><span class="pulse"></span> Live · Kondapur hub active</div>
+            <h1 class="hero-title">Premium Car Care.<br>Anytime. Anywhere.</h1>
+            <div class="hero-sub">
+              Book washes in a few taps, track your visits, and enjoy transparent pricing across all service types.
+            </div>
+
+            <div class="hero-cta-row">
+              <button class="btn btn-light" onclick="document.querySelector('.services-grid').scrollIntoView({behavior:'smooth'});">
+                Browse Services
+              </button>
+              <button class="btn btn-light" onclick="openChatNewTab()">Chat</button>
+            </div>
+          </div>
+
+          <aside class="hero-side" aria-label="Why choose ASP Car Care">
+            <h3>Why ASP Car Care?</h3>
+            <p>Trusted partners, quick slots, and clean pricing. Your next wash is always a tap away.</p>
+            <div class="side-badges">
+              <div class="side-badge">✅ Same-day slots</div>
+              <div class="side-badge">🧾 Transparent refunds</div>
+              <div class="side-badge">🔒 OTP based login</div>
+              <div class="side-badge">📍 Hyderabad coverage</div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- HIGHLIGHTS -->
+      <section class="row2">
+        <div class="panel">
+          <div class="panel-title">
+            <div class="h">Offers</div>
+            <div class="badge">New user</div>
+          </div>
+          <ul>
+            <li>Flat 15% off on Signup</li>
+            <li>Extra benefits on membership</li>
+            <li>Faster checkout with saved profile</li>
+          </ul>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title">
+            <div class="h">Service promise</div>
+            <div class="badge ok">Trusted</div>
+          </div>
+          <ul>
+            <li>Professional tools & verified partners</li>
+            <li>Clear pricing & visit history</li>
+            <li>Support chat available</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- SERVICES -->
+      <section>
+        <div class="section-title">Book a service</div>
+
+        <div class="services-grid">
+          <div class="service-card" onclick="goToSelfDriveBooking('Self Drive')">
+            <div class="service-top">
+              <div class="service-left">
+                <div class="icon">🚗</div>
+                <div>
+                  <p class="service-name">Self Drive</p>
+                  <div class="service-sub">Drop-off centre wash</div>
+                </div>
+              </div>
+              <div class="service-tag">Drive-in</div>
+            </div>
+
+            <p class="service-desc">
+              Drop your car at our centre and pick it up shining. Ideal for routine washes and deep cleaning.
+            </p>
+
+            <div class="service-meta">
+              <div class="meta-left">
+                <div class="pill">⭐ Popular</div>
+                <div class="pill">⏱ Quick slots</div>
+              </div>
+              <div class="cta">Book now <span class="arrow">➜</span></div>
+            </div>
+          </div>
+
+          <div class="service-card" onclick="goToASPcareBooking('ASP Care')">
+            <div class="service-top">
+              <div class="service-left">
+                <div class="icon">🛠️</div>
+                <div>
+                  <p class="service-name">ASP Care</p>
+                  <div class="service-sub">Partner inspection care</div>
+                </div>
+              </div>
+              <div class="service-tag">Partners</div>
+            </div>
+
+            <p class="service-desc">
+              Authorized partner care with inspection. Perfect before road trips or after long drives.
+            </p>
+
+            <div class="service-meta">
+              <div class="meta-left">
+                <div class="pill">🔍 Inspection</div>
+                <div class="pill">📅 Slot-based</div>
+              </div>
+              <div class="cta">Book now <span class="arrow">➜</span></div>
+            </div>
+          </div>
+
+          <div class="service-card" onclick="goToHomeBooking('@Home')">
+            <div class="service-top">
+              <div class="service-left">
+                <div class="icon">🏡</div>
+                <div>
+                  <p class="service-name">@Home</p>
+                  <div class="service-sub">Doorstep service</div>
+                </div>
+              </div>
+              <div class="service-tag">Doorstep</div>
+            </div>
+
+            <p class="service-desc">
+              Professional wash at your parking location. No queues, no driving — we come to you.
+            </p>
+
+            <div class="service-meta">
+              <div class="meta-left">
+                <div class="pill">🧼 Pro wash</div>
+                <div class="pill">⚡ Needs water/power</div>
+              </div>
+              <div class="cta">Book now <span class="arrow">➜</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- GUEST -->
+      <section id="guestSection" class="guest-section">
+        <div class="section-title">Guest checkout</div>
+
+        <div class="guest-card">
+          <div class="guest-head">
+            <div>
+              <div class="title">Don’t want an account?</div>
+              <div class="sub">Checkout as guest using just your name and mobile number.</div>
+            </div>
+            <button type="button" class="btn btn-ghost" onclick="toggleGuestPanel()">👤 Continue as Guest</button>
+          </div>
+
+          <div id="guestPanel" class="guest-panel">
+            <div class="guest-form-grid">
+              <div class="guest-form-field">
+                <label for="guestFirstName">First name</label>
+                <input type="text" id="guestFirstName" placeholder="Premchand">
+              </div>
+              <div class="guest-form-field">
+                <label for="guestLastName">Last name</label>
+                <input type="text" id="guestLastName" placeholder="Gunda">
+              </div>
+              <div class="guest-form-field">
+                <label for="guestPhone">Mobile number</label>
+                <input type="tel" id="guestPhone" placeholder="10-digit mobile">
+              </div>
+            </div>
+
+            <div class="guest-actions">
+              <div id="guestError" class="guest-error"></div>
+              <button id="guestGenerateBtn" type="button" class="btn btn-primary" onclick="sendGuestOtp()">
+                <span>Generate OTP</span>
+                <span id="guestSpinner" class="spinner" style="display:none;"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONTACT -->
+      <section class="contact-section">
+        <div class="contact-title">Contact &amp; Support</div>
+
+        <div class="contact-row">
+          <a class="contact-item" href="tel:+919010340125" onclick="handleTelClick(event)">📞 Contact Us</a>
+          <div class="contact-item" onclick="goInsta()">📸 Instagram</div>
+          <div class="contact-item" onclick="openChatNewTab()">💬 Chat with Us</div>
+          <div class="contact-item" onclick="showLocation()">📍 Location</div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div>© 2025 ASP Car Care</div>
+      <div class="legal-row">
+        <a href="/aboutUs" target="_blank" rel="noopener noreferrer">About Us</a>
+        <a href="/privacypolicy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+        <a href="/refundpolicy" target="_blank" rel="noopener noreferrer">Refund Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+	  const API_BASE = window.location.origin;
+    const API_USERS = "${API_BASE}/users";
+    const API_AUTH  = "${API_BASE}/auth";
+
+    const token       = localStorage.getItem("authToken");
+    const phone       = localStorage.getItem("phone");
+    const isLoggedIn  = !!(token && phone);
+
+    const dropdown      = document.getElementById("profileDropdown");
+    const profileArea   = document.getElementById("profileArea");
+    const profileNameEl = document.getElementById("profileName");
+    const profileIconEl = document.getElementById("profileIcon");
+    const authButtons   = document.getElementById("authButtons");
+
+    if (isLoggedIn) {
+      if (authButtons) authButtons.style.display = "none";
+      if (profileArea) profileArea.style.display = "flex";
+
+      fetch(API_USERS + "/profile?phone=" + encodeURIComponent(phone))
+        .then(res => res.json())
+        .then(user => {
+          if (!user) return;
+          const name = user.lastName || user.firstName || "User";
+          profileNameEl.textContent = name;
+          profileIconEl.textContent = name.charAt(0).toUpperCase();
+
+          if (user.email) localStorage.setItem("email", user.email);
+          else localStorage.removeItem("email");
+        })
+        .catch(() => {});
+    } else {
+      if (authButtons) authButtons.style.display = "flex";
+      if (profileArea) profileArea.style.display = "none";
+    }
+
+    if (profileArea) {
+      profileArea.onclick = (e) => {
+        e.stopPropagation();
+        if (!isLoggedIn) {
+          window.location.href = "SignupLogin.html?mode=login";
+          return;
+        }
+        dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+      };
+      document.onclick = () => { if (dropdown) dropdown.style.display = "none"; };
+    }
+
+    function goDashboard() { window.location.href = "/mainpage"; }
+    function goLogin()  { localStorage.removeItem("pendingTarget"); window.location.href = "SignupLogin.html?mode=login"; }
+    function goSignup() { localStorage.removeItem("pendingTarget"); window.location.href = "SignupLogin.html?mode=signup"; }
+
+    function requireLoginAndGo(targetUrl) {
+      const t = localStorage.getItem("authToken");
+      const p = localStorage.getItem("phone");
+      if (!t || !p) {
+        localStorage.setItem("pendingTarget", targetUrl);
+        window.location.href = "SignupLogin.html?mode=login";
+        return;
+      }
+      window.location.href = targetUrl;
+    }
+
+    function goToASPcareBooking(service) { requireLoginAndGo("/ASPcareservice?service=" + encodeURIComponent(service)); }
+    function goToSelfDriveBooking(service) { requireLoginAndGo("/selfdrive?service=" + encodeURIComponent(service)); }
+    function goToHomeBooking(service) { requireLoginAndGo("/homewash?service=" + encodeURIComponent(service)); }
+    function goToEditProfile() { requireLoginAndGo("/edit-profile"); }
+
+    function logout() { localStorage.clear(); window.location.href = "/aspcare"; }
+
+    function handleTelClick(e) {
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      if (!isMobile) {
+        e.preventDefault();
+        alert("📞 Contact Us: +91 90103 40125");
+      }
+    }
+
+    function goInsta() { window.open("https://instagram.com", "_blank", "noopener"); }
+    function showLocation() { alert("📍 Kondapur, Hyderabad - 500092"); }
+
+    function openChatNewTab() {
+      const url = isLoggedIn ? "/support-chat" : "SignupLogin.html?mode=login";
+      window.open(url, "_blank", "noopener");
+    }
+
+    function toggleGuestPanel() {
+      const panel = document.getElementById("guestPanel");
+      if (!panel) return;
+      panel.style.display = panel.style.display === "block" ? "none" : "block";
+    }
+
+    function scrollToGuest() {
+      const panel = document.getElementById("guestPanel");
+      const section = document.getElementById("guestSection");
+      if (!panel || !section) return;
+      panel.style.display = "block";
+      section.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function setGuestLoading(loading) {
+      const btn = document.getElementById("guestGenerateBtn");
+      const spinner = document.getElementById("guestSpinner");
+      if (btn) btn.disabled = loading;
+      if (spinner) spinner.style.display = loading ? "inline-block" : "none";
+    }
+
+    async function sendGuestOtp() {
+      const first = document.getElementById("guestFirstName").value.trim();
+      const last  = document.getElementById("guestLastName").value.trim();
+      const gPhone = document.getElementById("guestPhone").value.trim();
+      const errEl = document.getElementById("guestError");
+
+      if (errEl) errEl.textContent = "";
+
+      if (!first || !last || !gPhone) {
+        if (errEl) errEl.textContent = "Please fill all fields.";
+        return;
+      }
+
+      if (!/^\d{10}$/.test(gPhone)) {
+        if (errEl) errEl.textContent = "Please enter a valid 10-digit mobile number.";
+        return;
+      }
+
+      setGuestLoading(true);
+
+      try {
+        const profileResp = await fetch(API_USERS + "/profile?phone=" + encodeURIComponent(gPhone));
+
+        if (profileResp.ok) {
+          setGuestLoading(false);
+
+          if (confirm("This mobile number is already registered. Do you want to login instead?")) {
+            window.location.href = "SignupLogin.html?mode=login&phone=" + encodeURIComponent(gPhone);
+          } else {
+            if (errEl) errEl.textContent = "Please use Login with this mobile number.";
+          }
+          return;
+        } else if (profileResp.status !== 404) {
+          if (errEl) errEl.textContent = "Unable to check this number right now. Please try again.";
+          setGuestLoading(false);
+          return;
+        }
+
+        const guestSignupPayload = {
+          firstName: first,
+          lastName: last,
+          email: gPhone + "@guest.asp",
+          phone: gPhone,
+          age: 0,
+          password: "guest"
+        };
+
+        sessionStorage.setItem("guestSignupData", JSON.stringify(guestSignupPayload));
+
+        const otpResp = await fetch(API_AUTH + "/signup/send-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(guestSignupPayload)
+        });
+
+        const otpData = await otpResp.json();
+
+        if (!otpResp.ok || !otpData.success) {
+          if (errEl) errEl.textContent = otpData.message || "Failed to send OTP. Please try again.";
+          setGuestLoading(false);
+          return;
+        }
+
+        alert(otpData.message);
+
+        window.location.href =
+          "otp-verification.html?phone=" + encodeURIComponent(gPhone) + "&type=guest";
+      } catch (e) {
+        if (errEl) errEl.textContent = "Something went wrong. Please try again.";
+      } finally {
+        setGuestLoading(false);
+      }
+    }
+  </script>
+
+</body>
+</html>

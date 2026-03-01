@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><title>Payment Page</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f2f2f2; display:flex; justify-content:center; align-items:center; height:100vh; }
+    .payment-box { background:white; padding:30px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,.2); width:400px; text-align:center; }
+    .payment-info { margin-bottom:20px; text-align:left; }
+    .payment-info p { font-size:16px; margin:5px 0; }
+    button { background:#28a745; color:#fff; border:none; padding:10px 20px; border-radius:6px; font-size:16px; cursor:pointer; }
+    button:hover { background:#218838; }
+    .cancel { background:#e53935; margin-left:10px; }
+    .cancel:hover { background:#c62828; }
+  </style>
+</head>
+<body>
+  <div class="payment-box">
+    <h2>Proceed to Payment</h2>
+    <div class="payment-info">
+      <p><strong>Order ID:</strong> <span id="orderId"></span></p>
+      <p><strong>Total Amount:</strong> $<span id="amount"></span></p>
+    </div>
+    <button onclick="payNow()">💳 Pay Now</button>
+    <button class="cancel" onclick="cancelPayment()">Cancel</button>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const orderId = params.get("orderId") || "N/A";
+    const amount  = params.get("amount") || "0.00";
+    document.getElementById("orderId").textContent = orderId;
+    document.getElementById("amount").textContent  = amount;
+
+    function payNow() {
+      const name  = localStorage.getItem("userName") || "Guest User";
+      const items = JSON.parse(localStorage.getItem("checkoutItems") || "[]").map(i => ({
+        id: i.id, title: i.title, img: i.img, price: i.price, qty: i.qty
+      }));
+
+      fetch("http://localhost:8082/api/payment/confirm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId, amount, status:"SUCCESS", name, items })
+      })
+      .then(r=>r.text())
+      .then(msg=>{
+        // remove purchased items from cart
+        const cart = JSON.parse(localStorage.getItem("cartItems") || "[]");
+        const purchasedTitles = new Set(items.map(i=>i.title));
+        const remaining = cart.map(c => {
+          const bought = items.find(i=>i.id===c.id);
+          if (!bought) return c;
+          const newQty = c.qty - bought.qty;
+          return newQty > 0 ? { ...c, qty:newQty, checked:false } : null;
+        }).filter(Boolean);
+        localStorage.setItem("cartItems", JSON.stringify(remaining));
+        localStorage.removeItem("checkoutItems");
+
+        alert("✅ " + msg);
+        window.location.href = "success.html?orderId=" + orderId + "&amount=" + amount;
+      })
+      .catch(err=>{
+        console.error("Payment failed:", err);
+        alert("❌ Payment failed. Try again later.");
+      });
+    }
+
+    function cancelPayment() {
+      alert("Payment cancelled.");
+      window.location.href = "cart.html";
+    }
+  </script>
+</body>
+</html>

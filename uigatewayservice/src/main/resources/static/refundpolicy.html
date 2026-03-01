@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Refund Policy | ASP Car Care</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg: #020617;
+      --card: rgba(255,255,255,0.06);
+      --card2: rgba(255,255,255,0.04);
+      --border: rgba(148,163,184,0.22);
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --primary: #3b82f6;
+      --primary2:#1d4ed8;
+      --good:#22c55e;
+      --warn:#f59e0b;
+      --bad:#fb7185;
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; margin:0; }
+    body{
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+      color: var(--text);
+      background: radial-gradient(circle at top left, #0b1224 0, #020617 45%, #020617 100%);
+      display:flex;
+      flex-direction:column;
+    }
+
+    /* top bar (simple) */
+    .topbar{
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(2,6,23,0.82);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(148,163,184,0.18);
+    }
+    .topbar-inner{
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 12px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width: 0;
+    }
+    .brand-pill{
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 20% 20%, #38bdf8, #1d4ed8);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:800;
+      color:#fff;
+      box-shadow: 0 0 0 1px rgba(191,219,254,0.55);
+      cursor:pointer;
+      flex-shrink:0;
+    }
+    .brand-text{
+      display:flex;
+      flex-direction:column;
+      line-height:1.1;
+      min-width: 0;
+    }
+    .brand-text strong{
+      font-size: 13px;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .brand-text span{
+      font-size: 11px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .actions{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .btn{
+      border: 1px solid rgba(148,163,184,0.28);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: 999px;
+      cursor:pointer;
+      font-size: 12px;
+      font-weight: 600;
+      display:inline-flex;
+      gap:6px;
+      align-items:center;
+      text-decoration:none;
+      transition: transform .08s ease, background .12s ease, border-color .12s ease;
+      white-space:nowrap;
+    }
+    .btn:hover{ transform: translateY(-1px); border-color: rgba(59,130,246,0.7); background: rgba(59,130,246,0.12); }
+    .btn.primary{
+      border: none;
+      background: linear-gradient(135deg, var(--primary), var(--primary2));
+      box-shadow: 0 12px 28px rgba(2,6,23,0.55);
+    }
+
+    /* page shell */
+    .wrap{
+      width: 100%;
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 18px 14px 30px;
+      flex:1;
+    }
+
+    .hero{
+      border: 1px solid rgba(148,163,184,0.22);
+      background: radial-gradient(circle at top left, rgba(59,130,246,0.22), rgba(255,255,255,0.04) 45%, rgba(255,255,255,0.02));
+      border-radius: 22px;
+      padding: 18px 16px;
+      box-shadow: 0 24px 70px rgba(0,0,0,0.35);
+      overflow:hidden;
+      position:relative;
+    }
+    .hero h1{
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: 0.01em;
+    }
+    .hero p{
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+      max-width: 880px;
+    }
+    .meta{
+      margin-top: 10px;
+      display:flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items:center;
+    }
+    .pill{
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.25);
+      background: rgba(2,6,23,0.55);
+      color: var(--text);
+      white-space:nowrap;
+    }
+    .pill.good{ border-color: rgba(34,197,94,0.45); background: rgba(34,197,94,0.12); color: #bbf7d0; }
+    .pill.warn{ border-color: rgba(245,158,11,0.45); background: rgba(245,158,11,0.12); color: #fde68a; }
+    .pill.bad { border-color: rgba(251,113,133,0.45); background: rgba(251,113,133,0.12); color: #fecdd3; }
+
+    .grid{
+      margin-top: 14px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    @media (min-width: 900px){
+      .grid{ grid-template-columns: 1.2fr 0.8fr; }
+    }
+
+    .card{
+      border: 1px solid rgba(148,163,184,0.20);
+      background: rgba(255,255,255,0.045);
+      border-radius: 18px;
+      padding: 14px 14px;
+      box-shadow: 0 16px 45px rgba(0,0,0,0.25);
+    }
+    .card h2{
+      margin: 0 0 8px;
+      font-size: 14px;
+      letter-spacing: 0.02em;
+    }
+    .card p, .card li{
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .card p{ margin: 8px 0; color: var(--muted); }
+    .card ul{ margin: 8px 0 0 18px; color: var(--muted); }
+    .card li{ margin: 6px 0; }
+
+    .note{
+      border-radius: 14px;
+      border: 1px solid rgba(59,130,246,0.25);
+      background: rgba(59,130,246,0.10);
+      padding: 10px 12px;
+      color: #c7d2fe;
+      font-size: 12px;
+      line-height: 1.5;
+      margin-top: 10px;
+    }
+
+    table{
+      width:100%;
+      border-collapse: collapse;
+      overflow:hidden;
+      border-radius: 14px;
+      border: 1px solid rgba(148,163,184,0.20);
+      background: rgba(2,6,23,0.35);
+      margin-top: 10px;
+    }
+    th, td{
+      padding: 10px 10px;
+      font-size: 12px;
+      text-align:left;
+      border-bottom: 1px solid rgba(148,163,184,0.16);
+      color: var(--text);
+      vertical-align: top;
+    }
+    th{
+      background: rgba(15,23,42,0.70);
+      color: #e5e7eb;
+      font-weight: 700;
+      position: sticky;
+      top: 0;
+    }
+    tr:last-child td{ border-bottom:none; }
+    td span.k{ color: var(--muted); font-weight:600; }
+
+    .side{
+      display:flex;
+      flex-direction:column;
+      gap: 12px;
+    }
+
+    .contact{
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+    }
+    .contact a{
+      text-decoration:none;
+      color: var(--text);
+    }
+    .contact-row{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items:center;
+    }
+    .contact-pill{
+      display:inline-flex;
+      gap: 8px;
+      align-items:center;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.22);
+      background: rgba(255,255,255,0.05);
+      font-size: 12px;
+      cursor:pointer;
+      transition: background .12s ease, transform .08s ease, border-color .12s ease;
+    }
+    .contact-pill:hover{ transform: translateY(-1px); border-color: rgba(59,130,246,0.7); background: rgba(59,130,246,0.12); }
+
+    /* footer */
+    .footer{
+      border-top: 1px solid rgba(148,163,184,0.18);
+      background: rgba(2,6,23,0.82);
+      color: var(--muted);
+      padding: 14px 14px 18px;
+    }
+    .footer-inner{
+      max-width: 1040px;
+      margin: 0 auto;
+      display:flex;
+      justify-content: space-between;
+      align-items:center;
+      gap: 10px;
+      flex-wrap:wrap;
+      font-size: 12px;
+    }
+    .footer a{
+      color: var(--muted);
+      text-decoration:none;
+      border-bottom: 1px dashed rgba(148,163,184,0.35);
+    }
+    .footer a:hover{ color: var(--text); border-bottom-color: rgba(229,231,235,0.6); }
+
+    @media (max-width: 520px){
+      .hero h1{ font-size: 20px; }
+      .btn{ padding: 7px 10px; font-size: 12px; }
+      th, td{ font-size: 12px; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-pill" onclick="goHomeOrDashboard()" title="Back">ASP</div>
+        <div class="brand-text">
+          <strong>ASP Car Care</strong>
+          <span>Refund Policy</span>
+        </div>
+      </div>
+
+      <!-- ✅ Logged out actions -->
+      <div class="actions" id="actionsLoggedOut" style="display:none;">
+        <button class="btn" onclick="goLogin()">Login</button>
+        <button class="btn primary" onclick="goSignup()">Signup</button>
+      </div>
+
+      <!-- ✅ Logged in actions -->
+      <div class="actions" id="actionsLoggedIn" style="display:none;">
+        <button class="btn" onclick="goDashboard()">← Dashboard</button>
+        <button class="btn primary" onclick="goBookWash()">🚗 Book a Car Wash</button>
+      </div>
+    </div>
+  </div>
+
+  <main class="wrap">
+    <section class="hero">
+      <h1>Refund Policy</h1>
+      <p>
+        We aim to provide a smooth booking and service experience. This policy explains when you may be eligible
+        for a refund, how refunds are calculated, and how to request one. By placing a booking through ASP Car Care,
+        you agree to this Refund Policy.
+      </p>
+      <div class="meta">
+        <span class="pill">Effective Date: <b>15-Dec-2025</b></span>
+        <span class="pill">Applies to: Self Drive · @Home · ASP Care</span>
+        <span class="pill good">Resolution-first: Re-service preferred</span>
+      </div>
+    </section>
+
+    <section class="grid">
+      <!-- Main content -->
+      <div class="card">
+        <h2>1) Overview</h2>
+        <p>
+          Refunds depend on service type, cancellation time, and whether the service has started.
+          Platform/transaction fees (if any) may be non-refundable if charged by payment providers, unless required by law.
+        </p>
+
+        <h2 style="margin-top:14px;">2) Eligibility for Refunds</h2>
+
+        <div class="note">
+          <b>Note:</b> In most cases, we try to resolve issues via <b>re-service</b> or <b>reschedule</b> before refunds.
+        </div>
+
+        <h3 style="margin:12px 0 6px; font-size:13px;">A) Full Refund (100%)</h3>
+        <ul>
+          <li>Service not delivered due to ASP Care cancellation (staff/operational issues).</li>
+          <li>Payment deducted but booking not confirmed due to technical issue.</li>
+          <li>Duplicate payment for the same booking.</li>
+          <li>@Home service not possible due to our team being unable to reach the location.</li>
+        </ul>
+
+        <h3 style="margin:12px 0 6px; font-size:13px;">B) Partial Refund</h3>
+        <ul>
+          <li>Cancellation close to slot time (see cancellation window).</li>
+          <li>Service started but could not be completed due to customer-side reasons.</li>
+          <li>Downgrade/partial work requested (subject to assessment and approval).</li>
+        </ul>
+
+        <h3 style="margin:12px 0 6px; font-size:13px;">C) No Refund</h3>
+        <ul>
+          <li>No-show or access not provided at the scheduled time.</li>
+          <li>Cancellation after service has started (unless a verified service-quality issue exists).</li>
+          <li>Service could not be performed due to customer-side constraints (incorrect address, vehicle unavailable, unsafe conditions, etc.).</li>
+          <li>@Home services where required water/power is not available on-site (if applicable to the chosen package).</li>
+        </ul>
+
+        <h2 style="margin-top:14px;">3) Cancellation Window</h2>
+        <p>
+          Cancellation time is calculated from the slot start time (Self Drive) or the scheduled arrival window (@Home).
+        </p>
+
+        <table aria-label="Cancellation Window">
+          <thead>
+            <tr>
+              <th style="width:45%;">When you cancel</th>
+              <th>Refund amount</th>
+              <th style="width:30%;">Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="k">≥ 24 hours</span> before slot</td>
+              <td><span class="pill good">100%</span></td>
+              <td>Full refund (excluding non-refundable gateway fees if applicable)</td>
+            </tr>
+            <tr>
+              <td><span class="k">6–24 hours</span> before slot</td>
+              <td><span class="pill warn">75%</span></td>
+              <td>Operations planning cost may apply</td>
+            </tr>
+            <tr>
+              <td><span class="k">1–6 hours</span> before slot</td>
+              <td><span class="pill warn">50%</span></td>
+              <td>Late cancellation</td>
+            </tr>
+            <tr>
+              <td><span class="k">&lt; 1 hour</span> before slot</td>
+              <td><span class="pill bad">0%</span></td>
+              <td>No refund (treated as last-minute/no-show)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2 style="margin-top:14px;">4) Service Quality Issues</h2>
+        <ul>
+          <li>Report within <b>24 hours</b> of completion (photos/videos help).</li>
+          <li>We may offer: free re-service (preferred), partial refund, or full refund for verified non-delivery/severe issues.</li>
+        </ul>
+
+        <h2 style="margin-top:14px;">5) Refund Method & Timeline</h2>
+        <ul>
+          <li>Refunds are processed to the <b>original payment method</b> whenever possible.</li>
+          <li>Processing: Initiated within <b>1–3 business days</b>.</li>
+          <li>Bank/payment provider settlement: typically <b>5–10 business days</b>.</li>
+        </ul>
+
+        <h2 style="margin-top:14px;">6) How to Request a Refund</h2>
+        <ul>
+          <li>In app: <b>My Bookings → Booking Details → Help/Support → Raise Ticket</b></li>
+          <li>Chat Support: Tap <b>Support</b> and choose “Chat with Agent”</li>
+          <li>Email support: <b>support@yourdomain.com</b> (update this)</li>
+        </ul>
+
+        <div class="note" style="margin-top:12px;">
+          Please include: <b>Booking ID</b>, registered phone number, slot date/time, reason, and payment screenshot (if available).
+        </div>
+
+        <h2 style="margin-top:14px;">7) Rescheduling (Optional)</h2>
+        <ul>
+          <li>Rescheduling is recommended instead of cancellation whenever possible.</li>
+          <li>Requests <b>≥ 6 hours</b> before slot are usually free (subject to availability).</li>
+          <li>Requests within <b>&lt; 6 hours</b> may be treated as a late cancellation.</li>
+        </ul>
+
+        <h2 style="margin-top:14px;">8) Special Cases</h2>
+        <ul>
+          <li><b>Membership plans:</b> Non-refundable once benefits are used or plan has started (unless required by law).</li>
+          <li><b>Coupons/offers:</b> Refunds are calculated on the final paid amount (after discounts).</li>
+          <li><b>Cash payments:</b> Refunds may be issued via UPI/bank transfer after verification.</li>
+        </ul>
+
+        <h2 style="margin-top:14px;">9) Changes to This Policy</h2>
+        <p>
+          We may update this policy from time to time. Changes will be posted in the app/website with an updated effective date.
+        </p>
+      </div>
+
+      <!-- Side panel -->
+      <aside class="side">
+        <div class="card">
+          <h2>Contact & Support</h2>
+          <p>If you need help with a refund or booking, reach out here:</p>
+
+          <div class="contact">
+            <div class="contact-row">
+              <a class="contact-pill" href="tel:+919010340125" onclick="showPhone(event)">📞 <span>+91 90103 40125</span></a>
+              <a class="contact-pill" href="mailto:support@yourdomain.com">✉️ <span>support@yourdomain.com</span></a>
+            </div>
+            <div class="contact-row">
+              <div class="contact-pill" onclick="openSupportChat()">💬 <span>Chat with Agent</span></div>
+              <div class="contact-pill" onclick="showLocation()">📍 <span>Kondapur, Hyderabad</span></div>
+            </div>
+          </div>
+
+          <div class="note" style="margin-top:12px;">
+            For fastest resolution, share your <b>Booking ID</b> and a short description of the issue.
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Quick Summary</h2>
+          <ul>
+            <li><b>24h+</b> before slot: full refund</li>
+            <li><b>6–24h</b>: 75% refund</li>
+            <li><b>1–6h</b>: 50% refund</li>
+            <li><b>&lt;1h</b>: no refund</li>
+            <li>Quality issues: report within <b>24 hours</b></li>
+          </ul>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div>© 2025 ASP Car Care</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;">
+        <a href="about.html" target="_blank" rel="noopener noreferrer">About Us</a>
+        <a href="privacypolicy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+        <a href="refundpolicy.html" target="_blank" rel="noopener noreferrer">Refund Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ✅ Your app login state
+    const token = localStorage.getItem("authToken");
+    const phone = localStorage.getItem("phone");
+    const isLoggedIn = !!(token && phone);
+
+    // ✅ Toggle actions
+    const actionsLoggedIn  = document.getElementById("actionsLoggedIn");
+    const actionsLoggedOut = document.getElementById("actionsLoggedOut");
+
+    if (isLoggedIn) {
+      if (actionsLoggedIn) actionsLoggedIn.style.display = "flex";
+      if (actionsLoggedOut) actionsLoggedOut.style.display = "none";
+    } else {
+      if (actionsLoggedIn) actionsLoggedIn.style.display = "none";
+      if (actionsLoggedOut) actionsLoggedOut.style.display = "flex";
+    }
+
+    // ✅ Buttons behavior
+    function goHomeOrDashboard() {
+      window.location.href = isLoggedIn ? "/aspcare" : "/mainpage";
+    }
+
+    function goDashboard(){
+      window.location.href = "/aspcare";
+    }
+
+    function goBookWash(){
+      // takes them to services block on dashboard
+      window.location.href = "/aspcare#servicesSection";
+    }
+
+    function goLogin(){
+      window.location.href = "SignupLogin.html?mode=login";
+    }
+
+    function goSignup(){
+      window.location.href = "SignupLogin.html?mode=signup";
+    }
+
+    function openSupportChat(){
+      if (!isLoggedIn) {
+        window.location.href = "SignupLogin.html?mode=login";
+        return;
+      }
+      window.location.href = "/support-chat";
+    }
+
+    function showLocation(){
+      alert("📍 Kondapur, Hyderabad - 500092");
+    }
+
+    function showPhone(e){
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      if (!isMobile) {
+        if (e) e.preventDefault();
+        alert("📞 Contact Us: +91 90103 40125");
+      }
+    }
+  </script>
+</body>
+</html>

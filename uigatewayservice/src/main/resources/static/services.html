@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ASP Car Care – Services</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#eef3ff;
+      --text:#0f172a;
+      --muted:#667085;
+
+      --nav:#0f2f86;
+      --yellow:#ffd54a;
+
+      --shadow: 0 22px 60px rgba(15, 23, 42, .12);
+      --shadow2: 0 12px 26px rgba(15, 23, 42, .10);
+
+      --r18:18px;
+      --r22:22px;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(1200px 600px at 20% 0%, #dbe7ff 0%, transparent 55%),
+                  radial-gradient(900px 520px at 100% 10%, #d7f4ff 0%, transparent 55%),
+                  var(--bg);
+      color: var(--text);
+      display:flex;
+      justify-content:center;
+      padding:24px 12px;
+    }
+
+    /* ✅ BIGGER "SCREEN" */
+    .phone{
+      width: min(520px, 96vw);   /* bigger on desktop, still responsive */
+      border-radius: 22px;
+      background: rgba(255,255,255,.60);
+      border: 1px solid rgba(15,23,42,.10);
+      box-shadow: 0 22px 70px rgba(0,0,0,.10);
+      overflow:hidden;
+      position:relative;
+      padding-bottom: 120px;     /* more space for nav + footer */
+      backdrop-filter: blur(10px);
+    }
+
+    .content{
+      padding: 22px 22px 16px;
+    }
+
+    /* Header */
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .member{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width:0;
+    }
+    .avatar{
+      width:52px;height:52px;border-radius:50%;
+      background: rgba(255,255,255,.92);
+      border: 1px solid rgba(15,23,42,.10);
+      display:grid; place-items:center;
+      box-shadow: 0 10px 20px rgba(15,23,42,.08);
+      flex:0 0 auto;
+    }
+    .tier{
+      font-weight:1000;
+      font-size:16px;
+      letter-spacing:.2px;
+    }
+
+    .icons{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .iconbtn{
+      width:46px;height:46px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(15,23,42,.10);
+      display:grid; place-items:center;
+      cursor:pointer;
+      box-shadow: 0 10px 22px rgba(15,23,42,.08);
+      transition: transform .15s ease, filter .15s ease;
+    }
+    .iconbtn:active{ transform: translateY(1px) scale(.99); }
+
+    .greet{
+      margin-top:14px;
+      font-weight:1000;
+      font-size:18px;
+    }
+    .greet b{ font-weight:1000; }
+
+    /* ✅ BIGGER CARDS GRID */
+    .grid{
+      margin-top:18px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:18px;
+    }
+
+    /* Service cards */
+    .svc{
+      position:relative;
+      min-height: 210px;      /* ✅ taller so text fits */
+      padding: 18px 18px 18px;
+      border-radius: var(--r22);
+      box-shadow: var(--shadow2);
+      overflow:hidden;
+      cursor:pointer;
+      border: 1px solid rgba(255,255,255,.55);
+      transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+    }
+    .svc:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 18px 34px rgba(15,23,42,.14);
+      filter: saturate(1.02);
+    }
+    .svc:active{ transform: translateY(0px) scale(.995); }
+
+    /* background circles */
+    .svc:before{
+      content:"";
+      position:absolute;
+      width:160px;height:160px;
+      border-radius: 50%;
+      right:-80px; top:-80px;
+      background: rgba(255,255,255,.22);
+    }
+    .svc:after{
+      content:"";
+      position:absolute;
+      width:150px;height:150px;
+      border-radius: 50%;
+      left:-75px; bottom:-75px;
+      background: rgba(255,255,255,.16);
+    }
+
+    .title{
+      margin:0 0 8px;
+      font-size:18px;        /* ✅ bigger title */
+      font-weight:1000;
+      letter-spacing:.2px;
+      position:relative;
+      z-index:1;
+      padding-right: 62px;   /* ✅ reserve space for badge */
+    }
+    .desc{
+      margin:0;
+      font-size:13px;        /* ✅ more readable */
+      font-weight:650;
+      line-height:1.35;
+      color: rgba(15,23,42,.78);
+      max-width: 92%;
+      position:relative;
+      z-index:1;
+      padding-right: 62px;   /* ✅ reserve space for badge */
+    }
+
+    /* Price area */
+    .meta{
+      position:absolute;
+      left:18px;
+      bottom:16px;
+      z-index:1;
+    }
+    .from{
+      font-size:12px;
+      font-weight:900;
+      color: rgba(15,23,42,.60);
+      margin-bottom:4px;
+      text-transform: lowercase;
+    }
+    .price{
+      font-size:24px;        /* ✅ bigger price */
+      font-weight:1000;
+      letter-spacing:.2px;
+      color:#0f2f86;
+      line-height:1;
+    }
+
+    /* ✅ Badge moved + smaller so it won’t cover text */
+    .badge{
+      position:absolute;
+      right:14px;
+      top:14px;
+      width:46px;
+      height:46px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.28);
+      border: 1px solid rgba(255,255,255,.45);
+      box-shadow: 0 16px 26px rgba(0,0,0,.08);
+      backdrop-filter: blur(8px);
+      display:grid;
+      place-items:center;
+      z-index:2;
+    }
+    .badge svg{
+      width:22px;
+      height:22px;
+      stroke: #0f2f86;
+      stroke-width: 2.4;
+      fill:none;
+      opacity:.95;
+    }
+
+    /* Themes */
+    .yellow{ background: linear-gradient(135deg,#ffd54a,#ffbf2f); }
+    .blue{ background: linear-gradient(135deg,#42b8ff,#2a8cff); }
+    .salmon{ background: linear-gradient(135deg,#ff8a7a,#ff6a61); }
+    .gold{ background: linear-gradient(135deg,#ffd54a,#ffcf3a); }
+
+    /* ✅ Bottom nav larger */
+    .bottom-nav{
+      position:absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 52px;
+      height: 66px;
+      border-radius: 22px;
+      background: linear-gradient(180deg, #123aa0, #0f2f86);
+      box-shadow: 0 18px 40px rgba(2, 16, 60, .28);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 10px 12px;
+    }
+    .navitem{
+      width: 92px;
+      height: 46px;
+      border-radius: 999px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      color: rgba(255,255,255,.90);
+      font-weight:1000;
+      font-size:13px;
+      cursor:pointer;
+      user-select:none;
+    }
+    .navdot{
+      width: 34px;height: 34px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.10);
+      display:grid; place-items:center;
+      font-size:16px;
+    }
+    .navitem.active{
+      background: var(--yellow);
+      color: #0f2f86;
+      box-shadow: 0 10px 18px rgba(255,213,74,.22);
+    }
+    .navitem.active .navdot{
+      background: rgba(15,47,134,.14);
+    }
+
+    .footer{
+      position:absolute;
+      left:0; right:0;
+      bottom: 14px;
+      display:flex;
+      justify-content:center;
+      gap:18px;
+      font-size:13px;
+      color: rgba(15,23,42,.75);
+      font-weight:800;
+    }
+    .footer a{
+      color: inherit;
+      text-decoration:none;
+      font-weight:1000;
+    }
+
+    /* ✅ On very small phones, shrink a bit */
+    @media (max-width: 420px){
+      .phone{ width: min(400px, 96vw); }
+      .content{ padding: 18px 14px 14px; }
+      .svc{ min-height: 190px; padding: 16px; }
+      .price{ font-size: 22px; }
+      .title{ font-size: 17px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="phone" role="application" aria-label="ASP Car Care Services">
+    <div class="content">
+      <div class="topbar">
+        <div class="member">
+          <div class="avatar" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M12 12a4.2 4.2 0 1 0-4.2-4.2A4.2 4.2 0 0 0 12 12Z" stroke="#111827" stroke-width="1.8"/>
+              <path d="M4.5 20.2c1.6-3.1 4.3-4.7 7.5-4.7s5.9 1.6 7.5 4.7" stroke="#111827" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="tier">Tier Member</div>
+        </div>
+
+        <div class="icons">
+          <button class="iconbtn" type="button" aria-label="Rewards">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M8 3h8a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" stroke="#0f172a" stroke-width="1.8"/>
+              <path d="M10 6h4" stroke="#0f172a" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M9 10h6M9 13h6M9 16h5" stroke="#0f172a" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+          </button>
+
+          <button class="iconbtn" type="button" aria-label="Notifications">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M12 22a2.2 2.2 0 0 0 2.2-2.2H9.8A2.2 2.2 0 0 0 12 22Z" fill="#0f172a"/>
+              <path d="M18 16V11a6 6 0 1 0-12 0v5l-2 2h16l-2-2Z" stroke="#0f172a" stroke-width="1.8" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="greet" id="greetText">Good Morning, <b>Premchand</b></div>
+
+      <div class="grid">
+        <div class="svc yellow" onclick="goSelfDrive()">
+          <div class="badge" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M6 18h12" />
+              <path d="M8 18V7.8a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2V18" />
+              <path d="M9.5 10h5" />
+            </svg>
+          </div>
+          <h3 class="title">Self Drive</h3>
+          <p class="desc">Drop your car at our centre and pick it up shining. Ideal for routine washes and deep cleaning</p>
+          <div class="meta">
+            <div class="from">start from</div>
+            <div class="price">Rp299.000</div>
+          </div>
+        </div>
+
+        <div class="svc blue" onclick="goHomeWash()">
+          <div class="badge" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M4 11l8-6 8 6" />
+              <path d="M6.5 10.5V20h11V10.5" />
+            </svg>
+          </div>
+          <h3 class="title">Home</h3>
+          <p class="desc">Professional wash at your park or location. No queues, no driving — we come to you</p>
+          <div class="meta">
+            <div class="from">start from</div>
+            <div class="price">Rp409.000</div>
+          </div>
+        </div>
+
+        <div class="svc salmon" onclick="goAspCare()">
+          <div class="badge" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M7 20h10" />
+              <path d="M9 20V10.5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2V20" />
+              <path d="M10 12h4" />
+            </svg>
+          </div>
+          <h3 class="title">ASP care</h3>
+          <p class="desc">Authorized partner care with inspection. Perfect before road trips or after long drives</p>
+          <div class="meta">
+            <div class="from">start from</div>
+            <div class="price">Rp329.000</div>
+          </div>
+        </div>
+
+        <div class="svc gold" onclick="goTeflon()">
+          <div class="badge" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M7 7c3 2 7 2 10 0" />
+              <path d="M7 17c3-2 7-2 10 0" />
+              <path d="M12 7v10" opacity=".65" />
+            </svg>
+          </div>
+          <h3 class="title">Teflon</h3>
+          <p class="desc">Breathe fresh air, every mile of the way!</p>
+          <div class="meta">
+            <div class="from">start from</div>
+            <div class="price">Rp119.000</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-nav" role="navigation" aria-label="Bottom navigation">
+      <div class="navitem active" onclick="goDashboard()">
+        <span class="navdot" aria-hidden="true">⌂</span>
+        Home
+      </div>
+
+      <div class="navitem" onclick="alert('Orders (demo)')">
+        <span class="navdot" aria-hidden="true">▢</span>
+      </div>
+
+      <div class="navitem" onclick="alert('Rewards (demo)')">
+        <span class="navdot" aria-hidden="true">🏆</span>
+      </div>
+
+      <div class="navitem" onclick="alert('Profile (demo)')">
+        <span class="navdot" aria-hidden="true">👤</span>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span>© 2025 Copyrights</span>
+      <a href="#" onclick="return false;">AboutUs</a>
+      <a href="#" onclick="return false;">Privacy Policy</a>
+    </div>
+  </div>
+
+  <script>
+    function getGreeting(){
+      const h = new Date().getHours();
+      if (h < 12) return "Good Morning";
+      if (h < 17) return "Good Afternoon";
+      return "Good Evening";
+    }
+    function getUserDisplayName(){
+      const first = (localStorage.getItem("firstName") || "").trim();
+      const last  = (localStorage.getItem("lastName") || "").trim();
+      const full = (first + " " + last).trim();
+      return full || "Premchand";
+    }
+    document.getElementById("greetText").innerHTML =
+      `${getGreeting()}, <b>${getUserDisplayName()}</b>`;
+
+    function goDashboard(){ window.location.href = "dashboard.html"; }
+    function goSelfDrive(){ window.location.href = "selfdrive.html"; }
+    function goHomeWash(){ window.location.href = "home.html"; }
+    function goAspCare(){ window.location.href = "aspcare.html"; }
+    function goTeflon(){ window.location.href = "teflon.html"; }
+  </script>
+</body>
+</html>

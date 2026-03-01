@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fashion Zone</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #333;
+      color: white;
+      padding: 10px 20px;
+    }
+
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 40px auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: center;
+      padding: 20px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover { transform: scale(1.05); }
+
+    .card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    .title { margin-top: 10px; font-size: 18px; font-weight: bold; }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 20px 30px;
+      border-radius: 10px;
+      width: 400px;
+      text-align: center;
+      position: relative;
+    }
+
+    .close {
+      position: absolute;
+      top: 10px; right: 15px;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .modal-content h2 {
+      margin-bottom: 15px;
+    }
+
+    .subcategories button {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      background: #333;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .subcategories button:hover {
+      background: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <div class="navbar">
+    <h2>Fashion Zone</h2>
+    <a href="index.html">🏠 Home</a>
+  </div>
+
+  <!-- Main Fashion Categories -->
+  <div class="container">
+    <div class="card" onclick="openModal('clothes')">
+      <img src="images/fashion/clothes.jpg" alt="Clothes">
+      <div class="title">Clothes</div>
+    </div>
+
+    <div class="card" onclick="openModal('footwear')">
+      <img src="images/fashion/footwear.jpg" alt="Footwear">
+      <div class="title">Footwear</div>
+    </div>
+
+    <div class="card" onclick="openModal('jewellery')">
+      <img src="images/fashion/jewellery.jpg" alt="Jewellery">
+      <div class="title">Jewellery</div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="popupModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2 id="modalTitle">Category</h2>
+      <div class="subcategories" id="subcategoryContainer"></div>
+    </div>
+  </div>
+
+  <script>
+    const modal = document.getElementById('popupModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const subcategoryContainer = document.getElementById('subcategoryContainer');
+
+    function openModal(category) {
+      modal.style.display = "flex";
+
+      let subcategories = [];
+      if (category === "clothes") {
+        modalTitle.innerText = "Clothes";
+        subcategories = ["Men's Wear", "Women's Wear", "Kids' Wear"];
+      } else if (category === "footwear") {
+        modalTitle.innerText = "Footwear";
+        subcategories = ["Men's Shoes", "Women's Footwear", "Kids' Footwear"];
+      } else if (category === "jewellery") {
+        modalTitle.innerText = "Jewellery";
+        subcategories = ["Men's Accessories", "Women's Jewellery", "Kids' Accessories"];
+      }
+
+      subcategoryContainer.innerHTML = "";
+      subcategories.forEach(sub => {
+        subcategoryContainer.innerHTML += `
+          <button onclick="goToSubCategory('${sub}')">${sub}</button>
+        `;
+      });
+    }
+
+    function closeModal() {
+      modal.style.display = "none";
+    }
+
+    function goToSubCategory(sub) {
+      alert("You selected: " + sub);
+      closeModal();
+      // Later you can redirect:
+      // window.location.href = `fashion-${sub.toLowerCase().replace(/\s+/g, '-')}.html`;
+    }
+
+    // Close modal on outside click
+    window.onclick = (e) => {
+      if (e.target === modal) closeModal();
+    };
+  </script>
+</body>
+</html>

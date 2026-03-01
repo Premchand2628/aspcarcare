@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Main UI Page</title>
+  <style>
+    :root {
+      --dark:#333; --light:#fff; --muted:#f2f2f2; --shadow:0 4px 10px rgba(0,0,0,.12);
+      --accent:#3b82f6; --ok:#22c55e;
+    }
+    * { box-sizing:border-box; }
+    body {
+      margin:0; font-family:Arial,Helvetica,sans-serif; background:var(--muted);
+    }
+
+    /* NAVBAR */
+    .navbar {
+      position:sticky; top:0; z-index:1000;
+      display:flex; align-items:center; justify-content:space-between;
+      background:var(--dark); color:#fff; padding:10px 20px;
+    }
+    .nav-left { display:flex; align-items:center; gap:16px; }
+    .nav-left img { width:32px; height:32px; cursor:pointer; }
+    .search-bar input {
+      width:300px; max-width:48vw; padding:8px 10px; border-radius:6px;
+      border:none; outline:none;
+    }
+    .nav-center {
+      flex:1; text-align:center; font-family:'Algerian','Times New Roman',serif;
+      font-size:20px; font-weight:700; letter-spacing:.3px;
+    }
+    .nav-right { display:flex; align-items:center; gap:22px; }
+
+    /* Profile dropdown */
+    .dropdown { position:relative; display:inline-block; }
+    .dropdown > img {
+      width:40px; height:40px; border-radius:50%; cursor:pointer; vertical-align:middle;
+    }
+    .dropdown-content {
+      display:none; position:absolute; right:0; top:48px; background:#fff; color:#000;
+      min-width:160px; border-radius:8px; box-shadow:var(--shadow);
+      overflow:hidden; z-index:1001;
+    }
+    .dropdown-content a {
+      display:block; padding:10px 12px; text-decoration:none;
+      color:#222; border-bottom:1px solid #eee;
+    }
+    .dropdown-content a:hover { background:#f5f5f5; }
+    .dropdown:hover .dropdown-content { display:block; }
+
+    /* Menu (3 lines) */
+    .menu { position:relative; }
+    .menu-btn { background:none; border:none; color:#fff; font-size:22px; cursor:pointer; }
+    .menu-content {
+      display:none; position:absolute; right:0; top:36px; background:#fff; color:#000;
+      min-width:160px; border-radius:8px; box-shadow:var(--shadow);
+      overflow:hidden; z-index:1001;
+    }
+    .menu-content a {
+      display:block; padding:10px 12px; text-decoration:none; color:#222; border-bottom:1px solid #eee;
+    }
+    .menu-content a:hover { background:#f5f5f5; }
+    .menu.open .menu-content { display:block; }
+
+    /* GRID */
+    .categories {
+      max-width:1100px; margin:32px auto; padding:0 20px;
+      display:grid; grid-template-columns:repeat(3,1fr); gap:24px;
+      transition:filter .25s ease;
+    }
+    .category-card {
+      background:#fff; border-radius:12px; box-shadow:var(--shadow);
+      overflow:hidden; cursor:pointer; transition:transform .2s ease, box-shadow .2s ease;
+      position:relative;
+    }
+    .category-card:hover { transform:translateY(-4px); box-shadow:0 8px 18px rgba(0,0,0,.18); }
+
+    .category-thumb {
+      width:100%; height:180px; object-fit:cover; display:block;
+      border-top-left-radius:12px; border-top-right-radius:12px;
+    }
+    .category-title {
+      padding:12px; background:#222; color:#fff; font-weight:700; text-align:center;
+    }
+
+    /* Blur for overlay */
+    .blurred { filter:blur(4px); pointer-events:none; user-select:none; }
+
+    /* Overlay panel */
+    .overlay {
+      position:fixed; inset:0; background:rgba(0,0,0,.35);
+      display:none; align-items:center; justify-content:center; z-index:1002; padding:24px;
+    }
+    .overlay.show { display:flex; }
+    .panel {
+      width:min(820px,92vw); background:#fff; border-radius:14px;
+      box-shadow:0 16px 40px rgba(0,0,0,.35);
+      padding:20px 20px 16px; animation:pop .18s ease-out;
+    }
+    @keyframes pop { from{transform:scale(.98);opacity:.6} to{transform:scale(1);opacity:1} }
+
+    .panel-header {
+      display:flex; align-items:center; gap:12px; justify-content:space-between;
+      margin-bottom:14px;
+    }
+    .panel-title { font-size:20px; font-weight:700; color:#222; }
+    .panel-actions { display:flex; align-items:center; gap:8px; }
+    .btn {
+      padding:8px 12px; border-radius:8px; border:1px solid #ddd; background:#fff; cursor:pointer;
+    }
+    .btn:hover { background:#f5f5f5; }
+    .btn-primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+    .btn-primary:hover { filter:brightness(.95); }
+    .btn-ghost { background:transparent; border:none; color:#444; }
+
+    .panel-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+    .tile {
+      border:1px solid #eee; border-radius:10px; padding:16px; text-align:center; cursor:pointer; background:#fff;
+      transition:all .15s ease;
+    }
+    .tile:hover { box-shadow:var(--shadow); transform:translateY(-2px); }
+    .tile.dim { opacity:.35; }
+
+    .subgrid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:10px; }
+    .subtile {
+      border:1px dashed #cbd5e1; border-radius:10px; padding:14px; text-align:center; cursor:pointer; background:#f8fafc;
+    }
+    .subtile:hover { background:#eef2f7; }
+
+    @media (max-width:900px){ .categories{grid-template-columns:repeat(2,1fr)} .panel-grid{grid-template-columns:repeat(2,1fr)} }
+    @media (max-width:560px){ .categories{grid-template-columns:1fr} .panel-grid{grid-template-columns:1fr} .search-bar input{width:180px} }
+  </style>
+</head>
+<body>
+  <!-- NAVBAR -->
+  <div class="navbar">
+    <div class="nav-left">
+      <a href="index.html"><img src="Home.jpg" alt="Home" /></a>
+      <div class="search-bar"><input type="text" placeholder="Search..." /></div>
+    </div>
+
+    <div class="nav-center" id="welcomeText">Welcome, Guest</div>
+
+    <div class="nav-right">
+      <div class="dropdown">
+        <img src="Profile.jpg" alt="Profile" />
+        <div class="dropdown-content">
+          <a href="profile.html">View Profile</a>
+          <a href="login.html">Logout</a>
+        </div>
+      </div>
+
+      <div class="menu" id="menu">
+        <button class="menu-btn" aria-label="Menu">☰</button>
+        <div class="menu-content">
+          <a href="orders.html">Orders</a>
+          <a href="settings.html">Settings</a>
+          <a href="help.html">Help</a>
+          <a href="location.html">Location</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRID -->
+  <div class="categories" id="grid">
+    <div class="category-card" onclick="openFashion()">
+      <video class="category-thumb lazy" muted loop playsinline poster="images/fashion.jpg">
+        <source data-src="videos/fashion.mp4" type="video/mp4" />
+      </video>
+      <div class="category-title">Fashion</div>
+    </div>
+
+    <div class="category-card" onclick="openBooks()">
+      <video class="category-thumb lazy" muted loop playsinline poster="images/books.jpg">
+        <source data-src="videos/books.mp4" type="video/mp4" />
+      </video>
+      <div class="category-title">Books</div>
+    </div>
+
+    <div class="category-card" onclick="location.href='beauty.html'">
+      <video class="category-thumb lazy" muted loop playsinline poster="images/beauty.jpg">
+        <source data-src="videos/beauty.mp4" type="video/mp4" />
+      </video>
+      <div class="category-title">Beauty</div>
+    </div>
+
+    <div class="category-card" onclick="location.href='toys.html'">
+      <video class="category-thumb lazy" muted loop playsinline poster="images/toys.jpg">
+        <source data-src="videos/toys.mp4" type="video/mp4" />
+      </video>
+      <div class="category-title">Toys</div>
+    </div>
+
+    <div class="category-card" onclick="location.href='groceries.html'">
+      <video class="category-thumb lazy" muted loop playsinline poster="images/groceries.jpg">
+        <source data-src="videos/groceries.mp4" type="video/mp4" />
+      </video>
+      <div class="category-title">Groceries</div>
+    </div>
+
+    <div class="category-card" onclick="location.href='mobiles.html'">
+      <video class="category-thumb lazy" muted loop playsinline poster="images/mobiles.jpg">
+        <source data-src="videos/mobiles.mp4" type="video/mp4" />
+      </video>
+      <div class="category-title">Mobiles</div>
+    </div>
+
+    <div class="category-card" onclick="location.href='automobile.html'">
+      <video class="category-thumb lazy" muted loop playsinline poster="images/automobiles.jpg">
+        <source data-src="videos/automobiles.mp4" type="video/mp4" />
+      </video>
+      <div class="category-title">Automobiles</div>
+    </div>
+
+    <div class="category-card" onclick="location.href='electronics.html'">
+      <video class="category-thumb lazy" muted loop playsinline poster="images/electronics.jpg">
+        <source data-src="videos/electronics.mp4" type="video/mp4" />
+      </video>
+      <div class="category-title">Electronics</div>
+    </div>
+
+    <div class="category-card" style="opacity:.35;pointer-events:none">
+      <img class="category-thumb" src="images/placeholder.jpg" alt="More coming" />
+      <div class="category-title">More Coming</div>
+    </div>
+  </div>
+
+  <!-- OVERLAY -->
+  <div class="overlay" id="overlay" aria-hidden="true">
+    <div class="panel" role="dialog" aria-modal="true" aria-labelledby="panelTitle">
+      <div class="panel-header">
+        <div class="panel-title" id="panelTitle">Category</div>
+        <div class="panel-actions">
+          <button class="btn btn-ghost" id="levelBackBtn" onclick="levelBack()" style="display:none">← Back</button>
+          <button class="btn" onclick="closeOverlay()">✕ Close</button>
+        </div>
+      </div>
+      <div id="primaryLevel" class="panel-grid"></div>
+      <div id="secondaryLevel" class="subgrid" style="display:none"></div>
+    </div>
+  </div>
+
+  <script>
+    // ===== Dynamic username =====
+    fetch('/api/user/name')
+      .then(r => r.ok ? r.text() : 'Guest')
+      .then(name => {
+        const n = (name && name.trim()) ? name.trim() : 'Guest';
+        document.getElementById('welcomeText').textContent = `Welcome, ${n}`;
+      })
+      .catch(() => document.getElementById('welcomeText').textContent = 'Welcome, Guest');
+
+    // ===== Menu toggle =====
+    const menu = document.getElementById('menu');
+    document.addEventListener('click', e => {
+      if (menu.contains(e.target)) {
+        if (e.target.closest('.menu-btn')) menu.classList.toggle('open');
+      } else menu.classList.remove('open');
+    });
+
+    // ===== Overlay logic =====
+    const grid = document.getElementById('grid');
+    const overlay = document.getElementById('overlay');
+    const panelTitle = document.getElementById('panelTitle');
+    const primaryLevel = document.getElementById('primaryLevel');
+    const secondaryLevel = document.getElementById('secondaryLevel');
+    const levelBackBtn = document.getElementById('levelBackBtn');
+    let currentRoot = null, currentPrimary = null;
+
+    function blurOn(){ grid.classList.add('blurred'); overlay.classList.add('show'); }
+    function blurOff(){ grid.classList.remove('blurred'); overlay.classList.remove('show'); }
+
+    function closeOverlay(){
+      currentRoot=null; currentPrimary=null;
+      panelTitle.textContent='Category'; levelBackBtn.style.display='none';
+      secondaryLevel.style.display='none'; secondaryLevel.innerHTML='';
+      primaryLevel.innerHTML=''; blurOff();
+    }
+
+    function openFashion(){
+      currentRoot='fashion'; panelTitle.textContent='Fashion';
+      levelBackBtn.style.display='none'; secondaryLevel.style.display='none';
+      primaryLevel.innerHTML=`
+        <div class="tile" id="tile-clothes" onclick="openFashionPrimary('clothes')">Clothes</div>
+        <div class="tile" id="tile-footwear" onclick="openFashionPrimary('footwear')">Footwear</div>
+        <div class="tile" id="tile-jewellery" onclick="openFashionPrimary('jewellery')">Jewellery</div>`;
+      blurOn();
+    }
+
+    function openFashionPrimary(which){
+      currentPrimary=which;
+      ['clothes','footwear','jewellery'].forEach(k=>{
+        const el=document.getElementById('tile-'+k);
+        if(!el)return;
+        if(k!==which){ el.classList.add('dim'); el.onclick=null; } else el.classList.remove('dim');
+      });
+      levelBackBtn.style.display='inline-block'; secondaryLevel.style.display='grid';
+      if(which==='clothes'){
+        secondaryLevel.innerHTML=`
+          <div class="subtile" onclick="goFashion('clothes','men')">Men's Wear</div>
+          <div class="subtile" onclick="goFashion('clothes','women')">Women's Wear</div>
+          <div class="subtile" onclick="goFashion('clothes','kids')">Kids Wear</div>`;
+      } else if(which==='footwear'){
+        secondaryLevel.innerHTML=`
+          <div class="subtile" onclick="goFashion('footwear','men')">Men's Footwear</div>
+          <div class="subtile" onclick="goFashion('footwear','women')">Women's Footwear</div>
+          <div class="subtile" onclick="goFashion('footwear','kids')">Kids Footwear</div>`;
+      } else {
+        secondaryLevel.innerHTML=`
+          <div class="subtile" onclick="goFashion('jewellery','fine')">Fine Jewellery</div>
+          <div class="subtile" onclick="goFashion('jewellery','fashion')">Fashion Jewellery</div>
+          <div class="subtile" onclick="goFashion('jewellery','kids')">Kids Jewellery</div>`;
+      }
+    }
+
+    function goFashion(type, segment){
+      window.location.href = `fashion.html?type=${encodeURIComponent(type)}&segment=${encodeURIComponent(segment)}`;
+    }
+
+    function levelBack(){
+      if(currentRoot==='fashion' && currentPrimary){ openFashion(); return; }
+      if(currentRoot==='books'){ closeOverlay(); return; }
+      closeOverlay();
+    }
+
+    function openBooks(){
+      currentRoot='books'; panelTitle.textContent='Books';
+      primaryLevel.innerHTML=`
+        <div class="tile" onclick="goBooks('reading')">Reading Books</div>
+        <div class="tile" onclick="goBooks('writing')">Writing Books</div>
+        <div class="tile dim" style="pointer-events:none">More soon</div>`;
+      blurOn();
+    }
+
+    function goBooks(type){ window.location.href=`books.html?type=${encodeURIComponent(type)}`; }
+
+    overlay.addEventListener('click', e=>{ if(e.target===overlay) closeOverlay(); });
+    document.addEventListener('keydown', e=>{ if(e.key==='Escape' && overlay.classList.contains('show')) closeOverlay(); });
+
+    // ===== Lazy-load videos =====
+    const lazyVideos = document.querySelectorAll('video.lazy');
+    const videoObserver = new IntersectionObserver((entries, observer)=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          const video=entry.target;
+          const source=video.querySelector('source');
+          if(source && source.dataset.src){
+            source.src=source.dataset.src;
+            video.load();
+            video.play();
+            observer.unobserve(video);
+          }
+        }
+      });
+    });
+    lazyVideos.forEach(v=>videoObserver.observe(v));
+  </script>
+</body>
+</html>
