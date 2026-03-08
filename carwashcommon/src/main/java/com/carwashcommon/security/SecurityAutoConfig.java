@@ -44,7 +44,6 @@ public class SecurityAutoConfig {
       .authorizeHttpRequests(auth -> auth
         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
         .requestMatchers("/auth/**", "/otp/**", "/auth/password/forgot/send-otp").permitAll()
-<<<<<<< HEAD
         .requestMatchers(HttpMethod.GET, "/rates/**", "/carwashrates/**").permitAll()
         .requestMatchers(HttpMethod.GET, "/centres/**", "/quotations/**").permitAll()
         .requestMatchers(HttpMethod.POST, "/memberships/deal-price-bookings/redeem").permitAll()
@@ -52,11 +51,6 @@ public class SecurityAutoConfig {
         .requestMatchers(HttpMethod.GET, "/memberships/*").permitAll()
         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
         .requestMatchers("/actuator/health", "/actuator/info").permitAll()
-=======
-        .requestMatchers("/bookings/**").permitAll()
-        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
-        .requestMatchers("/actuator/**").permitAll()
->>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
         .anyRequest().authenticated()
       )
       .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

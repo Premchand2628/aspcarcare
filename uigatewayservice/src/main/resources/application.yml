@@ -8,12 +8,6 @@ spring:
   main:
     web-application-type: reactive
 
-<<<<<<< HEAD
-=======
-  webflux:
-    static-path-pattern: /**
-
->>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
   cloud:
     gateway:
       globalcors:

@@ -2,7 +2,6 @@ package com.carwash.bookingservice.dto;
 
 import java.math.BigDecimal;
 
-<<<<<<< HEAD
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -71,36 +70,6 @@ public class BookingRequest {
   private String planTypeCode;
 
   private Boolean subscriptionRedeemed;
-=======
-public class BookingRequest {
-
-  private String phone;
-  private String date;
-  private String timeslot;
-
-  private String carType;
-  private String carNumber;
-  private Integer carIndex;
-
-  // ✅ This stays HOME / SELFDRIVE / ASPCARE (matches booking table)
-  private String serviceType;
-
-  // ✅ BASIC / FOAM / PREMIUM (drives membership benefits + rates)
-  private String washType;
-
-  private String address;
-  private String mapsUrl;
-
-  private Long serviceCentreId;
-  private String centreName;
-
-  private String transactionId;
-
-  // ✅ Optional: UI-calculated base amount (original before membership discount)
-  private BigDecimal baseAmount;
-  private Boolean waterProvided;
-  private BigDecimal waterDiscountApplied;
->>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
   
   public String getPhone() { return phone; }
   public void setPhone(String phone) { this.phone = phone; }
@@ -155,7 +124,6 @@ public BigDecimal getWaterDiscountApplied() {
 public void setWaterDiscountApplied(BigDecimal waterDiscountApplied) {
 	this.waterDiscountApplied = waterDiscountApplied;
 }
-<<<<<<< HEAD
 
 public String getPlanTypeCode() {
   return planTypeCode;
@@ -172,8 +140,6 @@ public Boolean getSubscriptionRedeemed() {
 public void setSubscriptionRedeemed(Boolean subscriptionRedeemed) {
   this.subscriptionRedeemed = subscriptionRedeemed;
 }
-=======
->>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
   
   
 }

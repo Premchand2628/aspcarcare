@@ -5,10 +5,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.slf4j.MDC;
-<<<<<<< HEAD
 import jakarta.validation.Valid;
-=======
->>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -229,7 +226,6 @@ public class BookingController {
     // CREATE SINGLE BOOKING
     // ==========================================================
     @PostMapping
-<<<<<<< HEAD
     public ResponseEntity<ApiResponse> createBooking(@Valid @RequestBody BookingRequest req,
                                                      Authentication authentication) {
         try {
@@ -245,10 +241,6 @@ public class BookingController {
             }
 
             req.setPhone(resolvedPhone);
-=======
-    public ResponseEntity<ApiResponse> createBooking(@RequestBody BookingRequest req) {
-        try {
->>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
             return ResponseEntity.ok(bookingService.createBooking(req));
             
         } catch (IllegalArgumentException e) {
@@ -263,7 +255,6 @@ public class BookingController {
     // CONFIRM ORDER (MULTI)
     // ==========================================================
     @PostMapping("/confirm-order")
-<<<<<<< HEAD
     public ResponseEntity<ApiResponse> confirmOrder(@RequestBody List<@Valid BookingRequest> requests,
                                                     Authentication authentication) {
         try {
@@ -283,10 +274,6 @@ public class BookingController {
             }
 
             requests.forEach(request -> request.setPhone(resolvedPhone));
-=======
-    public ResponseEntity<ApiResponse> confirmOrder(@RequestBody List<BookingRequest> requests) {
-        try {
->>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
             return ResponseEntity.ok(bookingService.confirmOrder(requests));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage()));

@@ -11,10 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
-<<<<<<< HEAD
 import java.util.Locale;
-=======
->>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -30,10 +27,7 @@ import com.carwash.bookingservice.client.MembershipClient.MembershipClient;
 import com.carwash.bookingservice.client.MembershipClient.RateClient;
 import com.carwash.bookingservice.dto.ApiResponse;
 import com.carwash.bookingservice.dto.BookingRequest;
-<<<<<<< HEAD
 import com.carwash.bookingservice.dto.DealPriceBookingRedeemRequest;
-=======
->>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
 import com.carwash.bookingservice.dto.RefundQuoteResponse;
 import com.carwash.bookingservice.dto.StatusUpdateRequest;
 import com.carwash.bookingservice.dto.UpdateBookingRequest;
@@ -249,14 +243,11 @@ public class BookingServiceImpl implements BookingService {
         String error = validateBookingRequest(req);
         if (error != null) throw new IllegalArgumentException(error);
 
-<<<<<<< HEAD
         boolean subscriptionRedeemed = Boolean.TRUE.equals(req.getSubscriptionRedeemed());
         if (subscriptionRedeemed && isBlank(req.getPlanTypeCode())) {
             throw new IllegalArgumentException("planTypeCode is required for redeemed subscription booking");
         }
 
-=======
->>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
         if (!isBlank(req.getTransactionId())) {
             boolean exists = bookingRepository.existsByTransactionId(req.getTransactionId().trim());
             if (exists) throw new IllegalArgumentException("This transaction ID is already used for another booking.");
@@ -273,10 +264,7 @@ public class BookingServiceImpl implements BookingService {
                 .washType(Optional.ofNullable(req.getWashType()).orElse("BASIC"))
                 .address(Optional.ofNullable(req.getAddress()).orElse("NA"))
                 .transactionId(isBlank(req.getTransactionId()) ? null : req.getTransactionId().trim())
-<<<<<<< HEAD
                 .bookingCode(generateBookingCode(req.getServiceType()))
-=======
->>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
                 .status("PENDING")
                 .paymentStatus("PENDING")
                 .carNumber(req.getCarNumber())
@@ -288,11 +276,8 @@ public class BookingServiceImpl implements BookingService {
                 .payableAmount(original)
                 .discountPercentApplied(BigDecimal.ZERO)
                 .freeApplied(false)
-<<<<<<< HEAD
                 .planTypeCode(isBlank(req.getPlanTypeCode()) ? null : req.getPlanTypeCode().trim())
                 .subscriptionRedeemed(subscriptionRedeemed)
-=======
->>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
                 .membershipIdUsed(null)
                 .waterProvided(Boolean.TRUE.equals(req.getWaterProvided()))
                 .waterDiscountApplied(BigDecimal.ZERO)
@@ -301,7 +286,6 @@ public class BookingServiceImpl implements BookingService {
                 .refundInitiatedAt(null)
                 .build();
 
-<<<<<<< HEAD
         if (subscriptionRedeemed) {
             DealPriceBookingRedeemRequest redeemRequest = new DealPriceBookingRedeemRequest();
             redeemRequest.setPhone(req.getPhone());
@@ -342,8 +326,6 @@ public class BookingServiceImpl implements BookingService {
             return response;
         }
 
-=======
->>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
         // membership preview
         try {
             Map<String, Object> benefit = membershipClient.preview(req.getPhone(), original, booking.getWashType());
@@ -361,13 +343,9 @@ public class BookingServiceImpl implements BookingService {
         } catch (Exception ex) {
             log.warn("Failed to send booking email for booking ID: {}", saved.getId(), ex);
         }
-<<<<<<< HEAD
         ApiResponse response = new ApiResponse(true, "Booking created. Proceed to payment.", String.valueOf(saved.getId()));
         response.setBookingCode(saved.getBookingCode());
         return response;
-=======
-        return new ApiResponse(true, "Booking created. Proceed to payment.", String.valueOf(saved.getId()));
->>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
     }
     @Override
     public ApiResponse confirmOrder(List<BookingRequest> requests) {
@@ -399,10 +377,7 @@ public class BookingServiceImpl implements BookingService {
                     .washType(Optional.ofNullable(req.getWashType()).orElse("BASIC"))
                     .address(Optional.ofNullable(req.getAddress()).orElse("NA"))
                     .transactionId(null) // set later after validation
-<<<<<<< HEAD
                     .bookingCode(generateBookingCode(req.getServiceType()))
-=======
->>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
                     .status("PENDING")
                     .paymentStatus("PENDING")
                     .carNumber(req.getCarNumber())
@@ -962,7 +937,6 @@ public class BookingServiceImpl implements BookingService {
         return s;
     }
 
-<<<<<<< HEAD
     private String generateBookingCode(String serviceType) {
         String normalized = normServiceType(serviceType);
         if (normalized.contains("SELF")) {
@@ -1000,8 +974,6 @@ public class BookingServiceImpl implements BookingService {
         return sb.toString();
     }
 
-=======
->>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
     private LocalDateTime resolveSlotStart(LocalDate bookingDate, String timeSlot) {
         if (bookingDate == null) return null;
         if (isBlank(timeSlot)) return bookingDate.atStartOfDay();

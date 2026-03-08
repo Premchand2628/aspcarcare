@@ -1,23 +1,16 @@
 package com.carwash.membership.controller;
 
 import com.carwash.membership.dto.DealPriceBookingCreateRequest;
-<<<<<<< HEAD
 import com.carwash.membership.dto.DealPriceBookingRedeemRequest;
-=======
->>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
 import com.carwash.membership.entity.DealPriceBooking;
 import com.carwash.membership.service.DealPriceBookingService;
 import com.carwashcommon.security.JwtUserPrincipal;
 import io.jsonwebtoken.Claims;
-<<<<<<< HEAD
 import jakarta.validation.Valid;
-=======
->>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
-<<<<<<< HEAD
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,13 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Map;
 
-=======
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
->>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
 @RestController
 @RequestMapping("/memberships/deal-price-bookings")
 @CrossOrigin(origins = "*")
@@ -47,7 +33,6 @@ public class DealPriceBookingController {
   }
 
   @PostMapping
-<<<<<<< HEAD
   public ResponseEntity<?> createBooking(@Valid @RequestBody DealPriceBookingCreateRequest request,
                                          Authentication authentication) {
     try {
@@ -55,12 +40,6 @@ public class DealPriceBookingController {
       if (resolvedPhone == null || resolvedPhone.isBlank()) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
       }
-=======
-  public ResponseEntity<?> createBooking(@RequestBody DealPriceBookingCreateRequest request,
-                                         Authentication authentication) {
-    try {
-      String resolvedPhone = resolvePhone(authentication);
->>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
       DealPriceBooking saved = dealPriceBookingService.createBooking(request, resolvedPhone);
       return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     } catch (IllegalArgumentException e) {
@@ -68,7 +47,6 @@ public class DealPriceBookingController {
     }
   }
 
-<<<<<<< HEAD
   @GetMapping("/me")
   public ResponseEntity<?> getMyBookings(Authentication authentication) {
     String resolvedPhone = resolvePhone(authentication);
@@ -123,8 +101,6 @@ public class DealPriceBookingController {
     }
   }
 
-=======
->>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
   private String resolvePhone(Authentication authentication) {
     if (authentication == null || !authentication.isAuthenticated()) {
       return null;

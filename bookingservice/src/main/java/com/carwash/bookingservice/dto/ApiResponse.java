@@ -4,10 +4,7 @@ public class ApiResponse {
     private boolean success;
     private String message;
     private String token; // optional - for login success
-<<<<<<< HEAD
     private String bookingCode;
-=======
->>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
 
     public ApiResponse() {
     }
@@ -46,7 +43,6 @@ public class ApiResponse {
     public void setToken(String token) {
         this.token = token;
     }
-<<<<<<< HEAD
 
     public String getBookingCode() {
         return bookingCode;
@@ -55,6 +51,4 @@ public class ApiResponse {
     public void setBookingCode(String bookingCode) {
         this.bookingCode = bookingCode;
     }
-=======
->>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
 }

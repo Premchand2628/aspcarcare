@@ -36,15 +36,12 @@
       <artifactId>jackson-annotations</artifactId>
     </dependency>
 
-<<<<<<< HEAD
     <!-- Logging API (used by shared HTTP logging filter) -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
 
-=======
->>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
     <!-- ===================================================== -->
     <!-- SECURITY AUTO-CONFIG (compile only, services provide runtime) -->
     <!-- ===================================================== -->

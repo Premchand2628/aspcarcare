@@ -43,13 +43,10 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     
     long countByPhone(String phone);
 
-<<<<<<< HEAD
        @Query(value = "SELECT nextval('carwash_booking_home_seq')", nativeQuery = true)
        Long nextHomeBookingCodeSeq();
 
        @Query(value = "SELECT nextval('carwash_booking_self_seq')", nativeQuery = true)
        Long nextSelfBookingCodeSeq();
 
-=======
->>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
 }
