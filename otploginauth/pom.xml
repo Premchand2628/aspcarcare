@@ -15,6 +15,7 @@
   <name>otploginauth</name>
 
   <dependencies>
+<<<<<<< HEAD
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-security</artifactId>
@@ -28,6 +29,26 @@
       <artifactId>carwash-common</artifactId>
       <version>1.0.0-SNAPSHOT</version>
     </dependency>
+=======
+	  <dependency>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+<dependency>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-mail</artifactId>
+</dependency>
+<dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <scope>provided</scope>
+    </dependency>
+<dependency>
+  <groupId>com.carwash</groupId>
+  <artifactId>carwash-common</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+</dependency>
+>>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
 
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -77,6 +98,20 @@
       <artifactId>jackson-databind</artifactId>
     </dependency>
 
+<<<<<<< HEAD
+=======
+    <!-- ⚠️ These 2 look like separate projects; keep only if they really exist in your repo -->
+    <dependency>
+      <groupId>com.example</groupId>
+      <artifactId>otp-login-demo</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.employee</groupId>
+      <artifactId>application</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+>>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
   </dependencies>
 
   <build>

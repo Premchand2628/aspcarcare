@@ -1,6 +1,7 @@
 package com.carwash.bookingservice.client.MembershipClient;
 
 import org.springframework.http.ResponseEntity;
+<<<<<<< HEAD
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -9,14 +10,21 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+=======
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+>>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
 
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+<<<<<<< HEAD
 import com.carwash.bookingservice.dto.DealPriceBookingRedeemRequest;
 
+=======
+>>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
 @Component
 public class MembershipClient {
 
@@ -78,6 +86,7 @@ public class MembershipClient {
     ResponseEntity<Map> res = restTemplate.postForEntity(url, null, Map.class);
     return res.getBody();
   }
+<<<<<<< HEAD
 
   @SuppressWarnings("unchecked")
   public Map<String, Object> redeemDealSubscription(DealPriceBookingRedeemRequest request) {
@@ -100,4 +109,6 @@ public class MembershipClient {
     }
     return servletAttrs.getRequest().getHeader(HttpHeaders.AUTHORIZATION);
   }
+=======
+>>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
 }

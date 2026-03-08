@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+<<<<<<< HEAD
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +19,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
+=======
+import java.util.Locale;
+import java.util.Random;
+>>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
 
 @Service
 public class ReferralCouponService {
@@ -160,6 +165,7 @@ public class ReferralCouponService {
         couponRepo.save(updated);
     }
 
+<<<<<<< HEAD
         public Map<String, Object> referralDetails(String userPhone) {
         String normalizedPhone = normalizePhone(userPhone);
         List<ReferralCoupon> coupons = couponRepo.findByCreatedByPhone(normalizedPhone);
@@ -209,6 +215,8 @@ public class ReferralCouponService {
         return response;
         }
 
+=======
+>>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
     // -------- Helpers --------
 
     private BigDecimal computeDiscount(ReferralCoupon c, BigDecimal orderAmount) {

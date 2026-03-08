@@ -3,6 +3,7 @@ package com.carwash.membership.dto;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+<<<<<<< HEAD
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Pattern;
@@ -54,6 +55,24 @@ public class DealPriceBookingCreateRequest {
   @Positive(message = "Total washes must be greater than zero")
   private Integer totalWashes;
 
+=======
+public class DealPriceBookingCreateRequest {
+
+  private String phone;
+  private String carType;
+  private String serviceType;
+  private String washType;
+  private String waterProvided;
+  private String paymentStatus;
+  private BigDecimal refundAmount;
+  private LocalDateTime refundInitiatedAt;
+  private String refundStatus;
+  private String transactionId;
+  private BigDecimal discountPercentApplied;
+  private BigDecimal originalAmount;
+  private BigDecimal payableAmount;
+
+>>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
   public String getPhone() {
     return phone;
   }
@@ -157,6 +176,7 @@ public class DealPriceBookingCreateRequest {
   public void setPayableAmount(BigDecimal payableAmount) {
     this.payableAmount = payableAmount;
   }
+<<<<<<< HEAD
 
   public Integer getTotalWashes() {
     return totalWashes;
@@ -165,4 +185,6 @@ public class DealPriceBookingCreateRequest {
   public void setTotalWashes(Integer totalWashes) {
     this.totalWashes = totalWashes;
   }
+=======
+>>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
 }

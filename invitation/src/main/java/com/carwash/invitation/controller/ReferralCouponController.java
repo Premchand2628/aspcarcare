@@ -2,6 +2,7 @@ package com.carwash.invitation.controller;
 
 import com.carwash.invitation.dto.*;
 import com.carwash.invitation.service.ReferralCouponService;
+<<<<<<< HEAD
 import com.carwashcommon.security.JwtUserPrincipal;
 import io.jsonwebtoken.Claims;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+=======
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+>>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
 @RestController
 @RequestMapping("/coupons")
 @CrossOrigin(origins = "*")
@@ -40,6 +46,7 @@ public class ReferralCouponController {
         service.redeem(req);
         return ResponseEntity.ok().body("Coupon redeemed successfully");
     }
+<<<<<<< HEAD
 
     @GetMapping("/referral-details")
     public ResponseEntity<?> referralDetails(@RequestParam String userPhone,
@@ -91,4 +98,6 @@ public class ReferralCouponController {
     private String normalizePhone(String phone) {
         return phone == null ? "" : phone.replaceAll("[^0-9+]", "");
     }
+=======
+>>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
 }

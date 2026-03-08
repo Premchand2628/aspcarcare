@@ -1,6 +1,7 @@
 package com.carwash.membership.service;
 
 import com.carwash.membership.dto.DealPriceBookingCreateRequest;
+<<<<<<< HEAD
 import com.carwash.membership.dto.DealPriceBookingRedeemRequest;
 import com.carwash.membership.entity.DealPriceBooking;
 import com.carwash.membership.repository.DealPriceBookingRepository;
@@ -9,6 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+=======
+import com.carwash.membership.entity.DealPriceBooking;
+import com.carwash.membership.repository.DealPriceBookingRepository;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+>>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
@@ -33,7 +41,10 @@ public class DealPriceBookingService {
     String serviceType = required(request.getServiceType(), "serviceType");
     String washType = required(request.getWashType(), "washType");
     String waterProvided = normalizeWaterFlag(request.getWaterProvided());
+<<<<<<< HEAD
     int totalWashes = resolveTotalWashes(request.getTotalWashes(), washType);
+=======
+>>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
 
     DealPriceBooking booking = new DealPriceBooking();
     booking.setPhone(phone);
@@ -50,13 +61,17 @@ public class DealPriceBookingService {
     booking.setOriginalAmount(safeBigDecimal(request.getOriginalAmount()));
     booking.setPayableAmount(safeBigDecimal(request.getPayableAmount()));
     booking.setPlanTypeCode(generatePlanTypeCode(carType, serviceType, washType, waterProvided));
+<<<<<<< HEAD
     booking.setTotalWashes(totalWashes);
     booking.setUsedWashes(0);
     booking.setLeftWashes(totalWashes);
+=======
+>>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
 
     return dealPriceBookingRepository.save(booking);
   }
 
+<<<<<<< HEAD
   public List<DealPriceBooking> getBookingsForPhone(String phone) {
     String normalizedPhone = blankToNull(phone);
     if (normalizedPhone == null) {
@@ -109,6 +124,8 @@ public class DealPriceBookingService {
         .orElseThrow(() -> new IllegalStateException("Subscription not found after redemption"));
   }
 
+=======
+>>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
   private String normalizePhone(String resolvedPhone, String requestedPhone) {
     String phone = blankToNull(resolvedPhone);
     if (phone == null) {
@@ -130,10 +147,14 @@ public class DealPriceBookingService {
 
   private String normalizeWaterFlag(String value) {
     String normalized = blankToDefault(value, "N").toUpperCase(Locale.ROOT);
+<<<<<<< HEAD
     if ("Y".equals(normalized) || "YES".equals(normalized)) {
       return "Y";
     }
     return "N";
+=======
+    return "Y".equals(normalized) ? "Y" : "N";
+>>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
   }
 
   private BigDecimal safeBigDecimal(BigDecimal value) {
@@ -169,6 +190,7 @@ public class DealPriceBookingService {
     return (carPart + servicePart + washPart + "WF" + normalizeWaterFlag(waterFlag)).toUpperCase(Locale.ROOT);
   }
 
+<<<<<<< HEAD
   private int resolveTotalWashes(Integer requestedTotalWashes, String washType) {
     if (requestedTotalWashes != null && requestedTotalWashes > 0) {
       return requestedTotalWashes;
@@ -199,6 +221,8 @@ public class DealPriceBookingService {
     booking.setLeftWashes(left);
   }
 
+=======
+>>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
   private String firstTwoLetters(String value) {
     if (value == null) {
       return "";
@@ -210,6 +234,7 @@ public class DealPriceBookingService {
     }
     return lettersOnly.substring(0, Math.min(2, lettersOnly.length()));
   }
+<<<<<<< HEAD
 
   private boolean matches(String actual, String expected) {
     String a = blankToDefault(actual, "").replace("_", " ").trim().toUpperCase(Locale.ROOT);
@@ -227,4 +252,6 @@ public class DealPriceBookingService {
     String e = blankToDefault(expected, "").trim().toUpperCase(Locale.ROOT);
     return a.equals(e);
   }
+=======
+>>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
 }

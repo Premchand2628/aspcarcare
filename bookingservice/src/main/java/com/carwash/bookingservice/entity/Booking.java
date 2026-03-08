@@ -35,9 +35,12 @@ public class Booking {
     @Column(name = "transaction_id")
     private String transactionId;
 
+<<<<<<< HEAD
     @Column(name = "booking_code", unique = true, length = 20)
     private String bookingCode;
 
+=======
+>>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
     @Builder.Default
     private String status = "PENDING";
 
@@ -69,6 +72,7 @@ public class Booking {
     private BigDecimal discountPercentApplied;
     private Boolean freeApplied;
 
+<<<<<<< HEAD
     @Column(name = "plan_type_code", length = 64)
     private String planTypeCode;
 
@@ -76,6 +80,8 @@ public class Booking {
     @Builder.Default
     private Boolean subscriptionRedeemed = false;
 
+=======
+>>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
     @Column(name = "membership_id_used")
     private Long membershipIdUsed;
 
@@ -148,9 +154,12 @@ public class Booking {
         if (paymentStatus == null) {
             paymentStatus = "PENDING";
         }
+<<<<<<< HEAD
         if (subscriptionRedeemed == null) {
             subscriptionRedeemed = false;
         }
+=======
+>>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
         // Initialize rescheduling fields
         if (rescheduled == null) {
             rescheduled = "N";

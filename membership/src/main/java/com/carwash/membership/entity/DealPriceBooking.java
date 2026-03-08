@@ -66,6 +66,7 @@ public class DealPriceBooking {
   @Column(name = "plan_type_code", nullable = false, length = 40)
   private String planTypeCode;
 
+<<<<<<< HEAD
   @Column(name = "total_washes", nullable = false)
   private Integer totalWashes;
 
@@ -75,6 +76,8 @@ public class DealPriceBooking {
   @Column(name = "left_washes", nullable = false)
   private Integer leftWashes;
 
+=======
+>>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
   @PrePersist
   public void onCreate() {
     if (createdAt == null) {
@@ -97,6 +100,7 @@ public class DealPriceBooking {
       String suffix = UUID.randomUUID().toString().replace("-", "").substring(0, 10).toUpperCase(Locale.ROOT);
       transactionId = "DPB-" + suffix;
     }
+<<<<<<< HEAD
 
     if (totalWashes == null || totalWashes <= 0) {
       totalWashes = 3;
@@ -108,6 +112,8 @@ public class DealPriceBooking {
 
     int computedLeft = totalWashes - usedWashes;
     leftWashes = Math.max(computedLeft, 0);
+=======
+>>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
   }
 
   public Long getId() {
@@ -237,6 +243,7 @@ public class DealPriceBooking {
   public void setPlanTypeCode(String planTypeCode) {
     this.planTypeCode = planTypeCode;
   }
+<<<<<<< HEAD
 
   public Integer getTotalWashes() {
     return totalWashes;
@@ -261,4 +268,6 @@ public class DealPriceBooking {
   public void setLeftWashes(Integer leftWashes) {
     this.leftWashes = leftWashes;
   }
+=======
+>>>>>>> 5b20c96468ae6092789845c2e494b661303e36d7
 }
