@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Payment Success</title>
+  <style>
+    body { font-family: Arial; background: #f2f2f2; text-align: center; padding-top: 100px; }
+    .box { background: white; display: inline-block; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+    h2 { color: #28a745; }
+    button { margin-top: 15px; background: #333; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>✅ Payment Successful!</h2>
+    <p><b>Order ID:</b> <span id="orderId"></span></p>
+    <p><b>Amount Paid:</b> $<span id="amount"></span></p>
+    <button onclick="window.location.href='index.html'">Return to Home</button>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    document.getElementById("orderId").textContent = params.get("orderId");
+    document.getElementById("amount").textContent = params.get("amount");
+  </script>
+</body>
+</html>

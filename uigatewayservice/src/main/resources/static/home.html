@@ -1,0 +1,2256 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Book @Home Wash | ASP Care</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0; padding: 0;
+      min-height: 100vh; width: 100vw;
+      overflow-x: hidden;
+      background: radial-gradient(circle at top, #e0f2fe, #eef2ff 40%, #f9fafb 100%);
+      display: flex; flex-direction: column; color: #0f172a;
+    }
+    .top-bar {
+      position: sticky; top: 0; z-index: 10;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 24px;
+      background: rgba(15, 23, 42, 0.98);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 1px 4px rgba(15,23,42,0.3);
+      gap: 16px; flex-wrap: nowrap;
+    }
+    .logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 18px; color: #e5e7eb; letter-spacing: 0.03em; flex-shrink: 0; }
+    .logo-pill {
+      width: 30px; height: 30px; border-radius: 999px;
+      background: radial-gradient(circle at 20% 20%, #38bdf8, #1d4ed8);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; color: #f9fafb;
+      box-shadow: 0 0 0 1px rgba(191,219,254,0.7);
+      cursor: pointer;
+    }
+    .search-container { display: flex; align-items: center; flex: 1; gap: 12px; max-width: 520px; }
+    .search-box { flex: 1; position: relative; }
+    .search-box input {
+      width: 100%;
+      padding: 8px 30px 8px 30px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      font-size: 13px;
+      background: rgba(15,23,42,0.9);
+      color: #e5e7eb;
+      outline: none;
+    }
+    .search-box input::placeholder { color: #6b7280; }
+    .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 14px; color: #6b7280; cursor: pointer; }
+
+    .profile-area {
+      position: relative;
+      display: flex; align-items: center; gap: 8px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 999px;
+      transition: background 0.12s ease;
+      flex-shrink: 0;
+    }
+    .profile-area:hover { background: rgba(31,41,55,0.8); }
+    .profile-icon {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: radial-gradient(circle at 20% 20%, #22c55e, #16a34a);
+      color: #e5fdf4;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; font-weight: 600;
+      box-shadow: 0 0 0 1px rgba(34,197,94,0.6);
+    }
+    #profileName { color: #e5e7eb; font-weight: 500; font-size: 13px; }
+    .profile-dropdown {
+      position: absolute; right: 0; top: 42px;
+      background: #020617;
+      border-radius: 14px;
+      box-shadow: 0 18px 45px rgba(15,23,42,0.9);
+      min-width: 170px;
+      display: none;
+      overflow: hidden;
+      z-index: 20;
+      border: 1px solid rgba(51,65,85,0.9);
+    }
+    .profile-dropdown button {
+      width: 100%;
+      padding: 10px 12px;
+      border: none;
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
+      font-size: 13px;
+      color: #e5e7eb;
+    }
+    .profile-dropdown button:hover { background: rgba(15,23,42,0.9); }
+
+    .content { flex: 1; padding: 24px 16px 40px; display: flex; justify-content: center; }
+    .shell {
+      width: 100%;
+      max-width: 1080px;
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18), 0 0 0 1px rgba(148, 163, 184, 0.25);
+      overflow: hidden;
+      border: 1px solid rgba(226,232,240,0.9);
+    }
+    .shell-header {
+      padding: 20px 24px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      background: radial-gradient(circle at top left, #bfdbfe, #2563eb 45%, #1d4ed8 70%, #0f172a 100%);
+      color: #e5e7eb;
+    }
+    .shell-header-left { display: flex; align-items: center; gap: 14px; min-width: 0; }
+    .shell-logo-pill {
+      width: 46px; height: 46px; border-radius: 999px;
+      overflow: hidden;
+      background: #020617;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 0 2px rgba(191,219,254,0.8);
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .shell-logo-pill img { width: 100%; height: 100%; object-fit: cover; }
+    .shell-title { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .shell-title h1 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: 0.02em; color: #f9fafb; }
+    .shell-title span { font-size: 13px; opacity: 0.92; color: #dbeafe; }
+    .shell-header-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+    .header-tag {
+      font-size: 11px; padding: 6px 10px; border-radius: 999px;
+      background: rgba(15,23,42,0.45);
+      border: 1px solid rgba(191,219,254,0.9);
+      display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+    }
+    .header-tag span {
+      width: 8px; height: 8px; border-radius: 999px; background: #22c55e;
+      box-shadow: 0 0 0 0 rgba(34,197,94,0.7);
+      animation: pulse 1.4s infinite;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.7); }
+      70% { box-shadow: 0 0 0 8px rgba(34,197,94,0); }
+      100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+    }
+
+    .btn {
+      padding: 7px 14px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+      transition: transform 0.08s ease, box-shadow 0.12s ease, background 0.12s ease;
+    }
+    .btn-primary {
+      background: #f97316;
+      color: #111827;
+      box-shadow: 0 10px 24px rgba(248,150,68,0.4);
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      background: #ea580c;
+      box-shadow: 0 14px 30px rgba(248,150,68,0.55);
+    }
+    .btn-main {
+      width: 100%;
+      justify-content: center;
+      margin-top: 12px;
+      background: #2563eb;
+      color: #f9fafb;
+      box-shadow: 0 10px 24px rgba(37,99,235,0.35);
+    }
+    .btn-main:hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+      box-shadow: 0 14px 32px rgba(37,99,235,0.45);
+    }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; transform: none; }
+
+    .shell-body { padding: 20px 22px 22px; background: linear-gradient(to bottom, #ffffff, #f9fafb); display: flex; justify-content: center; }
+    .card {
+      background: #f9fafb;
+      padding: 20px 18px 18px;
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(15,23,42,0.06);
+      border: 1px solid rgba(229,231,235,1);
+      max-width: 720px;
+      width: 100%;
+    }
+    h2 { margin-top: 0; margin-bottom: 4px; font-size: 18px; color: #0f172a; }
+    .subtitle { font-size: 13px; color: #6b7280; margin-bottom: 10px; }
+    #phoneLabel { font-size: 12px; color: #4b5563; margin-bottom: 12px; }
+
+    .member-banner {
+      margin: 10px 0 12px;
+      padding: 10px 10px;
+      border-radius: 14px;
+      border: 1px solid rgba(209,213,219,0.9);
+      background: radial-gradient(circle at top left, #eff6ff, #ffffff);
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .member-left { min-width: 0; }
+    .member-title { font-size: 12px; font-weight: 800; color: #111827; display: flex; align-items: center; gap: 8px; }
+    .member-pill {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      border: 1px solid rgba(148,163,184,0.5);
+      background: rgba(15,23,42,0.04);
+      color: #0f172a;
+      white-space: nowrap;
+    }
+    .member-pill.active { background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.35); color: #166534; }
+    .member-pill.hold { background: rgba(251,146,60,0.15); border-color: rgba(251,146,60,0.4); color: #9a3412; }
+    .member-sub { font-size: 11px; color: #6b7280; margin-top: 6px; line-height: 1.35; }
+    .member-right { flex: 0 0 auto; display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
+    .member-mini { font-size: 11px; color: #111827; font-weight: 700; }
+    .member-mini span { font-weight: 800; color: #1d4ed8; }
+
+    .breakdown {
+      margin-top: 10px;
+      padding: 10px 10px;
+      border-radius: 14px;
+      border: 1px solid rgba(209,213,219,0.9);
+      background: #ffffff;
+    }
+    .b-row { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; margin: 6px 0; }
+    .b-row .k { color: #6b7280; }
+    .b-row .v { font-weight: 800; color: #111827; }
+    .b-row .v.green { color: #16a34a; }
+    .b-row .v.orange { color: #ea580c; }
+    .b-divider { height: 1px; background: rgba(229,231,235,1); margin: 8px 0; }
+
+    label { font-size: 12px; color: #111827; display: block; margin-bottom: 3px; }
+    input, select, textarea {
+      width: 100%;
+      padding: 7px 9px;
+      margin: 2px 0 10px;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      font-size: 13px;
+      background: #ffffff;
+      color: #0f172a;
+      outline: none;
+      transition: border-color 0.1s ease, box-shadow 0.1s ease, background 0.1s;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 1px rgba(37,99,235,0.25);
+      background: #ffffff;
+    }
+    textarea { resize: vertical; min-height: 50px; }
+
+    .hint { font-size: 11px; color: #6b7280; margin-top: -2px; margin-bottom: 10px; }
+
+    .cars-row {
+      display: inline-flex; align-items: center; gap: 8px;
+      margin-bottom: 8px; margin-top: 6px;
+      padding: 6px 10px; border-radius: 999px;
+      background: #e5f0ff; border: 1px solid #bfdbfe;
+    }
+    .cars-row span { font-size: 13px; font-weight: 600; color: #111827; }
+    .cars-input {
+      width: 64px; text-align: center;
+      border-radius: 999px; border: 1px solid #d1d5db;
+      padding: 6px; background: #ffffff; color: #0f172a; font-size: 13px;
+    }
+    .cars-btn {
+      width: 30px; height: 30px; border-radius: 999px;
+      border: 1px solid #2563eb; background: #ffffff; color: #1d4ed8;
+      font-weight: 700; cursor: pointer; font-size: 16px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.1s ease, color 0.1s ease;
+    }
+    .cars-btn:hover { background: #2563eb; color: #ffffff; }
+
+    .radio-group { display: flex; gap: 16px; margin-bottom: 6px; margin-top: 4px; font-size: 12px; }
+    .radio-group label { display: flex; align-items: center; gap: 4px; font-weight: normal; color: #111827; margin: 0; }
+    .radio-group input[type="radio"] { accent-color: #2563eb; }
+
+    /* ✅ Water facility block */
+    .water-box{
+      margin-top: 10px;
+      padding: 10px 10px;
+      border-radius: 14px;
+      border: 1px solid rgba(209,213,219,0.9);
+      background: radial-gradient(circle at top left, #ecfeff, #ffffff);
+    }
+    .water-title{
+      font-size: 12px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .car-block {
+      border-radius: 14px;
+      border: 1px solid rgba(209,213,219,0.9);
+      padding: 12px 12px 10px;
+      margin-bottom: 10px;
+      background: radial-gradient(circle at top left, #eff6ff, #ffffff);
+    }
+    .car-title {
+      font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #111827;
+      display: flex; justify-content: space-between; align-items: center; gap: 6px;
+    }
+    .car-title span.badge {
+      font-size: 11px; padding: 2px 8px; border-radius: 999px;
+      background: #0f172a; border: 1px solid #cbd5f5; color: #e5e7eb;
+    }
+
+    .car-type-pill-row { display: flex; flex-wrap: wrap; gap: 10px; margin: 6px 0 10px; }
+    .car-type-pill {
+      padding: 0; border-radius: 16px; border: 1px solid #bfdbfe;
+      background: #eff6ff; color: #1f2937; font-size: 11px;
+      cursor: pointer; min-width: 90px; text-align: center;
+      transition: background 0.1s ease, color 0.1s ease, box-shadow 0.1s ease, border-color 0.1s ease;
+    }
+    .car-pill-inner { display: flex; flex-direction: column; align-items: center; padding: 6px 10px 7px; gap: 4px; }
+    .car-pill-icon-wrap {
+      width: 44px; height: 44px; border-radius: 999px; background: #ffffff;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 0 1px rgba(209,213,219,0.9);
+      overflow: hidden;
+    }
+    .car-pill-icon-wrap img { width: 80%; height: 80%; object-fit: contain; }
+    .car-pill-label { font-size: 11px; font-weight: 600; }
+    .car-type-pill.selected {
+      background: #2563eb; color: #ffffff;
+      box-shadow: 0 0 0 1px rgba(37,99,235,0.4);
+      border-color: #1d4ed8;
+    }
+    .car-type-pill.selected .car-pill-icon-wrap { box-shadow: 0 0 0 1px rgba(191,219,254,0.9); }
+
+    .service-hint { font-size: 11px; color: #6b7280; margin-top: -4px; margin-bottom: 8px; }
+
+    .schedule-row { display: flex; align-items: center; gap: 6px; margin: 4px 0 8px; }
+    .schedule-label { font-size: 11px; color: #6b7280; min-width: 55px; }
+    .schedule-display {
+      font-size: 12px; color: #111827; flex: 1;
+      padding: 4px 10px; border-radius: 999px;
+      border: 1px dashed rgba(148,163,184,0.8);
+      background: #f9fafb; text-align: center;
+    }
+    .calendar-btn {
+      width: 32px; height: 32px; border-radius: 999px;
+      border: 1px solid #2563eb; background: #ffffff; color: #1d4ed8;
+      font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .calendar-btn:hover { background: #2563eb; color: #ffffff; }
+
+    .rates-line {
+      margin: 6px 0 8px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px dashed rgba(148,163,184,0.9);
+      background: #ffffff;
+      font-size: 12px;
+      color: #0f172a;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+    }
+    .rates-line .muted { color:#6b7280; }
+    .rates-line .strong { font-weight:800; }
+
+    .total-row { margin-top: 10px; font-size: 14px; font-weight: 600; text-align: right; color: #111827; }
+    .total-row span { color: #16a34a; }
+
+    .modal-overlay {
+      position: fixed; top: 0; left: 0;
+      height: 100vh; width: 100vw;
+      background: rgba(15,23,42,0.8);
+      display: none; justify-content: center; align-items: center;
+      z-index: 1000;
+    }
+    .modal-box {
+      background: #020617;
+      width: 380px; max-width: 95vw;
+      padding: 18px 18px 16px;
+      border-radius: 16px;
+      box-shadow: 0 22px 50px rgba(0,0,0,0.7);
+      border: 1px solid rgba(148,163,184,0.8);
+      color: #e5e7eb; font-size: 13px;
+    }
+    .modal-box h3 { margin: 0 0 10px; font-size: 15px; display: flex; align-items: center; gap: 6px; }
+    .modal-box h3 span.icon { font-size: 16px; }
+    .timeslot-group { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 10px; }
+    .slot-btn {
+      padding: 6px 10px; border-radius: 999px;
+      border: 1px solid #4f46e5;
+      background: #020617; color: #e5e7eb;
+      font-size: 12px; cursor: pointer;
+      min-width: 90px; text-align: center;
+    }
+    .slot-btn.selected { background: #4f46e5; color: white; }
+    .slot-btn.booked { border-color: #6b7280; background: #111827; color: #6b7280; cursor: not-allowed; opacity: 0.55; }
+    .slot-hint { font-size: 11px; color: #9ca3af; margin-top: 4px; }
+
+    .maps-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: -4px; margin-bottom: 4px; align-items: flex-start; }
+    .maps-col { flex: 1 1 0; min-width: 0; }
+    .maps-label { font-size: 11px; color: #6b7280; margin-bottom: 2px; }
+    .maps-buttons { display: flex; flex-direction: column; gap: 6px; flex: 0 0 190px; }
+    .btn-maps {
+      padding: 6px 10px; border-radius: 999px;
+      border: 1px solid #2563eb;
+      background: #ffffff; color: #1d4ed8;
+      font-size: 11px; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 4px;
+      justify-content: center;
+    }
+    .btn-maps-outline {
+      padding: 6px 10px; border-radius: 999px;
+      border: 1px dashed #9ca3af;
+      background: transparent; color: #6b7280;
+      font-size: 11px; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 4px;
+      justify-content: center;
+    }
+    .btn-maps:hover { background: #eff6ff; }
+    .btn-maps-outline:hover { border-style: solid; color: #111827; }
+    .maps-hint { font-size: 11px; color: #6b7280; margin-bottom: 6px; }
+
+    .map-overlay {
+      position: fixed; inset: 0;
+      background: rgba(15,23,42,0.85);
+      display: none; align-items: center; justify-content: center;
+      z-index: 1100;
+      backdrop-filter: blur(6px);
+    }
+    .map-modal {
+      width: 90vw; max-width: 600px;
+      height: 75vh; max-height: 560px;
+      background: #020617;
+      border-radius: 20px;
+      border: 1px solid rgba(148,163,184,0.7);
+      box-shadow: 0 24px 70px rgba(0,0,0,0.85);
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    .map-header {
+      padding: 10px 14px;
+      background: linear-gradient(135deg, #0ea5e9, #1d4ed8);
+      color: #f9fafb;
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 13px;
+    }
+    .map-header button {
+      border: none;
+      background: rgba(15,23,42,0.3);
+      color: #e5e7eb;
+      border-radius: 999px;
+      padding: 4px 9px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .map-header button:hover { background: rgba(15,23,42,0.7); }
+    #mapPicker { flex: 1; }
+    .map-footer {
+      padding: 10px 14px;
+      display: flex; justify-content: space-between; align-items: center; gap: 10px;
+      font-size: 11px; color: #9ca3af;
+      background: rgba(2,6,23,0.92);
+      border-top: 1px solid rgba(148,163,184,0.25);
+    }
+    .map-footer .btn-main { width: auto; margin-top: 0; font-size: 12px; padding: 7px 16px; }
+
+    .autocomplete-wrapper { position: relative; }
+    .autocomplete-dropdown {
+      position: absolute; left: 0; right: 0; top: 100%;
+      margin-top: 2px; z-index: 2000;
+      max-height: 180px; overflow-y: auto;
+      background: #ffffff;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    .autocomplete-option {
+      padding: 6px 9px;
+      font-size: 12px;
+      color: #111827;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(229,231,235,0.9);
+    }
+    .autocomplete-option:last-child { border-bottom: none; }
+    .autocomplete-option:hover { background: #eff6ff; }
+
+    .pinbox {
+      margin: 6px 0 10px;
+      padding: 10px 10px;
+      border-radius: 14px;
+      border: 1px solid rgba(209,213,219,0.9);
+      background: #ffffff;
+    }
+    .pin-row {
+      display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+    .pin-col { flex: 1 1 200px; min-width: 200px; }
+    .pin-actions { flex: 0 0 auto; display: flex; gap: 8px; align-items: center; }
+    .range-row {
+      display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+      margin-top: 6px;
+      padding: 8px 8px;
+      border-radius: 12px;
+      border: 1px solid rgba(209,213,219,0.9);
+      background: #f9fafb;
+    }
+    .range-row label { margin: 0; font-size: 11px; color: #4b5563; }
+    .range-row input[type="range"] { flex: 1; margin: 0; }
+    .range-pill {
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid #bfdbfe;
+      background: #eff6ff;
+      font-size: 11px;
+      font-weight: 700;
+      color: #1d4ed8;
+      white-space: nowrap;
+    }
+    .pin-hint { font-size: 11px; color: #6b7280; margin-top: 6px; }
+
+    @media (max-width: 640px) {
+      .content { padding: 16px 10px 32px; }
+      .shell { margin: 0; border-radius: 18px; }
+      .shell-header { flex-direction: column; align-items: flex-start; }
+      .maps-buttons { flex-direction: row; flex-wrap: wrap; }
+      .pin-actions { width: 100%; }
+      .pin-actions button { flex: 1; }
+      .member-banner { flex-direction: column; align-items: flex-start; }
+      .member-right { align-items: flex-start; }
+    }
+    @media (max-width: 480px) {
+      #profileName { display: none; }
+      .top-bar { padding: 8px 10px; gap: 8px; }
+      .search-box input { font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ================= TOP BAR ================= -->
+<div class="top-bar">
+  <div class="logo" onclick="goDashboard()">
+    <div class="logo-pill">ASP</div>
+    <span>ASP Care</span>
+  </div>
+
+  <div class="search-container">
+    <div class="search-box">
+      <span class="search-icon" onclick="handleSearchNavigation()">🔍</span>
+      <input id="searchInput" placeholder="Search orders, dashboard, self drive…" />
+    </div>
+  </div>
+
+  <div class="profile-area" id="profileArea">
+    <div class="profile-icon" id="profileIcon">U</div>
+    <span id="profileName">User</span>
+    <div class="profile-dropdown" id="profileDropdown">
+      <button onclick="goDashboard()">Dashboard</button>
+      <button onclick="goToOrders()">Orders</button>
+      <button onclick="goToEditProfile()">Edit Profile</button>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= CONTENT ================= -->
+<div class="content">
+  <div class="shell">
+
+    <!-- ========== HEADER ========== -->
+    <div class="shell-header">
+      <div class="shell-header-left">
+        <div class="shell-logo-pill">
+          <img src="/images/homewash.png" alt="Home Wash">
+        </div>
+        <div class="shell-title">
+          <h1>Home Wash Booking</h1>
+          <span>Professional doorstep car wash</span>
+        </div>
+      </div>
+
+      <div class="shell-header-right">
+        <div class="header-tag"><span></span> Service Live</div>
+        <button class="btn btn-primary" onclick="goDashboard()">← Dashboard</button>
+      </div>
+    </div>
+
+    <!-- ========== BODY ========== -->
+    <div class="shell-body">
+      <div class="card">
+
+        <h2>Book Home Wash</h2>
+        <div class="subtitle">Select vehicle, schedule & location</div>
+        <div id="phoneLabel"></div>
+
+        <!-- ===== MEMBERSHIP BANNER ===== -->
+        <div class="member-banner" id="memberBanner" style="display:none;">
+          <div class="member-left">
+            <div class="member-title">
+              Membership
+              <span class="member-pill" id="memberStatusPill">ACTIVE</span>
+            </div>
+            <div class="member-sub" id="memberSub"></div>
+          </div>
+          <div class="member-right">
+            <div class="member-mini">Foam Free: <span id="freeFoamLeft">0</span></div>
+            <div class="member-mini">Premium Free: <span id="freePremiumLeft">0</span></div>
+            <div class="member-mini">Discount: <span id="discPct">0%</span></div>
+          </div>
+        </div>
+
+        <!-- ===== WASH TYPE ===== -->
+        <label>Wash Type</label>
+        <select id="washTypeSelect">
+          <option value="BASIC">Basic Wash</option>
+          <option value="FOAM">Foam Wash</option>
+          <option value="PREMIUM">Premium Wash</option>
+        </select>
+        <div class="hint" id="washTypeHint"></div>
+
+        <div class="rates-line">
+          <span class="muted">Selected Rate</span>
+          <span class="strong" id="selectedRateText">₹0</span>
+        </div>
+
+        <!-- ===== CAR COUNT ===== -->
+        <div class="cars-row">
+          <button class="cars-btn" onclick="changeCarCount(-1)">−</button>
+          <span>Cars</span>
+          <input id="carCount" class="cars-input" value="1" readonly />
+          <button class="cars-btn" onclick="changeCarCount(1)">+</button>
+        </div>
+
+        <!-- ===== SAME LOCATION ===== -->
+        <div id="sameLocationBox" style="display:none;">
+          <label>Same Location for all cars?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="sameLoc" value="yes"> Yes</label>
+            <label><input type="radio" name="sameLoc" value="no"> No</label>
+          </div>
+          <div class="hint" id="sameLocHint"></div>
+        </div>
+
+        <!-- ===== COMMON ADDRESS ===== -->
+        <div id="commonAddressSection" style="display:none;">
+          <div id="commonPinboxHost"></div>
+
+          <label>Common Address</label>
+          <textarea id="commonAddress" placeholder="Auto-filled from map"></textarea>
+
+          <div class="maps-row">
+            <div class="maps-col">
+              <div class="maps-label">Maps link</div>
+              <input id="commonMapsUrl" readonly />
+            </div>
+            <div class="maps-buttons">
+              <button class="btn-maps" onclick="useCurrentLocationForAddress('common')">📍 Use my location</button>
+              <button class="btn-maps-outline" onclick="openMapForContext('common')">🗺️ Open map</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== CAR DETAILS ===== -->
+        <div id="carDetailsContainer"></div>
+
+        <!-- ===== WATER FACILITY ===== -->
+        <div class="water-box">
+          <div class="water-title">Water Facility Provided?</div>
+          <div class="radio-group">
+            <label><input type="radio" name="waterFacility" value="yes"> Yes (15% discount)</label>
+            <label><input type="radio" name="waterFacility" value="no" checked> No</label>
+          </div>
+        </div>
+
+        <!-- ===== BREAKDOWN ===== -->
+        <div class="breakdown" id="breakdownBox" style="display:none;">
+          <div class="b-row"><span class="k">Base Total</span><span class="v" id="bBase">₹0</span></div>
+          <div class="b-row"><span class="k">Free Applied</span><span class="v green" id="bFree">-₹0</span></div>
+          <div class="b-row"><span class="k">Discount</span><span class="v green" id="bDisc">-₹0</span></div>
+          <div class="b-row"><span class="k">Water Discount</span><span class="v green" id="bWater">-₹0</span></div>
+          <div class="b-divider"></div>
+          <div class="b-row"><span class="k">Payable</span><span class="v orange" id="bPay">₹0</span></div>
+        </div>
+
+        <div class="total-row" id="totalPrice">Total Amount: <span>₹0</span></div>
+
+        <button class="btn btn-main" onclick="submitBooking()">Continue</button>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= SCHEDULE MODAL ================= -->
+<div class="modal-overlay" id="scheduleModal">
+  <div class="modal-box">
+    <h3><span class="icon">📅</span> Select Date & Time</h3>
+
+    <label>Date</label>
+    <input type="date" id="schedDate">
+
+    <div class="timeslot-group" id="schedSlotGroup"></div>
+    <div class="slot-hint">Booked slots are disabled</div>
+
+    <button class="btn btn-main" onclick="saveSchedule()">Save</button>
+    <button class="btn btn-main" style="background:#6b7280;margin-top:6px" onclick="closeSchedule()">Cancel</button>
+  </div>
+</div>
+
+<!-- ================= MAP MODAL ================= -->
+<div class="map-overlay" id="mapOverlay">
+  <div class="map-modal">
+    <div class="map-header">
+      <span id="mapHeaderText">Pick location</span>
+      <button onclick="closeMapPicker()">✕</button>
+    </div>
+    <div id="mapPicker"></div>
+    <div class="map-footer">
+      <span id="mapFooterHint"></span>
+      <button class="btn btn-main" onclick="useMapSelection()">Use location</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+  // =========================
+  // CONFIG
+  // =========================
+  const API_BASE = window.location.origin;
+  const API_USERS        = API_BASE + "/users";
+  const API_BOOKINGS     = API_BASE + "/bookings";
+  const API_MEMBERSHIPS  = API_BASE + "/memberships";
+  const API_RATES_MATRIX = API_BASE + "/rates/matrix";
+
+  const AVAIL_SERVICE_TYPE = "HOME";
+  const MAX_CARS = 2;
+
+  const ALLOWED_STATES = new Set(["andhra pradesh", "telangana"]);
+
+  const TIME_SLOTS = [
+    "08:00-09:00","09:00-10:00","10:00-11:00","11:00-12:00",
+    "12:00-13:00","13:00-14:00","14:00-15:00","15:00-16:00",
+    "16:00-17:00","17:00-18:00","18:00-19:00"
+  ];
+
+  const VEHICLE_UI = ["Hatchback","Sedan","SUV","MPV","Pickup","Bike"];
+  const VEHICLE_TO_ENUM = {
+    "Hatchback":"HATCHBACK","Sedan":"SEDAN","SUV":"SUV","MPV":"MPV","Pickup":"PICKUP","Bike":"BIKE"
+  };
+  const CAR_ICONS = {
+    "Hatchback":"/images/hatchback-car.png",
+    "Sedan":"/images/sedan-car.png",
+    "SUV":"/images/suv.png",
+    "MPV":"/images/car.png",
+    "Pickup":"/images/pickup-truck.png",
+    "Bike":"/images/motorbike.png"
+  };
+
+  // =========================
+  // AUTH (✅ JWT ONLY)
+  // =========================
+  const phone = localStorage.getItem("phone");
+
+  // ✅ Use only JWT. If your login stored as "jwt", this will work.
+  // (If your login page still stores authToken, update it to store "jwt".)
+  function getJwt() {
+    return localStorage.getItem("jwt");
+  }
+
+  const jwt = getJwt();
+  if (!phone || !jwt) {
+    window.location.href = "/SignupLogin?mode=login";
+  }
+
+  function authHeaders(extra = {}) {
+    return { ...extra, "Authorization": "Bearer " + getJwt() };
+  }
+
+  const phoneLabelEl = document.getElementById("phoneLabel");
+  if (phoneLabelEl) phoneLabelEl.textContent = "Phone: " + phone;
+
+  // =========================
+  // MONEY FORMATTER (2 decimals)
+  // =========================
+  function money2(n) {
+    const x = Number(n || 0);
+    return (Math.round(x * 100) / 100).toFixed(2);
+  }
+
+  // =========================
+  // TOP BAR
+  // =========================
+  const profileArea     = document.getElementById("profileArea");
+  const profileDropdown = document.getElementById("profileDropdown");
+  const profileNameEl   = document.getElementById("profileName");
+  const profileIconEl   = document.getElementById("profileIcon");
+
+  function goDashboard() { window.location.href = "/aspcare"; }
+  function goToOrders() { window.location.href = "/orders"; }
+  function goToEditProfile() { window.location.href = "/edit-profile"; }
+  function logout() { localStorage.clear(); window.location.href = "/mainpage"; }
+
+  function handleSearchNavigation() {
+    const input = document.getElementById("searchInput");
+    if (!input) return;
+    const query = (input.value || "").trim().toLowerCase();
+    if (!query) return;
+
+    if (query.includes("order") || query.includes("booking")) return goToOrders();
+    if (query.includes("dashboard") || query === "home") return goDashboard();
+    if (query.includes("self")) return window.location.href = "/selfdrive";
+    alert('No matching page. Try "orders", "dashboard", or "self drive".');
+  }
+  window.handleSearchNavigation = handleSearchNavigation;
+  window.goDashboard = goDashboard;
+  window.goToOrders = goToOrders;
+  window.goToEditProfile = goToEditProfile;
+  window.logout = logout;
+
+  // Profile dropdown
+  if (profileArea) {
+    profileArea.onclick = (e) => {
+      e.stopPropagation();
+      profileDropdown.style.display = (profileDropdown.style.display === "block") ? "none" : "block";
+    };
+    document.addEventListener("click", () => { profileDropdown.style.display = "none"; });
+  }
+
+  // Fetch profile (JWT)
+  fetch(API_USERS + "/profile?phone=" + encodeURIComponent(phone), {
+    headers: authHeaders({ "Accept": "application/json" })
+  })
+  .then(r => r.ok ? r.json() : Promise.reject())
+  .then(user => {
+    const name = user.lastName || user.firstName || "User";
+    if (profileNameEl) profileNameEl.textContent = name;
+    if (profileIconEl) profileIconEl.textContent = name.charAt(0).toUpperCase();
+  })
+  .catch(() => {
+    if (profileNameEl) profileNameEl.textContent = "User";
+    if (profileIconEl) profileIconEl.textContent = "U";
+  });
+
+  // =========================
+  // PAGE STATE (DOM)
+  // =========================
+  const washTypeSelect    = document.getElementById("washTypeSelect");
+  const washTypeHint      = document.getElementById("washTypeHint");
+  const selectedRateText  = document.getElementById("selectedRateText");
+
+  const carCountInput         = document.getElementById("carCount");
+  const sameLocHint           = document.getElementById("sameLocHint");
+  const sameLocationBox       = document.getElementById("sameLocationBox");
+  const commonAddressSection  = document.getElementById("commonAddressSection");
+  const carDetailsContainer   = document.getElementById("carDetailsContainer");
+  const totalPriceEl          = document.getElementById("totalPrice");
+
+  const breakdownBox = document.getElementById("breakdownBox");
+  const bBase  = document.getElementById("bBase");
+  const bFree  = document.getElementById("bFree");
+  const bDisc  = document.getElementById("bDisc");
+  const bWater = document.getElementById("bWater");
+  const bPay   = document.getElementById("bPay");
+
+  // Schedule modal DOM
+  const scheduleModal  = document.getElementById("scheduleModal");
+  const schedDateInput = document.getElementById("schedDate");
+  const schedSlotGroup = document.getElementById("schedSlotGroup");
+
+  // Map modal DOM
+  const mapOverlay     = document.getElementById("mapOverlay");
+  const mapHeaderText  = document.getElementById("mapHeaderText");
+  const mapFooterHint  = document.getElementById("mapFooterHint");
+
+  // =========================
+  // WASH TYPE + RATES MATRIX (DB)
+  // =========================
+  let selectedWashType = "BASIC";
+  let ratesMap = {};
+  let ratesLoaded = false;
+
+  function normalizeWashType(v) {
+    const x = String(v || "").toUpperCase().trim();
+    if (x.includes("PREMIUM")) return "PREMIUM";
+    if (x.includes("FOAM")) return "FOAM";
+    return "BASIC";
+  }
+  function keyOf(vtEnum, wash) { return `${vtEnum}|${wash}`; }
+
+  function getRateAmount(vtUi, wash) {
+    const vtEnum = VEHICLE_TO_ENUM[vtUi];
+    if (!vtEnum) return null;
+    const rec = ratesMap[keyOf(vtEnum, wash)];
+    if (!rec) return null;
+    const n = Number(rec.amount);
+    return isNaN(n) ? null : n;
+  }
+
+  async function loadRatesMatrix() {
+    ratesLoaded = false;
+    if (washTypeHint) washTypeHint.textContent = "Loading rates…";
+    if (selectedRateText) selectedRateText.textContent = "₹0";
+
+    try {
+      const res = await fetch(API_RATES_MATRIX, {
+        headers: authHeaders({ "Accept": "application/json" })
+      });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+
+      const rows = await res.json();
+      const map = {};
+
+      (rows || []).forEach(r => {
+        const vt = String(r.vehicleType || "").toUpperCase();
+        const wl = String(r.washLevel || "").toUpperCase();
+        const amount = (r.amount != null) ? r.amount : r.rate;
+        map[keyOf(vt, wl)] = { amount, currency: r.currency || "INR" };
+      });
+
+      ratesMap = map;
+      ratesLoaded = true;
+
+      if (washTypeHint) washTypeHint.textContent = "Rates loaded ✅ Select vehicle to see rate.";
+      updateSelectedRateLabel();
+      updateTotalPrice();
+    } catch (e) {
+      console.error("Rates load failed:", e);
+      ratesLoaded = false;
+      if (washTypeHint) washTypeHint.textContent = "Rates not loaded ❌ (check /rates/matrix + gateway route + service running)";
+      updateSelectedRateLabel();
+      updateTotalPrice();
+    }
+  }
+
+  function updateSelectedRateLabel() {
+    const count = parseInt(carCountInput?.value || "1", 10) || 1;
+    let vtUi = null;
+
+    // show rate for first selected vehicle (simple UX)
+    for (let i = 1; i <= count; i++) {
+      const v = document.getElementById(`carType_${i}`)?.value || "";
+      if (v) { vtUi = v; break; }
+    }
+
+    if (!selectedRateText) return;
+    if (!ratesLoaded || !vtUi) { selectedRateText.textContent = "₹0"; return; }
+
+    const amt = getRateAmount(vtUi, selectedWashType);
+    selectedRateText.textContent = (amt == null) ? "NA" : ("₹" + money2(amt));
+  }
+
+  // =========================
+  // MEMBERSHIP (JWT)
+  // =========================
+  let membership = null;
+  let memberActive = false;
+  let memberDiscountPct = 0;
+  let memberPlanLabel = "";
+  let memberStatus = "";
+
+  const bannerEl        = document.getElementById("memberBanner");
+  const statusPillEl    = document.getElementById("memberStatusPill");
+  const subEl           = document.getElementById("memberSub");
+  const freeFoamLeftEl  = document.getElementById("freeFoamLeft");
+  const freePremiumLeftEl = document.getElementById("freePremiumLeft");
+  const discPctEl       = document.getElementById("discPct");
+
+  function getFoamFreeCount() {
+    if (!membership || !memberActive) return 0;
+    const v = (membership.freeFoamRemaining != null) ? Number(membership.freeFoamRemaining) : 0;
+    return Math.max(0, isNaN(v) ? 0 : v);
+  }
+  function getPremiumFreeCount() {
+    if (!membership || !memberActive) return 0;
+    const v = (membership.freePremiumRemaining != null) ? Number(membership.freePremiumRemaining) : 0;
+    return Math.max(0, isNaN(v) ? 0 : v);
+  }
+  function getMemberFreeCountByWashType() {
+    if (selectedWashType === "FOAM") return getFoamFreeCount();
+    if (selectedWashType === "PREMIUM") return getPremiumFreeCount();
+    return 0;
+  }
+  function planFallbackBenefits(planCodeOrName) {
+    const p = String(planCodeOrName || "").toUpperCase();
+    if (p.includes("BASIC")) return { disc: 10 };
+    if (p.includes("PREMIUM")) return { disc: 10 };
+    if (p.includes("ULTRA")) return { disc: 15 };
+    return { disc: 0 };
+  }
+
+  async function loadMembership() {
+    try {
+      const res = await fetch(API_MEMBERSHIPS + "/by-phone?phone=" + encodeURIComponent(phone), {
+        headers: authHeaders({ "Accept": "application/json" })
+      });
+
+      if (res.status === 404) {
+        membership = null;
+        renderMembershipBanner();
+        updateTotalPrice();
+        return;
+      }
+      if (!res.ok) throw new Error("HTTP " + res.status);
+
+      membership = await res.json();
+    } catch (e) {
+      console.error("membership load error", e);
+      membership = null;
+    }
+
+    renderMembershipBanner();
+    updateTotalPrice();
+  }
+
+  function renderMembershipBanner() {
+    if (!bannerEl) return;
+
+    if (!membership) {
+      bannerEl.style.display = "none";
+      memberActive = false;
+      memberDiscountPct = 0;
+      memberPlanLabel = "";
+      memberStatus = "";
+      return;
+    }
+
+    memberStatus = (membership.status || "").toUpperCase();
+    memberActive = (memberStatus === "ACTIVE");
+
+    memberDiscountPct = (membership.discountPercent != null) ? Number(membership.discountPercent) : 0;
+    if (!memberDiscountPct) {
+      const fb = planFallbackBenefits(membership.planCode || membership.planName);
+      memberDiscountPct = fb.disc;
+    }
+
+    memberPlanLabel = membership.planName || membership.planCode || "Membership";
+
+    bannerEl.style.display = "flex";
+
+    if (statusPillEl) {
+      statusPillEl.textContent = memberStatus || "UNKNOWN";
+      statusPillEl.className = "member-pill " + (memberActive ? "active" : (memberStatus === "HOLD" ? "hold" : ""));
+    }
+
+    if (freeFoamLeftEl) freeFoamLeftEl.textContent = String(memberActive ? getFoamFreeCount() : 0);
+    if (freePremiumLeftEl) freePremiumLeftEl.textContent = String(memberActive ? getPremiumFreeCount() : 0);
+    if (discPctEl) discPctEl.textContent = String(memberActive ? Math.max(0, memberDiscountPct) : 0) + "%";
+
+    if (subEl) {
+      if (!memberActive && memberStatus === "HOLD") {
+        subEl.textContent = `${memberPlanLabel} is on HOLD. Benefits will start after ACTIVE.`;
+      } else if (memberActive) {
+        subEl.textContent = `${memberPlanLabel} ACTIVE: Free washes + discount apply based on your plan.`;
+      } else {
+        subEl.textContent = `${memberPlanLabel} status: ${memberStatus || "UNKNOWN"}.`;
+      }
+    }
+  }
+
+  // =========================
+  // WATER FACILITY
+  // =========================
+  let waterFacilityYes = false;
+
+  // =========================
+  // DRAFT SAVE/RESTORE
+  // =========================
+  const HOME_DRAFT_KEY = `homeWashDraft:${phone || "unknown"}`;
+  function safeJsonParse(s, fallback=null) { try { return JSON.parse(s); } catch { return fallback; } }
+
+  let carSchedules = {};     // { 1:{date,slot}, 2:{date,slot} }
+  let sameLocation = null;   // "yes" | "no" | null
+
+  function saveDraft() {
+    try {
+      const count = parseInt(carCountInput?.value || "1", 10) || 1;
+      const sameLocVal = document.querySelector("input[name='sameLoc']:checked")?.value || null;
+
+      const cars = {};
+      for (let i = 1; i <= count; i++) {
+        cars[i] = {
+          carNumber: document.getElementById(`carNumber_${i}`)?.value || "",
+          carType: document.getElementById(`carType_${i}`)?.value || "",
+          address: document.getElementById(`carAddress_${i}`)?.value || "",
+          mapsUrl: document.getElementById(`carMaps_${i}`)?.value || ""
+        };
+      }
+
+      localStorage.setItem(HOME_DRAFT_KEY, JSON.stringify({
+        washType: selectedWashType,
+        carCount: count,
+        sameLocation: sameLocVal,
+        commonAddress: document.getElementById("commonAddress")?.value || "",
+        commonMapsUrl: document.getElementById("commonMapsUrl")?.value || "",
+        cars,
+        carSchedules,
+        waterFacilityYes
+      }));
+    } catch (e) {}
+  }
+  function loadDraft() { return safeJsonParse(localStorage.getItem(HOME_DRAFT_KEY), null); }
+
+  // =========================
+  // VEHICLE UI (Car number + Vehicle pills)
+  // =========================
+  function createCarTypeSelect(id) {
+    const selectType = document.createElement("select");
+    selectType.id = id;
+    selectType.style.display = "none";
+
+    const defaultOpt = document.createElement("option");
+    defaultOpt.value = "";
+    defaultOpt.textContent = "-- Select --";
+    selectType.appendChild(defaultOpt);
+
+    VEHICLE_UI.forEach(t => {
+      const opt = document.createElement("option");
+      opt.value = t; opt.textContent = t;
+      selectType.appendChild(opt);
+    });
+
+    return selectType;
+  }
+
+  function createCarTypePills(carIndex, hiddenSelect) {
+    const row = document.createElement("div");
+    row.className = "car-type-pill-row";
+
+    VEHICLE_UI.forEach(typeName => {
+      const pill = document.createElement("button");
+      pill.type = "button";
+      pill.className = "car-type-pill";
+      pill.dataset.type = typeName;
+
+      pill.innerHTML = `
+        <div class="car-pill-inner">
+          <div class="car-pill-icon-wrap">
+            <img src="${CAR_ICONS[typeName]}" alt="${typeName}">
+          </div>
+          <div class="car-pill-label">${typeName}</div>
+        </div>
+      `;
+
+      pill.addEventListener("click", () => {
+        hiddenSelect.value = typeName;
+        row.querySelectorAll(".car-type-pill").forEach(p => p.classList.remove("selected"));
+        pill.classList.add("selected");
+
+        updateSelectedRateLabel();
+        updateTotalPrice();
+        saveDraft();
+      });
+
+      row.appendChild(pill);
+    });
+
+    return row;
+  }
+
+  // =========================
+  // PRICING
+  // =========================
+  function computeBaseTotal() {
+    const count = parseInt(carCountInput?.value || "1", 10) || 1;
+    let total = 0;
+    const items = [];
+
+    for (let i = 1; i <= count; i++) {
+      const carTypeUi = document.getElementById(`carType_${i}`)?.value || "";
+      const amt = carTypeUi ? (getRateAmount(carTypeUi, selectedWashType) ?? 0) : 0;
+      total += amt;
+      items.push({ i, amt });
+    }
+    return { total, items };
+  }
+
+  function applyMembershipToTotal(baseTotal, items) {
+    if (!memberActive || !membership) {
+      return { payable: baseTotal, freeApplied: 0, discountApplied: 0 };
+    }
+
+    let freeLeft = getMemberFreeCountByWashType();
+    let freeApplied = 0;
+
+    for (const it of items) {
+      if (freeLeft <= 0) break;
+      if (it.amt > 0) {
+        freeApplied += it.amt;
+        freeLeft -= 1;
+      }
+    }
+
+    const remaining = Math.max(0, baseTotal - freeApplied);
+    const pct = Math.max(0, Number(memberDiscountPct) || 0);
+    const discountApplied = Math.round((remaining * pct) / 100);
+    const payable = Math.max(0, remaining - discountApplied);
+
+    return { payable, freeApplied, discountApplied };
+  }
+
+  function updateTotalPrice() {
+    const { total: baseTotal, items } = computeBaseTotal();
+
+    const mem = applyMembershipToTotal(baseTotal, items);
+    let payable = Number(mem.payable || 0);
+
+    const waterDiscount = waterFacilityYes ? (payable * 0.15) : 0;
+    payable = Math.max(0, payable - waterDiscount);
+
+    if (totalPriceEl) totalPriceEl.innerHTML = 'Total Amount: <span>₹' + money2(payable) + '</span>';
+
+    const showBreakdown = !!membership || waterFacilityYes;
+    if (breakdownBox) breakdownBox.style.display = showBreakdown ? "block" : "none";
+
+    if (showBreakdown) {
+      if (bBase) bBase.textContent = "₹" + money2(baseTotal);
+      if (bFree) bFree.textContent = "-₹" + money2(memberActive ? mem.freeApplied : 0);
+      if (bDisc) bDisc.textContent = "-₹" + money2(memberActive ? mem.discountApplied : 0);
+      if (bWater) bWater.textContent = "-₹" + money2(waterDiscount);
+      if (bPay) bPay.textContent = "₹" + money2(payable);
+    }
+  }
+
+  // =========================
+  // CAR COUNT (max=2)
+  // =========================
+  function changeCarCount(delta) {
+    let value = parseInt(carCountInput?.value || "1", 10) || 1;
+    value += delta;
+    if (value < 1) value = 1;
+    if (value > MAX_CARS) value = MAX_CARS;
+
+    if (carCountInput) carCountInput.value = value;
+
+    Object.keys(carSchedules).forEach(k => {
+      const idx = parseInt(k, 10);
+      if (idx > value) delete carSchedules[k];
+    });
+
+    if (value === 1) {
+      if (sameLocationBox) sameLocationBox.style.display = "none";
+      if (commonAddressSection) commonAddressSection.style.display = "none";
+      sameLocation = null;
+      document.querySelectorAll("input[name='sameLoc']").forEach(r => (r.checked = false));
+      if (sameLocHint) sameLocHint.textContent = "Single car booking – fill details below.";
+      renderCarDetails();
+    } else {
+      if (sameLocationBox) sameLocationBox.style.display = "block";
+      if (sameLocHint) sameLocHint.textContent = "Select Yes/No for same location, then fill car details.";
+      if (commonAddressSection) commonAddressSection.style.display = (sameLocation === "yes") ? "block" : "none";
+      renderCarDetails();
+    }
+
+    updateSelectedRateLabel();
+    updateTotalPrice();
+    saveDraft();
+  }
+  window.changeCarCount = changeCarCount;
+
+  document.querySelectorAll("input[name='sameLoc']").forEach(radio => {
+    radio.addEventListener("change", () => {
+      sameLocation = radio.value;
+
+      if (sameLocation === "yes") {
+        if (sameLocHint) sameLocHint.textContent = "Common location for all cars (per-car time slots).";
+        if (commonAddressSection) commonAddressSection.style.display = "block";
+        // mountPinbox("common") will be in Part 4
+      } else if (sameLocation === "no") {
+        if (sameLocHint) sameLocHint.textContent = "Each car has different address + map + time slot.";
+        if (commonAddressSection) commonAddressSection.style.display = "none";
+      }
+
+      renderCarDetails();
+      updateSelectedRateLabel();
+      updateTotalPrice();
+      saveDraft();
+    });
+  });
+
+  // =========================
+  // RENDER CAR BLOCKS (includes car number + vehicle pills)
+  // =========================
+  function formatDateForDisplay(ymd) {
+    if (!ymd) return "";
+    const [y, m, d] = ymd.split("-");
+    return `${d}-${m}-${y}`;
+  }
+
+  function updateScheduleDisplay(carIndex) {
+    const span = document.getElementById(`scheduleDisplay_${carIndex}`);
+    if (!span) return;
+    const sched = carSchedules[carIndex];
+    if (!sched) span.textContent = "No date selected";
+    else span.textContent = `${formatDateForDisplay(sched.date)} ${sched.slot}`;
+  }
+
+  function renderCarDetails() {
+    if (!carDetailsContainer) return;
+    carDetailsContainer.innerHTML = "";
+
+    const count = parseInt(carCountInput?.value || "1", 10) || 1;
+
+    const buildCarBlock = (i, includeAddress) => {
+      const block = document.createElement("div");
+      block.className = "car-block";
+
+      block.innerHTML = `
+        <div class="car-title">Car ${i} <span class="badge">@Home</span></div>
+
+        <label>Car Number</label>
+        <input id="carNumber_${i}" placeholder="e.g., TS09AB1234" />
+
+        <div class="schedule-row">
+          <span class="schedule-label">Schedule</span>
+          <span class="schedule-display" id="scheduleDisplay_${i}">No date selected</span>
+          <button type="button" class="calendar-btn" onclick="openSchedule(${i})">📅</button>
+        </div>
+
+        <label>Vehicle Type</label>
+      `;
+
+      const hiddenSelect = createCarTypeSelect(`carType_${i}`);
+      block.appendChild(hiddenSelect);
+
+      const pillRow = createCarTypePills(i, hiddenSelect);
+      block.appendChild(pillRow);
+
+      const hint = document.createElement("div");
+      hint.className = "service-hint";
+      hint.textContent = "Select vehicle to see rate from DB.";
+      block.appendChild(hint);
+
+      // Address UI will be appended in Part 4 (pinbox + map etc.)
+      if (includeAddress) {
+        const pinHost = document.createElement("div");
+        pinHost.id = `pinboxHost_car_${i}`;
+        block.appendChild(pinHost);
+
+        const labelAddr = document.createElement("label");
+        labelAddr.textContent = "Address (Auto from map)";
+        block.appendChild(labelAddr);
+
+        const textareaAddr = document.createElement("textarea");
+        textareaAddr.id = `carAddress_${i}`;
+        textareaAddr.placeholder = "Use pincode + map to auto-fill address";
+        block.appendChild(textareaAddr);
+
+        const mapsRow = document.createElement("div");
+        mapsRow.className = "maps-row";
+        mapsRow.innerHTML = `
+          <div class="maps-col">
+            <div class="maps-label">Maps link (auto-generated)</div>
+            <input id="carMaps_${i}" placeholder="Maps link will auto-fill" readonly />
+          </div>
+          <div class="maps-buttons">
+            <button type="button" class="btn-maps" onclick="useCurrentLocationForAddress('car', ${i})">📍 Use my current location</button>
+          </div>
+        `;
+        block.appendChild(mapsRow);
+
+        const mHint = document.createElement("div");
+        mHint.className = "maps-hint";
+        mHint.textContent = "Use pincode + map to auto-fill accurate address.";
+        block.appendChild(mHint);
+      }
+
+      carDetailsContainer.appendChild(block);
+
+      // listeners
+      const carNumberEl = document.getElementById(`carNumber_${i}`);
+      if (carNumberEl) carNumberEl.addEventListener("input", saveDraft);
+
+      hiddenSelect.addEventListener("change", () => {
+        updateSelectedRateLabel();
+        updateTotalPrice();
+        saveDraft();
+      });
+
+      updateScheduleDisplay(i);
+    };
+
+    if (count === 1) {
+      buildCarBlock(1, true);
+      return;
+    }
+
+    // if 2 cars, show based on sameLocation selection
+    if (!sameLocation) return;
+
+    for (let i = 1; i <= count; i++) {
+      buildCarBlock(i, sameLocation === "no");
+    }
+  }
+
+  // =========================
+  // WASH TYPE CHANGE
+  // =========================
+  if (washTypeSelect) {
+    washTypeSelect.addEventListener("change", () => {
+      selectedWashType = normalizeWashType(washTypeSelect.value);
+      updateSelectedRateLabel();
+      updateTotalPrice();
+      saveDraft();
+    });
+  }
+
+  // =========================
+  // WATER RADIO CHANGE
+  // =========================
+  document.querySelectorAll("input[name='waterFacility']").forEach(r => {
+    r.addEventListener("change", () => {
+      waterFacilityYes = (document.querySelector("input[name='waterFacility']:checked")?.value === "yes");
+      updateTotalPrice();
+      saveDraft();
+    });
+  });
+
+  // =========================
+  // ✅ INIT (partial: restore + render)
+  // =========================
+  const draft = loadDraft();
+
+  // restore wash type
+  if (draft?.washType && washTypeSelect) {
+    selectedWashType = normalizeWashType(draft.washType);
+    washTypeSelect.value = selectedWashType;
+  } else {
+    selectedWashType = "BASIC";
+    if (washTypeSelect) washTypeSelect.value = "BASIC";
+  }
+
+  // restore water
+  if (draft?.waterFacilityYes === true) {
+    const yes = document.querySelector("input[name='waterFacility'][value='yes']");
+    if (yes) yes.checked = true;
+    waterFacilityYes = true;
+  } else {
+    const no = document.querySelector("input[name='waterFacility'][value='no']");
+    if (no) no.checked = true;
+    waterFacilityYes = false;
+  }
+
+  // restore count (enforce max=2)
+  if (draft?.carCount && carCountInput) {
+    carCountInput.value = String(Math.min(MAX_CARS, Math.max(1, Number(draft.carCount) || 1)));
+  }
+
+  // restore sameLocation selection
+  if ((parseInt(carCountInput?.value || "1", 10) || 1) > 1) {
+    if (sameLocationBox) sameLocationBox.style.display = "block";
+    sameLocation = draft?.sameLocation || null;
+    if (sameLocation) {
+      const radio = document.querySelector(`input[name='sameLoc'][value='${sameLocation}']`);
+      if (radio) radio.checked = true;
+      if (commonAddressSection) commonAddressSection.style.display = (sameLocation === "yes") ? "block" : "none";
+    }
+  } else {
+    if (sameLocationBox) sameLocationBox.style.display = "none";
+    if (commonAddressSection) commonAddressSection.style.display = "none";
+    sameLocation = null;
+  }
+
+  // restore schedules
+  if (draft?.carSchedules) carSchedules = draft.carSchedules;
+
+  // restore common address
+  if (draft?.commonAddress) {
+    const el = document.getElementById("commonAddress");
+    if (el) el.value = draft.commonAddress;
+  }
+  if (draft?.commonMapsUrl) {
+    const el = document.getElementById("commonMapsUrl");
+    if (el) el.value = draft.commonMapsUrl;
+  }
+
+  // render car blocks now (pinbox/map mounting happens in Part 4)
+  renderCarDetails();
+
+  // restore per-car fields
+  const cntRestore = parseInt(carCountInput?.value || "1", 10) || 1;
+for (let i = 1; i <= cntRestore; i++) {
+    const c = draft?.cars?.[i];
+    if (!c) continue;
+
+    const carNumberEl = document.getElementById(`carNumber_${i}`);
+    if (carNumberEl) carNumberEl.value = c.carNumber || "";
+
+    const carTypeEl = document.getElementById(`carType_${i}`);
+    if (carTypeEl && c.carType) {
+      carTypeEl.value = c.carType;
+      const block = carTypeEl.closest(".car-block");
+      if (block) {
+        block.querySelectorAll(".car-type-pill").forEach(p => {
+          p.classList.toggle("selected", p.dataset.type === c.carType);
+        });
+      }
+    }
+
+    const addrEl = document.getElementById(`carAddress_${i}`);
+    if (addrEl) addrEl.value = c.address || "";
+
+    const mapsEl = document.getElementById(`carMaps_${i}`);
+    if (mapsEl) mapsEl.value = c.mapsUrl || "";
+
+    updateScheduleDisplay(i);
+  }
+
+  // load membership + rates
+  loadMembership();
+  loadRatesMatrix();
+  updateTotalPrice();
+
+  // =========================
+  // NOTE:
+  // Part 4 will include:
+  // - PINCODE + MAP (mountPinbox, map picker, reverse geocode)
+  // - SCHEDULE modal logic + availability checks
+  // - submitBooking() full logic + final redirect to /homewashreview
+  // =========================
+</script>
+<script>
+  // ======================
+  // PINCODE + MAP
+  // ======================
+  let activePincodeDropdown = null;
+
+  const mapOverlayEl = document.getElementById("mapOverlay");
+  const mapHeaderTextEl = document.getElementById("mapHeaderText");
+  const mapFooterHintEl = document.getElementById("mapFooterHint");
+
+  let map, marker, mapInitialized = false;
+  let circle = null;
+  let circleCenter = null;
+  let circleRadiusM = null;
+  let mapContext = null;
+
+  function closePincodeDropdown() {
+    if (activePincodeDropdown) {
+      activePincodeDropdown.remove();
+      activePincodeDropdown = null;
+    }
+  }
+
+  function mountPinbox(type, index=null) {
+    const host = (type === "common")
+      ? document.getElementById("commonPinboxHost")
+      : document.getElementById(`pinboxHost_car_${index}`);
+
+    if (!host) return;
+    host.innerHTML = "";
+
+    const suffix = (type === "common") ? "common" : `car_${index}`;
+
+    const box = document.createElement("div");
+    box.className = "pinbox";
+    box.innerHTML = `
+      <div class="pin-row">
+        <div class="pin-col autocomplete-wrapper">
+          <label style="margin-bottom:4px;">Pincode</label>
+          <input id="pin_${suffix}" inputmode="numeric" maxlength="6" placeholder="Enter 6-digit pincode">
+          <input id="area_${suffix}" type="hidden" value="">
+        </div>
+
+        <div class="pin-actions">
+          <button type="button" class="btn-maps" id="btnSearch_${suffix}">🔎 Search</button>
+          <button type="button" class="btn-maps-outline" id="btnMap_${suffix}">🗺️ Open map</button>
+        </div>
+      </div>
+
+      <div class="range-row">
+        <label>Service range</label>
+        <input id="range_${suffix}" type="range" min="1" max="15" step="1" value="3">
+        <div class="range-pill"><span id="rangeVal_${suffix}">3</span> km</div>
+      </div>
+
+      <div class="pin-hint">
+        Enter pincode → choose area → map opens with a circle → pick point inside circle.
+      </div>
+    `;
+
+    host.appendChild(box);
+
+    const pinEl = document.getElementById(`pin_${suffix}`);
+    const areaEl = document.getElementById(`area_${suffix}`);
+    const rangeEl = document.getElementById(`range_${suffix}`);
+    const rangeValEl = document.getElementById(`rangeVal_${suffix}`);
+    const btnSearch = document.getElementById(`btnSearch_${suffix}`);
+    const btnMap = document.getElementById(`btnMap_${suffix}`);
+
+    rangeValEl.textContent = String(parseInt(rangeEl.value || "3",10) || 3);
+
+    pinEl.addEventListener("input", () => {
+      const v = (pinEl.value || "").replace(/\D/g, "").slice(0,6);
+      pinEl.value = v;
+      saveDraft();
+      closePincodeDropdown();
+      if (v.length === 6) searchByPincode(type, index);
+    });
+
+    rangeEl.addEventListener("input", () => {
+      rangeValEl.textContent = String(parseInt(rangeEl.value || "3",10) || 3);
+      if (mapContext && mapContext.type === type && mapContext.index === index && circle) {
+        circleRadiusM = (parseInt(rangeEl.value||"3",10) || 3) * 1000;
+        circle.setRadius(circleRadiusM);
+      }
+      saveDraft();
+    });
+
+    btnSearch.addEventListener("click", () => searchByPincode(type, index));
+    btnMap.addEventListener("click", () => openMapForContext(type, index));
+
+    pinEl.addEventListener("blur", () => setTimeout(() => closePincodeDropdown(), 180));
+  }
+
+  async function searchByPincode(type, index=null) {
+    const suffix = (type === "common") ? "common" : `car_${index}`;
+    const pinEl = document.getElementById(`pin_${suffix}`);
+    const areaEl = document.getElementById(`area_${suffix}`);
+
+    const pin = (pinEl?.value || "").trim();
+    if (!/^\d{6}$/.test(pin)) { alert("Please enter valid 6-digit pincode."); return; }
+
+    closePincodeDropdown();
+
+    const url = "https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=10&countrycodes=in&q="
+      + encodeURIComponent(pin);
+
+    try {
+      const res = await fetch(url, { headers: { "Accept-Language": "en" } });
+      const results = await res.json();
+
+      const filtered = (results || []).filter(r => {
+        const st = (r && r.address && (r.address.state || r.address.state_district || "")) || "";
+        return ALLOWED_STATES.has(String(st).toLowerCase().trim());
+      });
+
+      if (filtered.length === 0) {
+        alert("No AP/Telangana results found for this pincode.");
+        return;
+      }
+
+      showPincodeDropdown(filtered, pinEl, areaEl, type, index);
+    } catch (e) {
+      console.error(e);
+      alert("Unable to search pincode. Try again.");
+    }
+  }
+
+  function showPincodeDropdown(results, pinEl, areaEl, type, index) {
+    closePincodeDropdown();
+
+    const wrapper = pinEl.parentElement;
+    if (!wrapper || !wrapper.classList.contains("autocomplete-wrapper")) return;
+
+    const dropdown = document.createElement("div");
+    dropdown.className = "autocomplete-dropdown";
+
+    results.forEach(item => {
+      const label = item.display_name;
+      const lat = parseFloat(item.lat);
+      const lon = parseFloat(item.lon);
+
+      const opt = document.createElement("div");
+      opt.className = "autocomplete-option";
+      opt.textContent = label;
+
+      opt.onclick = () => {
+        areaEl.value = label;
+        closePincodeDropdown();
+        saveDraft();
+        openMapAt(type, index, lat, lon, label);
+      };
+
+      dropdown.appendChild(opt);
+    });
+
+    activePincodeDropdown = dropdown;
+    wrapper.appendChild(dropdown);
+  }
+
+  function openMapForContext(type, index=null) {
+    const suffix = (type === "common") ? "common" : `car_${index}`;
+    const areaLabel = document.getElementById(`area_${suffix}`)?.value || "";
+    const rangeKm = parseInt(document.getElementById(`range_${suffix}`)?.value || "3", 10) || 3;
+
+    let defaultLatLng = [17.3850, 78.4867]; // Hyderabad fallback
+
+    let url = "";
+    if (type === "common") url = (document.getElementById("commonMapsUrl")?.value || "").trim();
+    else url = (document.getElementById(`carMaps_${index}`)?.value || "").trim();
+
+    const coords = parseLatLngFromMapsUrl(url);
+    if (coords) defaultLatLng = [coords.lat, coords.lng];
+
+    openMapAt(type, index, defaultLatLng[0], defaultLatLng[1], areaLabel || "Select point");
+
+    circleCenter = { lat: defaultLatLng[0], lng: defaultLatLng[1] };
+    circleRadiusM = rangeKm * 1000;
+
+    if (circle) circle.remove();
+    circle = L.circle([circleCenter.lat, circleCenter.lng], { radius: circleRadiusM }).addTo(map);
+  }
+
+  function openMapAt(type, index, lat, lng, label) {
+    mapContext = { type, index };
+
+    if (mapHeaderTextEl) {
+      mapHeaderTextEl.textContent = `Pick location (${type === "common" ? "Common" : "Car " + index})`;
+    }
+    if (mapFooterHintEl) {
+      mapFooterHintEl.textContent = `Pick inside circle. ${label ? "Area: " + label : ""}`;
+    }
+
+    if (mapOverlayEl) mapOverlayEl.style.display = "flex";
+
+    if (!mapInitialized) { initMap(); mapInitialized = true; }
+
+    const suffix = (type === "common") ? "common" : `car_${index}`;
+    const rangeKm = parseInt(document.getElementById(`range_${suffix}`)?.value || "3", 10) || 3;
+
+    circleCenter = { lat, lng };
+    circleRadiusM = rangeKm * 1000;
+
+    if (circle) circle.remove();
+    circle = L.circle([lat, lng], { radius: circleRadiusM }).addTo(map);
+
+    marker.setLatLng([lat, lng]);
+    map.setView([lat, lng], 14);
+    setTimeout(() => map.invalidateSize(), 150);
+  }
+
+  function closeMapPicker() {
+    if (mapOverlayEl) mapOverlayEl.style.display = "none";
+    mapContext = null;
+  }
+  window.closeMapPicker = closeMapPicker;
+
+  function initMap() {
+    const defaultLatLng = [17.3850, 78.4867];
+    map = L.map("mapPicker").setView(defaultLatLng, 12);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19, attribution: "&copy; OpenStreetMap"
+    }).addTo(map);
+
+    marker = L.marker(defaultLatLng, { draggable: true }).addTo(map);
+
+    map.on("click", (e) => {
+      if (circle && !isLatLngInsideCircle(e.latlng, circleCenter, circleRadiusM)) {
+        alert("Please select within the range circle.");
+        return;
+      }
+      marker.setLatLng(e.latlng);
+    });
+
+    marker.on("dragend", () => {
+      if (circle) {
+        const ll = marker.getLatLng();
+        if (!isLatLngInsideCircle(ll, circleCenter, circleRadiusM)) {
+          alert("Marker must be within the range circle.");
+          marker.setLatLng([circleCenter.lat, circleCenter.lng]);
+        }
+      }
+    });
+  }
+
+  function isLatLngInsideCircle(latlng, center, radiusM) {
+    if (!center || !radiusM) return true;
+    const d = haversineMeters(center.lat, center.lng, latlng.lat, latlng.lng);
+    return d <= radiusM;
+  }
+
+  function haversineMeters(lat1, lon1, lat2, lon2) {
+    const R = 6371000;
+    const toRad = (x) => x * Math.PI / 180;
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+    const a =
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+      Math.sin(dLon/2) * Math.sin(dLon/2);
+    return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  }
+
+  function parseLatLngFromMapsUrl(url) {
+    if (!url) return null;
+    const qIndex = url.indexOf("?q=");
+    if (qIndex !== -1) {
+      const coordsPart = url.substring(qIndex + 3).split("&")[0];
+      const parts = coordsPart.split(",");
+      if (parts.length === 2) {
+        const lat = parseFloat(parts[0]);
+        const lng = parseFloat(parts[1]);
+        if (!isNaN(lat) && !isNaN(lng)) return { lat, lng };
+      }
+    }
+    return null;
+  }
+
+  async function reverseGeocodeAndFill(lat, lng, addressId, mapsId) {
+    try {
+      const url = "https://nominatim.openstreetmap.org/reverse?format=json&addressdetails=1"
+        + "&lat=" + encodeURIComponent(lat) + "&lon=" + encodeURIComponent(lng);
+
+      const res = await fetch(url, { headers: { "Accept-Language": "en" } });
+      if (!res.ok) throw new Error("Reverse geocode failed");
+      const data = await res.json();
+
+      const state = ((data.address && data.address.state) || "").toLowerCase().trim();
+      if (!ALLOWED_STATES.has(state)) {
+        alert("Please choose location only in Andhra Pradesh or Telangana.");
+        return false;
+      }
+
+      const display = data.display_name || "";
+      const addrEl = document.getElementById(addressId);
+      if (addrEl) addrEl.value = display;
+
+      const mapsUrl = `https://www.google.com/maps?q=${lat.toFixed(6)},${lng.toFixed(6)}`;
+      const mapsEl = document.getElementById(mapsId);
+      if (mapsEl) mapsEl.value = mapsUrl;
+
+      return true;
+    } catch (e) {
+      console.error(e);
+      alert("Unable to fetch address. Try again.");
+      return false;
+    }
+  }
+
+  async function useMapSelection() {
+    if (!marker || !mapContext) return;
+
+    const ll = marker.getLatLng();
+
+    if (circle && !isLatLngInsideCircle(ll, circleCenter, circleRadiusM)) {
+      alert("Please select within the range circle.");
+      return;
+    }
+
+    const addrId = (mapContext.type === "common") ? "commonAddress" : `carAddress_${mapContext.index}`;
+    const mapsId = (mapContext.type === "common") ? "commonMapsUrl" : `carMaps_${mapContext.index}`;
+
+    const ok = await reverseGeocodeAndFill(ll.lat, ll.lng, addrId, mapsId);
+    if (!ok) return;
+
+    closeMapPicker();
+    saveDraft();
+  }
+  window.useMapSelection = useMapSelection;
+
+  async function useCurrentLocationForAddress(type, index) {
+    if (!navigator.geolocation) {
+      alert("Browser doesn't support location.");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+
+        const addrId = (type === "common") ? "commonAddress" : `carAddress_${index}`;
+        const mapsId = (type === "common") ? "commonMapsUrl" : `carMaps_${index}`;
+        const ok = await reverseGeocodeAndFill(lat, lng, addrId, mapsId);
+        if (ok) saveDraft();
+      },
+      (err) => { console.error(err); alert("Unable to fetch location."); },
+      { enableHighAccuracy: true, timeout: 12000 }
+    );
+  }
+  window.useCurrentLocationForAddress = useCurrentLocationForAddress;
+
+  // ======================
+  // SCHEDULE (Availability)
+  // ======================
+  let currentScheduleCar = null;
+  let selectedSchedSlot = null;
+  let currentAvailability = null;
+
+  // set min date today
+  (function setTodayMin() {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const dd = String(today.getDate()).padStart(2, "0");
+    if (schedDateInput) schedDateInput.min = `${yyyy}-${mm}-${dd}`;
+  })();
+
+  function openSchedule(index) {
+    currentScheduleCar = index;
+    selectedSchedSlot = null;
+
+    const sched = carSchedules[index];
+    if (sched) {
+      if (schedDateInput) schedDateInput.value = sched.date;
+      selectedSchedSlot = sched.slot;
+    } else {
+      if (schedDateInput) schedDateInput.value = "";
+    }
+
+    currentAvailability = null;
+    renderScheduleSlots();
+
+    if (scheduleModal) scheduleModal.style.display = "flex";
+
+    if (schedDateInput && schedDateInput.value) loadAvailabilityAndRender(schedDateInput.value);
+  }
+  window.openSchedule = openSchedule;
+
+  function closeSchedule() {
+    if (scheduleModal) scheduleModal.style.display = "none";
+    currentScheduleCar = null;
+    selectedSchedSlot = null;
+    currentAvailability = null;
+  }
+  window.closeSchedule = closeSchedule;
+
+  if (schedDateInput) {
+    schedDateInput.addEventListener("change", function () {
+      const dateVal = this.value;
+      selectedSchedSlot = null;
+      if (!currentScheduleCar) return;
+
+      if (!dateVal) { currentAvailability = null; renderScheduleSlots(); return; }
+      loadAvailabilityAndRender(dateVal);
+    });
+  }
+
+  async function loadAvailabilityAndRender(dateVal) {
+    try {
+      const url = `${API_BOOKINGS}/availability?date=${encodeURIComponent(dateVal)}&serviceType=${encodeURIComponent(AVAIL_SERVICE_TYPE)}`;
+      const res = await fetch(url, { headers: authHeaders({ "Accept": "application/json" }) });
+      currentAvailability = res.ok ? await res.json() : null;
+    } catch (e) {
+      console.error("availability error", e);
+      currentAvailability = null;
+    }
+    renderScheduleSlots();
+  }
+
+  function renderScheduleSlots() {
+    if (!schedSlotGroup) return;
+    schedSlotGroup.innerHTML = "";
+
+    TIME_SLOTS.forEach(slot => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "slot-btn";
+      btn.textContent = slot;
+
+      const isAvailable = !currentAvailability || currentAvailability[slot] !== false;
+
+      if (!isAvailable) {
+        btn.classList.add("booked");
+        btn.disabled = true;
+      } else {
+        if (slot === selectedSchedSlot) btn.classList.add("selected");
+        btn.onclick = () => { selectedSchedSlot = slot; renderScheduleSlots(); };
+      }
+
+      schedSlotGroup.appendChild(btn);
+    });
+  }
+
+  function saveSchedule() {
+    if (!currentScheduleCar) { closeSchedule(); return; }
+    const dateVal = (schedDateInput?.value || "").trim();
+    if (!dateVal) { alert("Select a date."); return; }
+    if (!selectedSchedSlot) { alert("Select a time slot."); return; }
+
+    carSchedules[currentScheduleCar] = { date: dateVal, slot: selectedSchedSlot };
+    updateScheduleDisplay(currentScheduleCar);
+    closeSchedule();
+    saveDraft();
+  }
+  window.saveSchedule = saveSchedule;
+
+  // =========================
+  // FINAL SERVER CHECK for Slots
+  // =========================
+  async function assertSlotsStillAvailable(perCarList) {
+    const dates = Array.from(new Set(perCarList.map(x => x.date)));
+    for (const d of dates) {
+      let map = null;
+      try {
+        const res = await fetch(`${API_BOOKINGS}/availability?date=${encodeURIComponent(d)}&serviceType=${encodeURIComponent(AVAIL_SERVICE_TYPE)}`, {
+          headers: authHeaders({ "Accept": "application/json" })
+        });
+        map = res.ok ? await res.json() : null;
+      } catch {
+        map = null;
+      }
+
+      if (map) {
+        const usedSlots = new Set(perCarList.filter(x => x.date === d).map(x => x.timeSlot));
+        for (const slot of usedSlots) {
+          if (map[slot] === false) {
+            throw new Error(`Slot not available: ${d} ${slot}`);
+          }
+        }
+      }
+    }
+  }
+
+  // =========================
+  // SUBMIT BOOKING
+  // =========================
+  function normalizeCarNumber(v) {
+    return String(v || "")
+      .toUpperCase()
+      .replace(/\s+/g, "")
+      .replace(/[^A-Z0-9]/g, "");
+  }
+
+  function validateCarNumberDuplicates() {
+    const count = parseInt(carCountInput?.value || "1", 10) || 1;
+    const seen = new Map();
+
+    for (let i = 1; i <= count; i++) {
+      const raw = document.getElementById(`carNumber_${i}`)?.value || "";
+      const norm = normalizeCarNumber(raw);
+      if (!norm) continue;
+
+      if (seen.has(norm)) {
+        const first = seen.get(norm);
+        alert(`Duplicate car number:\nCar ${first} and Car ${i} are same (${norm}).`);
+        return false;
+      }
+      seen.set(norm, i);
+    }
+    return true;
+  }
+
+  async function submitBooking() {
+    try {
+      const count = parseInt(carCountInput?.value || "1", 10) || 1;
+
+      if (count > MAX_CARS) {
+        alert(`Maximum ${MAX_CARS} cars allowed.`);
+        if (carCountInput) carCountInput.value = String(MAX_CARS);
+        renderCarDetails();
+        return;
+      }
+
+      if (!validateCarNumberDuplicates()) return;
+
+      const chosenSame = (count > 1)
+        ? (document.querySelector("input[name='sameLoc']:checked")?.value || null)
+        : null;
+
+      if (count > 1 && !chosenSame) {
+        alert("Please select whether location is same for all cars.");
+        return;
+      }
+
+      // common address validation if same=yes
+      let commonAddr = "", commonMaps = "";
+      if (count > 1 && chosenSame === "yes") {
+        commonAddr = (document.getElementById("commonAddress")?.value || "").trim();
+        commonMaps = (document.getElementById("commonMapsUrl")?.value || "").trim();
+        if (!commonAddr || !commonMaps) {
+          alert("Please select the common location using pincode + map.");
+          return;
+        }
+      }
+
+      const perCar = [];
+      for (let i = 1; i <= count; i++) {
+        const carTypeUi = (document.getElementById(`carType_${i}`)?.value || "").trim();
+        if (!carTypeUi) { alert(`Select vehicle type for Car ${i}.`); return; }
+
+        const carNumber = (document.getElementById(`carNumber_${i}`)?.value || "").trim();
+        if (!carNumber) { alert(`Enter car number for Car ${i}.`); return; }
+
+        const sched = carSchedules[i];
+        if (!sched?.date || !sched?.slot) { alert(`Select date & time for Car ${i}.`); return; }
+
+        const addr = (count > 1 && chosenSame === "yes")
+          ? commonAddr
+          : (document.getElementById(`carAddress_${i}`)?.value || "").trim();
+
+        const maps = (count > 1 && chosenSame === "yes")
+          ? commonMaps
+          : (document.getElementById(`carMaps_${i}`)?.value || "").trim();
+
+        if (!addr || !maps) { alert(`Select location using pincode + map for Car ${i}.`); return; }
+
+        const base = Number(getRateAmount(carTypeUi, selectedWashType) ?? 0);
+        if (!base) {
+          alert(`Rate not found in DB for ${carTypeUi} + ${selectedWashType}. Add rate in DB.`);
+          return;
+        }
+
+        perCar.push({
+          i,
+          carTypeUi,
+          carNumber,
+          addr,
+          maps,
+          date: sched.date,
+          timeSlot: sched.slot,
+          base
+        });
+      }
+
+      // final availability check
+      await assertSlotsStillAvailable(perCar);
+
+      // membership + freebies
+      let freeLeft = (memberActive && membership) ? getMemberFreeCountByWashType() : 0;
+      const pct = (memberActive && membership) ? Math.max(0, Number(memberDiscountPct) || 0) : 0;
+
+      const freeFlags = {};
+      for (const it of perCar) {
+        if (freeLeft <= 0) break;
+        freeFlags[it.i] = true;
+        freeLeft -= 1;
+      }
+
+      const bookings = perCar.map(it => {
+        const isFree = !!freeFlags[it.i];
+        const freeApplied = isFree ? it.base : 0;
+        const afterFree = isFree ? 0 : it.base;
+        const discountApplied = (!isFree && pct > 0) ? Math.round((afterFree * pct) / 100) : 0;
+
+        const beforeWater = Math.max(0, afterFree - discountApplied);
+        const waterDiscountApplied = waterFacilityYes ? (beforeWater * 0.15) : 0;
+        const finalAmount = Math.max(0, beforeWater - waterDiscountApplied);
+
+        return {
+          phone,
+          carIndex: it.i,
+          sameLocation: (count > 1 && chosenSame === "yes"),
+          address: it.addr,
+          mapsUrl: it.maps,
+
+          carNumber: it.carNumber,
+          carType: (VEHICLE_TO_ENUM[it.carTypeUi] || it.carTypeUi),
+          bookingDate: it.date,
+          timeSlot: it.timeSlot,
+
+          serviceType: "HOME",
+          washType: selectedWashType,
+
+          baseAmount: it.base,
+          freeApplied,
+          discountApplied,
+
+          waterProvided: waterFacilityYes,
+          waterDiscountApplied: Number(money2(waterDiscountApplied)),
+
+          finalAmount: Number(money2(finalAmount))
+        };
+      });
+
+      // totals for review
+      const baseTotal  = bookings.reduce((s, b) => s + Number(b.baseAmount || 0), 0);
+      const freeTotal  = bookings.reduce((s, b) => s + Number(b.freeApplied || 0), 0);
+      const discTotal  = bookings.reduce((s, b) => s + Number(b.discountApplied || 0), 0);
+      const waterTotal = bookings.reduce((s, b) => s + Number(b.waterDiscountApplied || 0), 0);
+      const payable    = bookings.reduce((s, b) => s + Number(b.finalAmount || 0), 0);
+
+      const memSnap = membership ? {
+        plan: memberPlanLabel || (membership.planName || membership.planCode || "Membership"),
+        status: memberStatus || (membership.status || ""),
+        freeFoamLeft: memberActive ? getFoamFreeCount() : 0,
+        freePremiumLeft: memberActive ? getPremiumFreeCount() : 0,
+        discountPercent: memberActive ? Math.max(0, Number(memberDiscountPct) || 0) : 0
+      } : null;
+
+      const draftObj = {
+        phone,
+        serviceType: "HOME",
+        washType: selectedWashType,
+        bookings,
+        membership: memSnap,
+        pricing: {
+          baseTotal,
+          freeApplied: memberActive ? freeTotal : 0,
+          discountApplied: memberActive ? discTotal : 0,
+          waterDiscountApplied: waterTotal,
+          payable
+        }
+      };
+
+      // store for review/payment pages
+      localStorage.setItem("pendingBookings", JSON.stringify(bookings));
+      localStorage.setItem("asp_home_booking_draft", JSON.stringify(draftObj));
+
+      localStorage.setItem("billAmount", String(baseTotal));
+      localStorage.setItem("payableAmount", String(payable));
+      localStorage.setItem("finalPayableAmount", String(payable));
+      localStorage.setItem("waterFacilityYes", waterFacilityYes ? "yes" : "no");
+
+      saveDraft();
+
+      // ✅ redirect
+      window.location.assign("/homewashreview");
+    } catch (e) {
+      console.error("submitBooking error:", e);
+      if (String(e?.message || "").includes("Slot not available")) {
+        alert("Selected slot already booked. Please choose another.");
+      } else {
+        alert("Booking failed. Check console.");
+      }
+    }
+  }
+  window.submitBooking = submitBooking;
+
+  // =========================
+  // MOUNT PINBOXES (AFTER DOM)
+  // =========================
+  // mount common (only visible when sameLoc=yes, but safe to mount anyway)
+  mountPinbox("common");
+
+  // mount per-car pinboxes for visible blocks
+  const cnt = parseInt(carCountInput?.value || "1", 10) || 1;
+  for (let i = 1; i <= cnt; i++) {
+    const host = document.getElementById(`pinboxHost_car_${i}`);
+    if (host) mountPinbox("car", i);
+  }
+
+  // ensure common pinbox mounts when user selects same=yes
+  document.querySelectorAll("input[name='sameLoc']").forEach(radio => {
+    radio.addEventListener("change", () => {
+      if (radio.checked && radio.value === "yes") mountPinbox("common");
+      if (radio.checked && radio.value === "no") {
+        // mount per-car pinboxes when each car has its own address
+        const c = parseInt(carCountInput?.value || "1", 10) || 1;
+        for (let i = 1; i <= c; i++) mountPinbox("car", i);
+      }
+    });
+  });
+
+  // persist on leave
+  window.addEventListener("beforeunload", () => { try { saveDraft(); } catch(e){} });
+</script>
+
+</body>
+</html>

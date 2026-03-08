@@ -1,0 +1,1157 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -----------------------< com.carwash:membership >-----------------------
+[INFO] Building membership 1.0.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.2.1:run (default-cli) > test-compile @ membership >>>
+[WARNING] Could not transfer metadata com.carwash:carwash-common:1.0.0-SNAPSHOT/maven-metadata.xml from/to maven-default-http-blocker (http://0.0.0.0/): Blocked mirror for repositories: [paytm-repo (http://artifactorypg.paytm.in/artifactory/libs-release, default, releases+snapshots)]
+[WARNING] com.carwash:carwash-common:1.0.0-SNAPSHOT/maven-metadata.xml failed to transfer from http://0.0.0.0/ during a previous attempt. This failure was cached in the local repository and resolution will not be reattempted until the update interval of maven-default-http-blocker has elapsed or updates are forced. Original error: Could not transfer metadata com.carwash:carwash-common:1.0.0-SNAPSHOT/maven-metadata.xml from/to maven-default-http-blocker (http://0.0.0.0/): Blocked mirror for repositories: [paytm-repo (http://artifactorypg.paytm.in/artifactory/libs-release, default, releases+snapshots)]
+[WARNING] Could not transfer metadata com.carwash:carwash-parent:1.0.0-SNAPSHOT/maven-metadata.xml from/to maven-default-http-blocker (http://0.0.0.0/): Blocked mirror for repositories: [paytm-repo (http://artifactorypg.paytm.in/artifactory/libs-release, default, releases+snapshots)]
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ membership ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] Copying 4 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.8.1:compile (default-compile) @ membership ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ membership ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] Copying 1 resource from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.8.1:testCompile (default-testCompile) @ membership ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] <<< spring-boot:3.2.1:run (default-cli) < test-compile @ membership <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.2.1:run (default-cli) @ membership ---
+[INFO] Attaching agents: []
+01:03:18,384 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - Processing appender named [FILE]
+01:03:18,384 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - About to instantiate appender of type [ch.qos.logback.core.rolling.RollingFileAppender]
+01:03:18,405 |-INFO in c.q.l.core.rolling.TimeBasedRollingPolicy@1101598632 - No compression will be used
+01:03:18,406 |-INFO in c.q.l.core.rolling.TimeBasedRollingPolicy@1101598632 - Will use the pattern C:/Users/chand/grafana-loki/logs/membership.%d{yyyy-MM-dd}.log for the active file
+01:03:18,425 |-INFO in c.q.l.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy - The date pattern is 'yyyy-MM-dd' from file name pattern 'C:/Users/chand/grafana-loki/logs/membership.%d{yyyy-MM-dd}.log'.
+01:03:18,425 |-INFO in c.q.l.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy - Roll-over at midnight.
+01:03:18,433 |-INFO in c.q.l.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy - Setting initial period to 2026-03-01T19:26:30.796Z
+01:03:18,455 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [net.logstash.logback.composite.loggingevent.LoggingEventJsonProviders] for [providers] property
+01:03:18,469 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [net.logstash.logback.composite.loggingevent.LoggingEventFormattedTimestampJsonProvider] for [timestamp] property
+01:03:18,471 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [net.logstash.logback.composite.loggingevent.LogLevelJsonProvider] for [logLevel] property
+01:03:18,472 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [net.logstash.logback.composite.loggingevent.LoggerNameJsonProvider] for [loggerName] property
+01:03:18,473 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [net.logstash.logback.composite.loggingevent.LoggingEventThreadNameJsonProvider] for [threadName] property
+01:03:18,473 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [net.logstash.logback.composite.loggingevent.MessageJsonProvider] for [message] property
+01:03:18,474 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [net.logstash.logback.composite.loggingevent.MdcJsonProvider] for [mdc] property
+01:03:18,475 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [net.logstash.logback.composite.loggingevent.StackTraceJsonProvider] for [stackTrace] property
+01:03:18,479 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [net.logstash.logback.composite.GlobalCustomFieldsJsonProvider] for [globalCustomFields] property
+01:03:18,479 |-WARN in ch.qos.logback.core.joran.util.beans.BeanDescriptionFactory@3d8bbcdc - Class 'net.logstash.logback.composite.GlobalCustomFieldsJsonProvider' contains multiple setters for the same property 'customFieldsNode'.
+01:03:18,690 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[FILE] - Active log file name: C:/Users/chand/grafana-loki/logs/membership.log
+01:03:18,690 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[FILE] - File property is set to [C:/Users/chand/grafana-loki/logs/membership.log]
+01:03:18,692 |-INFO in ch.qos.logback.classic.model.processor.RootLoggerModelHandler - Setting level of ROOT logger to INFO
+01:03:18,692 |-INFO in ch.qos.logback.classic.jul.LevelChangePropagator@52500920 - Propagating INFO level on Logger[ROOT] onto the JUL framework
+01:03:18,694 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [FILE] to Logger[ROOT]
+01:03:18,694 |-INFO in ch.qos.logback.core.model.processor.DefaultProcessor@117e0fe5 - End of configuration.
+01:03:18,694 |-INFO in org.springframework.boot.logging.logback.SpringBootJoranConfigurator@18a3962d - Registering current configuration as safe fallback point
+
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.2.1)
+
+CONNECTED DB = jdbc:postgresql://localhost:5432/itemlist
+Hibernate: 
+    select
+        dpb1_0.id,
+        dpb1_0.car_type,
+        dpb1_0.created_at,
+        dpb1_0.discount_percent_applied,
+        dpb1_0.left_washes,
+        dpb1_0.original_amount,
+        dpb1_0.payable_amount,
+        dpb1_0.payment_status,
+        dpb1_0.phone,
+        dpb1_0.plan_type_code,
+        dpb1_0.refund_amount,
+        dpb1_0.refund_initiated_at,
+        dpb1_0.refund_status,
+        dpb1_0.service_type,
+        dpb1_0.total_washes,
+        dpb1_0.transaction_id,
+        dpb1_0.used_washes,
+        dpb1_0.wash_type,
+        dpb1_0.water_provided 
+    from
+        carwash_deal_price_booking dpb1_0 
+    where
+        dpb1_0.phone=? 
+    order by
+        dpb1_0.created_at desc
+Hibernate: 
+    select
+        m1_0.id,
+        m1_0.created_at,
+        m1_0.discount_end_date,
+        m1_0.discount_percent,
+        m1_0.discount_start_date,
+        m1_0.end_date,
+        m1_0.free_foam_remaining,
+        m1_0.free_premium_remaining,
+        m1_0.free_used1,
+        m1_0.free_used2,
+        m1_0.free_used3,
+        m1_0.is_upgrade,
+        m1_0.membership_id,
+        m1_0.phone,
+        m1_0.plan_code,
+        m1_0.plan_name,
+        m1_0.previous_plan_code,
+        m1_0.price,
+        m1_0.start_date,
+        m1_0.status,
+        m1_0.transaction_id,
+        m1_0.updated_at,
+        m1_0.upgrade_created_at,
+        m1_0.upgrade_difference_amount,
+        m1_0.upgraded_from_membership_id 
+    from
+        carwash_membership m1_0 
+    where
+        m1_0.phone=? 
+        and m1_0.status=? 
+    order by
+        m1_0.updated_at desc 
+    fetch
+        first ? rows only
+Hibernate: 
+    select
+        dpb1_0.id,
+        dpb1_0.car_type,
+        dpb1_0.created_at,
+        dpb1_0.discount_percent_applied,
+        dpb1_0.left_washes,
+        dpb1_0.original_amount,
+        dpb1_0.payable_amount,
+        dpb1_0.payment_status,
+        dpb1_0.phone,
+        dpb1_0.plan_type_code,
+        dpb1_0.refund_amount,
+        dpb1_0.refund_initiated_at,
+        dpb1_0.refund_status,
+        dpb1_0.service_type,
+        dpb1_0.total_washes,
+        dpb1_0.transaction_id,
+        dpb1_0.used_washes,
+        dpb1_0.wash_type,
+        dpb1_0.water_provided 
+    from
+        carwash_deal_price_booking dpb1_0 
+    where
+        dpb1_0.phone=? 
+    order by
+        dpb1_0.created_at desc
+Hibernate: 
+    select
+        dpb1_0.id,
+        dpb1_0.car_type,
+        dpb1_0.created_at,
+        dpb1_0.discount_percent_applied,
+        dpb1_0.left_washes,
+        dpb1_0.original_amount,
+        dpb1_0.payable_amount,
+        dpb1_0.payment_status,
+        dpb1_0.phone,
+        dpb1_0.plan_type_code,
+        dpb1_0.refund_amount,
+        dpb1_0.refund_initiated_at,
+        dpb1_0.refund_status,
+        dpb1_0.service_type,
+        dpb1_0.total_washes,
+        dpb1_0.transaction_id,
+        dpb1_0.used_washes,
+        dpb1_0.wash_type,
+        dpb1_0.water_provided 
+    from
+        carwash_deal_price_booking dpb1_0 
+    where
+        dpb1_0.phone=? 
+    order by
+        dpb1_0.created_at desc
+Hibernate: 
+    select
+        m1_0.id,
+        m1_0.created_at,
+        m1_0.discount_end_date,
+        m1_0.discount_percent,
+        m1_0.discount_start_date,
+        m1_0.end_date,
+        m1_0.free_foam_remaining,
+        m1_0.free_premium_remaining,
+        m1_0.free_used1,
+        m1_0.free_used2,
+        m1_0.free_used3,
+        m1_0.is_upgrade,
+        m1_0.membership_id,
+        m1_0.phone,
+        m1_0.plan_code,
+        m1_0.plan_name,
+        m1_0.previous_plan_code,
+        m1_0.price,
+        m1_0.start_date,
+        m1_0.status,
+        m1_0.transaction_id,
+        m1_0.updated_at,
+        m1_0.upgrade_created_at,
+        m1_0.upgrade_difference_amount,
+        m1_0.upgraded_from_membership_id 
+    from
+        carwash_membership m1_0 
+    where
+        m1_0.phone=? 
+        and m1_0.status=? 
+    order by
+        m1_0.updated_at desc 
+    fetch
+        first ? rows only
+Hibernate: 
+    select
+        m1_0.id,
+        m1_0.created_at,
+        m1_0.discount_end_date,
+        m1_0.discount_percent,
+        m1_0.discount_start_date,
+        m1_0.end_date,
+        m1_0.free_foam_remaining,
+        m1_0.free_premium_remaining,
+        m1_0.free_used1,
+        m1_0.free_used2,
+        m1_0.free_used3,
+        m1_0.is_upgrade,
+        m1_0.membership_id,
+        m1_0.phone,
+        m1_0.plan_code,
+        m1_0.plan_name,
+        m1_0.previous_plan_code,
+        m1_0.price,
+        m1_0.start_date,
+        m1_0.status,
+        m1_0.transaction_id,
+        m1_0.updated_at,
+        m1_0.upgrade_created_at,
+        m1_0.upgrade_difference_amount,
+        m1_0.upgraded_from_membership_id 
+    from
+        carwash_membership m1_0 
+    where
+        m1_0.phone=? 
+        and m1_0.status=? 
+    order by
+        m1_0.updated_at desc 
+    fetch
+        first ? rows only
+Hibernate: 
+    select
+        m1_0.id,
+        m1_0.created_at,
+        m1_0.discount_end_date,
+        m1_0.discount_percent,
+        m1_0.discount_start_date,
+        m1_0.end_date,
+        m1_0.free_foam_remaining,
+        m1_0.free_premium_remaining,
+        m1_0.free_used1,
+        m1_0.free_used2,
+        m1_0.free_used3,
+        m1_0.is_upgrade,
+        m1_0.membership_id,
+        m1_0.phone,
+        m1_0.plan_code,
+        m1_0.plan_name,
+        m1_0.previous_plan_code,
+        m1_0.price,
+        m1_0.start_date,
+        m1_0.status,
+        m1_0.transaction_id,
+        m1_0.updated_at,
+        m1_0.upgrade_created_at,
+        m1_0.upgrade_difference_amount,
+        m1_0.upgraded_from_membership_id 
+    from
+        carwash_membership m1_0 
+    where
+        m1_0.phone=?
+Hibernate: 
+    select
+        m1_0.id,
+        m1_0.created_at,
+        m1_0.discount_end_date,
+        m1_0.discount_percent,
+        m1_0.discount_start_date,
+        m1_0.end_date,
+        m1_0.free_foam_remaining,
+        m1_0.free_premium_remaining,
+        m1_0.free_used1,
+        m1_0.free_used2,
+        m1_0.free_used3,
+        m1_0.is_upgrade,
+        m1_0.membership_id,
+        m1_0.phone,
+        m1_0.plan_code,
+        m1_0.plan_name,
+        m1_0.previous_plan_code,
+        m1_0.price,
+        m1_0.start_date,
+        m1_0.status,
+        m1_0.transaction_id,
+        m1_0.updated_at,
+        m1_0.upgrade_created_at,
+        m1_0.upgrade_difference_amount,
+        m1_0.upgraded_from_membership_id 
+    from
+        carwash_membership m1_0 
+    where
+        m1_0.phone=?
+Hibernate: 
+    select
+        m1_0.id,
+        m1_0.created_at,
+        m1_0.discount_end_date,
+        m1_0.discount_percent,
+        m1_0.discount_start_date,
+        m1_0.end_date,
+        m1_0.free_foam_remaining,
+        m1_0.free_premium_remaining,
+        m1_0.free_used1,
+        m1_0.free_used2,
+        m1_0.free_used3,
+        m1_0.is_upgrade,
+        m1_0.membership_id,
+        m1_0.phone,
+        m1_0.plan_code,
+        m1_0.plan_name,
+        m1_0.previous_plan_code,
+        m1_0.price,
+        m1_0.start_date,
+        m1_0.status,
+        m1_0.transaction_id,
+        m1_0.updated_at,
+        m1_0.upgrade_created_at,
+        m1_0.upgrade_difference_amount,
+        m1_0.upgraded_from_membership_id 
+    from
+        carwash_membership m1_0 
+    where
+        m1_0.phone=? 
+        and m1_0.status=? 
+    order by
+        m1_0.updated_at desc 
+    fetch
+        first ? rows only
+Hibernate: 
+    select
+        m1_0.id,
+        m1_0.created_at,
+        m1_0.discount_end_date,
+        m1_0.discount_percent,
+        m1_0.discount_start_date,
+        m1_0.end_date,
+        m1_0.free_foam_remaining,
+        m1_0.free_premium_remaining,
+        m1_0.free_used1,
+        m1_0.free_used2,
+        m1_0.free_used3,
+        m1_0.is_upgrade,
+        m1_0.membership_id,
+        m1_0.phone,
+        m1_0.plan_code,
+        m1_0.plan_name,
+        m1_0.previous_plan_code,
+        m1_0.price,
+        m1_0.start_date,
+        m1_0.status,
+        m1_0.transaction_id,
+        m1_0.updated_at,
+        m1_0.upgrade_created_at,
+        m1_0.upgrade_difference_amount,
+        m1_0.upgraded_from_membership_id 
+    from
+        carwash_membership m1_0 
+    where
+        m1_0.phone=? 
+        and m1_0.status=? 
+    order by
+        m1_0.updated_at desc 
+    fetch
+        first ? rows only
+Hibernate: 
+    select
+        dpb1_0.id,
+        dpb1_0.car_type,
+        dpb1_0.created_at,
+        dpb1_0.discount_percent_applied,
+        dpb1_0.left_washes,
+        dpb1_0.original_amount,
+        dpb1_0.payable_amount,
+        dpb1_0.payment_status,
+        dpb1_0.phone,
+        dpb1_0.plan_type_code,
+        dpb1_0.refund_amount,
+        dpb1_0.refund_initiated_at,
+        dpb1_0.refund_status,
+        dpb1_0.service_type,
+        dpb1_0.total_washes,
+        dpb1_0.transaction_id,
+        dpb1_0.used_washes,
+        dpb1_0.wash_type,
+        dpb1_0.water_provided 
+    from
+        carwash_deal_price_booking dpb1_0 
+    where
+        dpb1_0.phone=? 
+    order by
+        dpb1_0.created_at desc
+Hibernate: 
+    select
+        dpb1_0.id,
+        dpb1_0.car_type,
+        dpb1_0.created_at,
+        dpb1_0.discount_percent_applied,
+        dpb1_0.left_washes,
+        dpb1_0.original_amount,
+        dpb1_0.payable_amount,
+        dpb1_0.payment_status,
+        dpb1_0.phone,
+        dpb1_0.plan_type_code,
+        dpb1_0.refund_amount,
+        dpb1_0.refund_initiated_at,
+        dpb1_0.refund_status,
+        dpb1_0.service_type,
+        dpb1_0.total_washes,
+        dpb1_0.transaction_id,
+        dpb1_0.used_washes,
+        dpb1_0.wash_type,
+        dpb1_0.water_provided 
+    from
+        carwash_deal_price_booking dpb1_0 
+    where
+        dpb1_0.phone=? 
+    order by
+        dpb1_0.created_at desc
+Hibernate: 
+    select
+        dpb1_0.id,
+        dpb1_0.car_type,
+        dpb1_0.created_at,
+        dpb1_0.discount_percent_applied,
+        dpb1_0.left_washes,
+        dpb1_0.original_amount,
+        dpb1_0.payable_amount,
+        dpb1_0.payment_status,
+        dpb1_0.phone,
+        dpb1_0.plan_type_code,
+        dpb1_0.refund_amount,
+        dpb1_0.refund_initiated_at,
+        dpb1_0.refund_status,
+        dpb1_0.service_type,
+        dpb1_0.total_washes,
+        dpb1_0.transaction_id,
+        dpb1_0.used_washes,
+        dpb1_0.wash_type,
+        dpb1_0.water_provided 
+    from
+        carwash_deal_price_booking dpb1_0 
+    where
+        dpb1_0.phone=? 
+    order by
+        dpb1_0.created_at desc
+Hibernate: 
+    select
+        dpb1_0.id,
+        dpb1_0.car_type,
+        dpb1_0.created_at,
+        dpb1_0.discount_percent_applied,
+        dpb1_0.left_washes,
+        dpb1_0.original_amount,
+        dpb1_0.payable_amount,
+        dpb1_0.payment_status,
+        dpb1_0.phone,
+        dpb1_0.plan_type_code,
+        dpb1_0.refund_amount,
+        dpb1_0.refund_initiated_at,
+        dpb1_0.refund_status,
+        dpb1_0.service_type,
+        dpb1_0.total_washes,
+        dpb1_0.transaction_id,
+        dpb1_0.used_washes,
+        dpb1_0.wash_type,
+        dpb1_0.water_provided 
+    from
+        carwash_deal_price_booking dpb1_0 
+    where
+        dpb1_0.phone=? 
+    order by
+        dpb1_0.created_at desc
+Hibernate: 
+    select
+        dpb1_0.id,
+        dpb1_0.car_type,
+        dpb1_0.created_at,
+        dpb1_0.discount_percent_applied,
+        dpb1_0.left_washes,
+        dpb1_0.original_amount,
+        dpb1_0.payable_amount,
+        dpb1_0.payment_status,
+        dpb1_0.phone,
+        dpb1_0.plan_type_code,
+        dpb1_0.refund_amount,
+        dpb1_0.refund_initiated_at,
+        dpb1_0.refund_status,
+        dpb1_0.service_type,
+        dpb1_0.total_washes,
+        dpb1_0.transaction_id,
+        dpb1_0.used_washes,
+        dpb1_0.wash_type,
+        dpb1_0.water_provided 
+    from
+        carwash_deal_price_booking dpb1_0 
+    where
+        dpb1_0.phone=? 
+    order by
+        dpb1_0.created_at desc
+Hibernate: 
+    select
+        m1_0.id,
+        m1_0.created_at,
+        m1_0.discount_end_date,
+        m1_0.discount_percent,
+        m1_0.discount_start_date,
+        m1_0.end_date,
+        m1_0.free_foam_remaining,
+        m1_0.free_premium_remaining,
+        m1_0.free_used1,
+        m1_0.free_used2,
+        m1_0.free_used3,
+        m1_0.is_upgrade,
+        m1_0.membership_id,
+        m1_0.phone,
+        m1_0.plan_code,
+        m1_0.plan_name,
+        m1_0.previous_plan_code,
+        m1_0.price,
+        m1_0.start_date,
+        m1_0.status,
+        m1_0.transaction_id,
+        m1_0.updated_at,
+        m1_0.upgrade_created_at,
+        m1_0.upgrade_difference_amount,
+        m1_0.upgraded_from_membership_id 
+    from
+        carwash_membership m1_0 
+    where
+        m1_0.phone=? 
+        and m1_0.status=? 
+    order by
+        m1_0.updated_at desc 
+    fetch
+        first ? rows only
+Hibernate: 
+    select
+        m1_0.id,
+        m1_0.created_at,
+        m1_0.discount_end_date,
+        m1_0.discount_percent,
+        m1_0.discount_start_date,
+        m1_0.end_date,
+        m1_0.free_foam_remaining,
+        m1_0.free_premium_remaining,
+        m1_0.free_used1,
+        m1_0.free_used2,
+        m1_0.free_used3,
+        m1_0.is_upgrade,
+        m1_0.membership_id,
+        m1_0.phone,
+        m1_0.plan_code,
+        m1_0.plan_name,
+        m1_0.previous_plan_code,
+        m1_0.price,
+        m1_0.start_date,
+        m1_0.status,
+        m1_0.transaction_id,
+        m1_0.updated_at,
+        m1_0.upgrade_created_at,
+        m1_0.upgrade_difference_amount,
+        m1_0.upgraded_from_membership_id 
+    from
+        carwash_membership m1_0 
+    where
+        m1_0.phone=? 
+        and m1_0.status=? 
+    order by
+        m1_0.updated_at desc 
+    fetch
+        first ? rows only
+Hibernate: 
+    select
+        dpb1_0.id,
+        dpb1_0.car_type,
+        dpb1_0.created_at,
+        dpb1_0.discount_percent_applied,
+        dpb1_0.left_washes,
+        dpb1_0.original_amount,
+        dpb1_0.payable_amount,
+        dpb1_0.payment_status,
+        dpb1_0.phone,
+        dpb1_0.plan_type_code,
+        dpb1_0.refund_amount,
+        dpb1_0.refund_initiated_at,
+        dpb1_0.refund_status,
+        dpb1_0.service_type,
+        dpb1_0.total_washes,
+        dpb1_0.transaction_id,
+        dpb1_0.used_washes,
+        dpb1_0.wash_type,
+        dpb1_0.water_provided 
+    from
+        carwash_deal_price_booking dpb1_0 
+    where
+        dpb1_0.phone=? 
+    order by
+        dpb1_0.created_at desc
+Hibernate: 
+    select
+        dpb1_0.id,
+        dpb1_0.car_type,
+        dpb1_0.created_at,
+        dpb1_0.discount_percent_applied,
+        dpb1_0.left_washes,
+        dpb1_0.original_amount,
+        dpb1_0.payable_amount,
+        dpb1_0.payment_status,
+        dpb1_0.phone,
+        dpb1_0.plan_type_code,
+        dpb1_0.refund_amount,
+        dpb1_0.refund_initiated_at,
+        dpb1_0.refund_status,
+        dpb1_0.service_type,
+        dpb1_0.total_washes,
+        dpb1_0.transaction_id,
+        dpb1_0.used_washes,
+        dpb1_0.wash_type,
+        dpb1_0.water_provided 
+    from
+        carwash_deal_price_booking dpb1_0 
+    where
+        dpb1_0.phone=? 
+    order by
+        dpb1_0.created_at desc
+Hibernate: 
+    select
+        m1_0.id,
+        m1_0.created_at,
+        m1_0.discount_end_date,
+        m1_0.discount_percent,
+        m1_0.discount_start_date,
+        m1_0.end_date,
+        m1_0.free_foam_remaining,
+        m1_0.free_premium_remaining,
+        m1_0.free_used1,
+        m1_0.free_used2,
+        m1_0.free_used3,
+        m1_0.is_upgrade,
+        m1_0.membership_id,
+        m1_0.phone,
+        m1_0.plan_code,
+        m1_0.plan_name,
+        m1_0.previous_plan_code,
+        m1_0.price,
+        m1_0.start_date,
+        m1_0.status,
+        m1_0.transaction_id,
+        m1_0.updated_at,
+        m1_0.upgrade_created_at,
+        m1_0.upgrade_difference_amount,
+        m1_0.upgraded_from_membership_id 
+    from
+        carwash_membership m1_0 
+    where
+        m1_0.phone=? 
+        and m1_0.status=? 
+    order by
+        m1_0.updated_at desc 
+    fetch
+        first ? rows only
+Hibernate: 
+    select
+        m1_0.id,
+        m1_0.created_at,
+        m1_0.discount_end_date,
+        m1_0.discount_percent,
+        m1_0.discount_start_date,
+        m1_0.end_date,
+        m1_0.free_foam_remaining,
+        m1_0.free_premium_remaining,
+        m1_0.free_used1,
+        m1_0.free_used2,
+        m1_0.free_used3,
+        m1_0.is_upgrade,
+        m1_0.membership_id,
+        m1_0.phone,
+        m1_0.plan_code,
+        m1_0.plan_name,
+        m1_0.previous_plan_code,
+        m1_0.price,
+        m1_0.start_date,
+        m1_0.status,
+        m1_0.transaction_id,
+        m1_0.updated_at,
+        m1_0.upgrade_created_at,
+        m1_0.upgrade_difference_amount,
+        m1_0.upgraded_from_membership_id 
+    from
+        carwash_membership m1_0 
+    where
+        m1_0.phone=? 
+        and m1_0.status=? 
+    order by
+        m1_0.updated_at desc 
+    fetch
+        first ? rows only
+Hibernate: 
+    select
+        m1_0.id,
+        m1_0.created_at,
+        m1_0.discount_end_date,
+        m1_0.discount_percent,
+        m1_0.discount_start_date,
+        m1_0.end_date,
+        m1_0.free_foam_remaining,
+        m1_0.free_premium_remaining,
+        m1_0.free_used1,
+        m1_0.free_used2,
+        m1_0.free_used3,
+        m1_0.is_upgrade,
+        m1_0.membership_id,
+        m1_0.phone,
+        m1_0.plan_code,
+        m1_0.plan_name,
+        m1_0.previous_plan_code,
+        m1_0.price,
+        m1_0.start_date,
+        m1_0.status,
+        m1_0.transaction_id,
+        m1_0.updated_at,
+        m1_0.upgrade_created_at,
+        m1_0.upgrade_difference_amount,
+        m1_0.upgraded_from_membership_id 
+    from
+        carwash_membership m1_0 
+    where
+        m1_0.phone=?
+Hibernate: 
+    select
+        m1_0.id,
+        m1_0.created_at,
+        m1_0.discount_end_date,
+        m1_0.discount_percent,
+        m1_0.discount_start_date,
+        m1_0.end_date,
+        m1_0.free_foam_remaining,
+        m1_0.free_premium_remaining,
+        m1_0.free_used1,
+        m1_0.free_used2,
+        m1_0.free_used3,
+        m1_0.is_upgrade,
+        m1_0.membership_id,
+        m1_0.phone,
+        m1_0.plan_code,
+        m1_0.plan_name,
+        m1_0.previous_plan_code,
+        m1_0.price,
+        m1_0.start_date,
+        m1_0.status,
+        m1_0.transaction_id,
+        m1_0.updated_at,
+        m1_0.upgrade_created_at,
+        m1_0.upgrade_difference_amount,
+        m1_0.upgraded_from_membership_id 
+    from
+        carwash_membership m1_0 
+    where
+        m1_0.phone=?
+Hibernate: 
+    select
+        dpb1_0.id,
+        dpb1_0.car_type,
+        dpb1_0.created_at,
+        dpb1_0.discount_percent_applied,
+        dpb1_0.left_washes,
+        dpb1_0.original_amount,
+        dpb1_0.payable_amount,
+        dpb1_0.payment_status,
+        dpb1_0.phone,
+        dpb1_0.plan_type_code,
+        dpb1_0.refund_amount,
+        dpb1_0.refund_initiated_at,
+        dpb1_0.refund_status,
+        dpb1_0.service_type,
+        dpb1_0.total_washes,
+        dpb1_0.transaction_id,
+        dpb1_0.used_washes,
+        dpb1_0.wash_type,
+        dpb1_0.water_provided 
+    from
+        carwash_deal_price_booking dpb1_0 
+    where
+        dpb1_0.phone=? 
+    order by
+        dpb1_0.created_at desc
+Hibernate: 
+    select
+        dpb1_0.id,
+        dpb1_0.car_type,
+        dpb1_0.created_at,
+        dpb1_0.discount_percent_applied,
+        dpb1_0.left_washes,
+        dpb1_0.original_amount,
+        dpb1_0.payable_amount,
+        dpb1_0.payment_status,
+        dpb1_0.phone,
+        dpb1_0.plan_type_code,
+        dpb1_0.refund_amount,
+        dpb1_0.refund_initiated_at,
+        dpb1_0.refund_status,
+        dpb1_0.service_type,
+        dpb1_0.total_washes,
+        dpb1_0.transaction_id,
+        dpb1_0.used_washes,
+        dpb1_0.wash_type,
+        dpb1_0.water_provided 
+    from
+        carwash_deal_price_booking dpb1_0 
+    where
+        dpb1_0.phone=? 
+    order by
+        dpb1_0.created_at desc
+Hibernate: 
+    select
+        dpb1_0.id,
+        dpb1_0.car_type,
+        dpb1_0.created_at,
+        dpb1_0.discount_percent_applied,
+        dpb1_0.left_washes,
+        dpb1_0.original_amount,
+        dpb1_0.payable_amount,
+        dpb1_0.payment_status,
+        dpb1_0.phone,
+        dpb1_0.plan_type_code,
+        dpb1_0.refund_amount,
+        dpb1_0.refund_initiated_at,
+        dpb1_0.refund_status,
+        dpb1_0.service_type,
+        dpb1_0.total_washes,
+        dpb1_0.transaction_id,
+        dpb1_0.used_washes,
+        dpb1_0.wash_type,
+        dpb1_0.water_provided 
+    from
+        carwash_deal_price_booking dpb1_0 
+    where
+        dpb1_0.phone=? 
+    order by
+        dpb1_0.created_at desc
+Hibernate: 
+    select
+        dpb1_0.id,
+        dpb1_0.car_type,
+        dpb1_0.created_at,
+        dpb1_0.discount_percent_applied,
+        dpb1_0.left_washes,
+        dpb1_0.original_amount,
+        dpb1_0.payable_amount,
+        dpb1_0.payment_status,
+        dpb1_0.phone,
+        dpb1_0.plan_type_code,
+        dpb1_0.refund_amount,
+        dpb1_0.refund_initiated_at,
+        dpb1_0.refund_status,
+        dpb1_0.service_type,
+        dpb1_0.total_washes,
+        dpb1_0.transaction_id,
+        dpb1_0.used_washes,
+        dpb1_0.wash_type,
+        dpb1_0.water_provided 
+    from
+        carwash_deal_price_booking dpb1_0 
+    where
+        dpb1_0.phone=? 
+    order by
+        dpb1_0.created_at desc
+Hibernate: 
+    select
+        dpb1_0.id,
+        dpb1_0.car_type,
+        dpb1_0.created_at,
+        dpb1_0.discount_percent_applied,
+        dpb1_0.left_washes,
+        dpb1_0.original_amount,
+        dpb1_0.payable_amount,
+        dpb1_0.payment_status,
+        dpb1_0.phone,
+        dpb1_0.plan_type_code,
+        dpb1_0.refund_amount,
+        dpb1_0.refund_initiated_at,
+        dpb1_0.refund_status,
+        dpb1_0.service_type,
+        dpb1_0.total_washes,
+        dpb1_0.transaction_id,
+        dpb1_0.used_washes,
+        dpb1_0.wash_type,
+        dpb1_0.water_provided 
+    from
+        carwash_deal_price_booking dpb1_0 
+    where
+        dpb1_0.phone=? 
+    order by
+        dpb1_0.created_at desc
+Hibernate: 
+    select
+        dpb1_0.id,
+        dpb1_0.car_type,
+        dpb1_0.created_at,
+        dpb1_0.discount_percent_applied,
+        dpb1_0.left_washes,
+        dpb1_0.original_amount,
+        dpb1_0.payable_amount,
+        dpb1_0.payment_status,
+        dpb1_0.phone,
+        dpb1_0.plan_type_code,
+        dpb1_0.refund_amount,
+        dpb1_0.refund_initiated_at,
+        dpb1_0.refund_status,
+        dpb1_0.service_type,
+        dpb1_0.total_washes,
+        dpb1_0.transaction_id,
+        dpb1_0.used_washes,
+        dpb1_0.wash_type,
+        dpb1_0.water_provided 
+    from
+        carwash_deal_price_booking dpb1_0 
+    where
+        dpb1_0.phone=? 
+    order by
+        dpb1_0.created_at desc
+Hibernate: 
+    select
+        m1_0.id,
+        m1_0.created_at,
+        m1_0.discount_end_date,
+        m1_0.discount_percent,
+        m1_0.discount_start_date,
+        m1_0.end_date,
+        m1_0.free_foam_remaining,
+        m1_0.free_premium_remaining,
+        m1_0.free_used1,
+        m1_0.free_used2,
+        m1_0.free_used3,
+        m1_0.is_upgrade,
+        m1_0.membership_id,
+        m1_0.phone,
+        m1_0.plan_code,
+        m1_0.plan_name,
+        m1_0.previous_plan_code,
+        m1_0.price,
+        m1_0.start_date,
+        m1_0.status,
+        m1_0.transaction_id,
+        m1_0.updated_at,
+        m1_0.upgrade_created_at,
+        m1_0.upgrade_difference_amount,
+        m1_0.upgraded_from_membership_id 
+    from
+        carwash_membership m1_0 
+    where
+        m1_0.phone=? 
+        and m1_0.status=? 
+    order by
+        m1_0.updated_at desc 
+    fetch
+        first ? rows only
+Hibernate: 
+    select
+        m1_0.id,
+        m1_0.created_at,
+        m1_0.discount_end_date,
+        m1_0.discount_percent,
+        m1_0.discount_start_date,
+        m1_0.end_date,
+        m1_0.free_foam_remaining,
+        m1_0.free_premium_remaining,
+        m1_0.free_used1,
+        m1_0.free_used2,
+        m1_0.free_used3,
+        m1_0.is_upgrade,
+        m1_0.membership_id,
+        m1_0.phone,
+        m1_0.plan_code,
+        m1_0.plan_name,
+        m1_0.previous_plan_code,
+        m1_0.price,
+        m1_0.start_date,
+        m1_0.status,
+        m1_0.transaction_id,
+        m1_0.updated_at,
+        m1_0.upgrade_created_at,
+        m1_0.upgrade_difference_amount,
+        m1_0.upgraded_from_membership_id 
+    from
+        carwash_membership m1_0 
+    where
+        m1_0.phone=? 
+        and m1_0.status=? 
+    order by
+        m1_0.updated_at desc 
+    fetch
+        first ? rows only
+Hibernate: 
+    select
+        m1_0.id,
+        m1_0.created_at,
+        m1_0.discount_end_date,
+        m1_0.discount_percent,
+        m1_0.discount_start_date,
+        m1_0.end_date,
+        m1_0.free_foam_remaining,
+        m1_0.free_premium_remaining,
+        m1_0.free_used1,
+        m1_0.free_used2,
+        m1_0.free_used3,
+        m1_0.is_upgrade,
+        m1_0.membership_id,
+        m1_0.phone,
+        m1_0.plan_code,
+        m1_0.plan_name,
+        m1_0.previous_plan_code,
+        m1_0.price,
+        m1_0.start_date,
+        m1_0.status,
+        m1_0.transaction_id,
+        m1_0.updated_at,
+        m1_0.upgrade_created_at,
+        m1_0.upgrade_difference_amount,
+        m1_0.upgraded_from_membership_id 
+    from
+        carwash_membership m1_0 
+    where
+        m1_0.phone=? 
+        and m1_0.status=? 
+    order by
+        m1_0.updated_at desc 
+    fetch
+        first ? rows only
+Hibernate: 
+    select
+        dpb1_0.id,
+        dpb1_0.car_type,
+        dpb1_0.created_at,
+        dpb1_0.discount_percent_applied,
+        dpb1_0.left_washes,
+        dpb1_0.original_amount,
+        dpb1_0.payable_amount,
+        dpb1_0.payment_status,
+        dpb1_0.phone,
+        dpb1_0.plan_type_code,
+        dpb1_0.refund_amount,
+        dpb1_0.refund_initiated_at,
+        dpb1_0.refund_status,
+        dpb1_0.service_type,
+        dpb1_0.total_washes,
+        dpb1_0.transaction_id,
+        dpb1_0.used_washes,
+        dpb1_0.wash_type,
+        dpb1_0.water_provided 
+    from
+        carwash_deal_price_booking dpb1_0 
+    where
+        dpb1_0.phone=? 
+    order by
+        dpb1_0.created_at desc
+Hibernate: 
+    select
+        dpb1_0.id,
+        dpb1_0.car_type,
+        dpb1_0.created_at,
+        dpb1_0.discount_percent_applied,
+        dpb1_0.left_washes,
+        dpb1_0.original_amount,
+        dpb1_0.payable_amount,
+        dpb1_0.payment_status,
+        dpb1_0.phone,
+        dpb1_0.plan_type_code,
+        dpb1_0.refund_amount,
+        dpb1_0.refund_initiated_at,
+        dpb1_0.refund_status,
+        dpb1_0.service_type,
+        dpb1_0.total_washes,
+        dpb1_0.transaction_id,
+        dpb1_0.used_washes,
+        dpb1_0.wash_type,
+        dpb1_0.water_provided 
+    from
+        carwash_deal_price_booking dpb1_0 
+    where
+        dpb1_0.phone=? 
+    order by
+        dpb1_0.created_at desc
+Hibernate: 
+    select
+        m1_0.id,
+        m1_0.created_at,
+        m1_0.discount_end_date,
+        m1_0.discount_percent,
+        m1_0.discount_start_date,
+        m1_0.end_date,
+        m1_0.free_foam_remaining,
+        m1_0.free_premium_remaining,
+        m1_0.free_used1,
+        m1_0.free_used2,
+        m1_0.free_used3,
+        m1_0.is_upgrade,
+        m1_0.membership_id,
+        m1_0.phone,
+        m1_0.plan_code,
+        m1_0.plan_name,
+        m1_0.previous_plan_code,
+        m1_0.price,
+        m1_0.start_date,
+        m1_0.status,
+        m1_0.transaction_id,
+        m1_0.updated_at,
+        m1_0.upgrade_created_at,
+        m1_0.upgrade_difference_amount,
+        m1_0.upgraded_from_membership_id 
+    from
+        carwash_membership m1_0 
+    where
+        m1_0.phone=? 
+        and m1_0.status=? 
+    order by
+        m1_0.updated_at desc 
+    fetch
+        first ? rows only
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  46:30 min
+[INFO] Finished at: 2026-03-02T01:49:41+05:30
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:3.2.1:run (default-cli) on project membership: Process terminated with exit code: -1 -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException

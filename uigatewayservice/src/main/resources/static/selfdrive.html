@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Self Drive | ASP Care</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #e0f2fe, #eef2ff 40%, #f9fafb 100%);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      color: #0f172a;
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 1080px;
+      margin: 32px 20px;
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow:
+        0 20px 60px rgba(15, 23, 42, 0.18),
+        0 0 0 1px rgba(148, 163, 184, 0.25);
+      overflow: hidden;
+      border: 1px solid rgba(226,232,240,0.9);
+    }
+
+    .shell-header {
+      padding: 20px 24px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      background: radial-gradient(circle at top left, #bfdbfe, #2563eb 45%, #1d4ed8 70%, #0f172a 100%);
+      color: #e5e7eb;
+    }
+
+    .shell-header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .shell-logo-pill {
+      width: 46px;
+      height: 46px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: #020617;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 0 2px rgba(191,219,254,0.8);
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .shell-logo-pill img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .shell-title {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .shell-title h1 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      color: #f9fafb;
+    }
+
+    .shell-title span {
+      font-size: 13px;
+      opacity: 0.92;
+      color: #dbeafe;
+    }
+
+    .shell-header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .header-tag {
+      font-size: 11px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.45);
+      border: 1px solid rgba(191,219,254,0.9);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .header-tag span {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 0 rgba(34,197,94,0.7);
+      animation: pulse 1.4s infinite;
+    }
+
+    @keyframes pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(34,197,94,0.7); }
+      70%  { box-shadow: 0 0 0 8px rgba(34,197,94,0); }
+      100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+    }
+
+    .btn {
+      padding: 7px 14px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+      transition: transform 0.08s ease, box-shadow 0.12s ease, background 0.12s ease;
+    }
+
+    .btn-primary {
+      background: #f97316;
+      color: #111827;
+      box-shadow: 0 10px 24px rgba(248,150,68,0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      background: #ea580c;
+      box-shadow: 0 14px 30px rgba(248,150,68,0.55);
+    }
+
+    .btn-main {
+      width: 100%;
+      justify-content: center;
+      margin-top: 12px;
+      background: #2563eb;
+      color: #f9fafb;
+      box-shadow: 0 10px 24px rgba(37,99,235,0.35);
+    }
+
+    .btn-main:hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+      box-shadow: 0 14px 32px rgba(37,99,235,0.45);
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .shell-body {
+      padding: 20px 22px 22px;
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2.2fr);
+      gap: 18px;
+      background: linear-gradient(to bottom, #ffffff, #f9fafb);
+    }
+
+    @media (max-width: 900px) {
+      .shell-body { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: #f9fafb;
+      padding: 18px 18px 18px;
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(15,23,42,0.06);
+      border: 1px solid rgba(229,231,235,1);
+    }
+
+    h2 { margin-top: 0; margin-bottom: 4px; font-size: 18px; color: #0f172a; }
+    .subtitle { font-size: 13px; color: #6b7280; margin-bottom: 8px; }
+    #phoneLabel { font-size: 12px; color: #4b5563; margin-bottom: 8px; }
+
+    label { font-size: 12px; color: #111827; display: block; margin-bottom: 3px; }
+
+    input, select {
+      width: 100%;
+      padding: 7px 9px;
+      margin: 2px 0 6px;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      font-size: 13px;
+      background: #ffffff;
+      color: #0f172a;
+      outline: none;
+      transition: border-color 0.1s ease, box-shadow 0.1s ease, background 0.1s;
+    }
+
+    input:focus, select:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 1px rgba(37,99,235,0.25);
+      background: #ffffff;
+    }
+
+    .hint { font-size: 11px; color: #6b7280; margin-top: -2px; margin-bottom: 10px; }
+
+    .cars-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+      margin-top: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #e5f0ff;
+      border: 1px solid #bfdbfe;
+    }
+
+    .cars-row span { font-size: 13px; font-weight: 600; }
+
+    .cars-input {
+      width: 64px;
+      text-align: center;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      padding: 6px;
+      background: #ffffff;
+      color: #0f172a;
+      font-size: 13px;
+    }
+
+    .cars-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      border: 1px solid #2563eb;
+      background: #ffffff;
+      color: #1d4ed8;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.1s ease, color 0.1s ease;
+    }
+
+    .cars-btn:hover { background: #2563eb; color: #ffffff; }
+
+    .car-block {
+      border-radius: 14px;
+      border: 1px solid rgba(209,213,219,0.9);
+      padding: 10px 12px 10px;
+      margin-bottom: 10px;
+      background: radial-gradient(circle at top left, #eff6ff, #ffffff);
+    }
+
+    .car-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      color: #111827;
+    }
+
+    .car-title span.badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #0f172a;
+      border: 1px solid #cbd5f5;
+      color: #e5e7eb;
+    }
+
+    .car-error { font-size: 11px; color: #dc2626; margin-bottom: 4px; min-height: 14px; }
+
+    .vehicle-type-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 10px;
+      margin: 4px 0 8px;
+    }
+
+    .vehicle-type-item {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid #bfdbfe;
+      background: #eff6ff;
+      padding: 6px 4px 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+    }
+
+    .vehicle-type-item:hover { background: #dbeafe; }
+
+    .vehicle-type-item.selected {
+      background: #2563eb;
+      border-color: #1d4ed8;
+      box-shadow: 0 0 0 1px rgba(37,99,235,0.4);
+    }
+
+    .vehicle-type-item.selected .vehicle-name { color: #ffffff; }
+    .vehicle-type-item.selected .vehicle-icon-wrap { background: #1d4ed8; }
+
+    .vehicle-icon-wrap {
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 4px;
+      box-shadow: 0 4px 10px rgba(15,23,42,0.15);
+    }
+
+    .vehicle-icon-wrap img { width: 32px; height: 32px; object-fit: contain; }
+    .vehicle-name { font-size: 11px; font-weight: 600; color: #1f2937; }
+
+    .service-hint { font-size: 11px; color: #6b7280; margin-top: -4px; margin-bottom: 6px; }
+
+    /* Rate row (only visible after Vehicle+Wash selected) */
+    .rate-row {
+      margin-top: 6px;
+      padding: 9px 10px;
+      border-radius: 12px;
+      border: 1px dashed rgba(148,163,184,0.8);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      background: #ffffff;
+    }
+
+    .rate-row strong { font-size: 14px; }
+
+    .centre-header { font-size: 15px; font-weight: 600; margin-bottom: 4px; color: #0f172a; }
+    .centre-subtitle { font-size: 12px; color: #6b7280; margin-bottom: 10px; }
+
+    .centre-pill {
+      font-size: 12px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.7);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+      background: #f3f4ff;
+      color: #111827;
+    }
+
+    .centre-list {
+      max-height: 340px;
+      overflow-y: auto;
+      border-radius: 14px;
+      border: 1px solid rgba(209,213,219,1);
+      background: #ffffff;
+      padding: 8px;
+      font-size: 12px;
+    }
+
+    .centre-card {
+      border-radius: 14px;
+      padding: 10px 10px 9px;
+      margin-bottom: 8px;
+      background: radial-gradient(circle at top left, #e0f2fe, #ffffff);
+      border: 1px solid rgba(209,213,219,1);
+      transition: border-color 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
+    }
+
+    .centre-card.selected {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 1px rgba(37,99,235,0.35);
+      background: radial-gradient(circle at top left, #bfdbfe, #ffffff);
+    }
+
+    .centre-card-header { display: flex; align-items: flex-start; gap: 8px; }
+    .centre-card input[type="checkbox"] { margin-top: 4px; accent-color: #2563eb; cursor: pointer; }
+
+    .centre-name { font-weight: 600; font-size: 13px; color: #111827; }
+    .centre-address { color: #6b7280; font-size: 11px; margin-top: 2px; }
+
+    .centre-schedule {
+      margin-top: 10px;
+      border-radius: 12px;
+      padding: 10px;
+      background: #f9fafb;
+      border: 1px dashed rgba(209,213,219,1);
+    }
+
+    .centre-schedule-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 12px; }
+    .timeslot-group { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 4px; }
+
+    .slot-btn {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid #bfdbfe;
+      background: #eff6ff;
+      color: #1f2937;
+      font-size: 12px;
+      cursor: pointer;
+      min-width: 90px;
+      text-align: center;
+      transition: background 0.1s ease, color 0.1s ease, border-color 0.1s ease;
+    }
+
+    .slot-btn.selected { background: #2563eb; color: #ffffff; border-color: #1d4ed8; }
+
+    .slot-btn.booked {
+      border-color: #d1d5db;
+      background: #e5e7eb;
+      color: #9ca3af;
+      cursor: not-allowed;
+      opacity: 0.75;
+    }
+
+    .slot-hint { font-size: 11px; color: #6b7280; margin-top: 4px; }
+    .bottom-review-row { grid-column: 1 / -1; margin-top: 4px; }
+
+    /* Membership block (like home.html) */
+    .membership-card {
+      margin-top: 12px;
+      border-radius: 16px;
+      border: 1px solid rgba(203,213,225,0.95);
+      background: #ffffff;
+      padding: 12px;
+      box-shadow: 0 10px 24px rgba(15,23,42,0.06);
+    }
+    .membership-top {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      margin-bottom: 8px;
+    }
+    .membership-title {
+      display: flex; align-items: center; gap: 8px;
+      font-weight: 800; color: #0f172a;
+    }
+    .status-pill {
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      border: 1px solid rgba(16,185,129,0.35);
+      background: rgba(16,185,129,0.12);
+      color: #065f46;
+      white-space: nowrap;
+    }
+    .status-pill.inactive {
+      border-color: rgba(148,163,184,0.5);
+      background: rgba(148,163,184,0.18);
+      color: #334155;
+    }
+    .membership-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .mrow {
+      border: 1px solid rgba(226,232,240,1);
+      border-radius: 12px;
+      padding: 8px 10px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      background: #f8fafc;
+      font-size: 13px;
+    }
+    .mrow span { color: #64748b; }
+    .mrow strong { color: #0f172a; }
+    .membership-foot {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    @media (max-width: 640px) {
+      .shell { margin: 20px 12px; }
+      .shell-header { flex-direction: column; align-items: flex-start; }
+      .shell-header-right { width: 100%; justify-content: space-between; }
+      .vehicle-type-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .membership-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+<div class="shell">
+  <div class="shell-header">
+    <div class="shell-header-left">
+      <div class="shell-logo-pill" onclick="goBack()" title="Back to dashboard">
+        <img src="images/logo.png" alt="ASP Car Care">
+      </div>
+      <div class="shell-title">
+        <h1>Self Drive – Car Wash</h1>
+        <span>Drop your car at a nearby centre and pick it up shining.</span>
+      </div>
+    </div>
+    <div class="shell-header-right">
+      <div class="header-tag">
+        <span></span>
+        Self Drive · Live slots
+      </div>
+      <button class="btn btn-primary" onclick="goBack()">← Back to Dashboard</button>
+    </div>
+  </div>
+
+  <div class="shell-body">
+    <div class="card">
+      <h2>Booking Details</h2>
+      <div class="subtitle">Pick area & centre, then add vehicles and select wash type.</div>
+      <p id="phoneLabel"></p>
+
+      <!-- Membership block like home.html -->
+      <div id="membershipBlock" class="membership-card" style="display:none;">
+        <div class="membership-top">
+          <div class="membership-title">🎟️ Membership</div>
+          <div id="membershipStatusPill" class="status-pill inactive">INACTIVE</div>
+        </div>
+        <div class="membership-grid">
+          <div class="mrow"><span>Plan</span><strong id="mPlan">—</strong></div>
+          <div class="mrow"><span>Discount</span><strong id="mDiscount">0%</strong></div>
+          <div class="mrow"><span>Free Foam</span><strong id="mFreeFoam">0</strong></div>
+          <div class="mrow"><span>Free Premium</span><strong id="mFreePremium">0</strong></div>
+          <div class="mrow"><span>Valid until</span><strong id="mValidUntil">—</strong></div>
+          <div class="mrow"><span>Txn Id</span><strong id="mTxnId">—</strong></div>
+        </div>
+        <div class="membership-foot">Membership is ACTIVE. Free washes apply first, then discounts (as per plan).</div>
+      </div>
+
+      <div class="cars-row">
+        <span>Total Cars</span>
+        <button type="button" class="cars-btn" onclick="changeCarCount(-1)">−</button>
+        <input id="carCount" class="cars-input" type="number" value="1" min="1" max="10" readonly>
+        <button type="button" class="cars-btn" onclick="changeCarCount(1)">+</button>
+      </div>
+
+      <div class="hint" id="centreHint">
+        Please select Area & Centre first – slots are per centre.
+      </div>
+
+      <div id="carDetailsContainer"></div>
+
+      <!-- Bill breakdown -->
+      <div id="billBox" style="margin-top:12px;border:1px solid #e5e7eb;background:#fff;border-radius:14px;padding:12px;">
+        <div style="display:flex;justify-content:space-between;margin:4px 0;">
+          <span style="color:#6b7280;">Base total</span>
+          <strong id="baseTotalLabel">₹0</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin:4px 0;">
+          <span style="color:#6b7280;">Free booking applied</span>
+          <strong id="freeAppliedLabel" style="color:#16a34a;">-₹0</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin:4px 0;">
+          <span style="color:#6b7280;">Discount applied</span>
+          <strong id="discountAppliedLabel" style="color:#16a34a;">-₹0</strong>
+        </div>
+        <div style="height:1px;background:#e5e7eb;margin:10px 0;"></div>
+        <div style="display:flex;justify-content:space-between;margin:4px 0;">
+          <span style="font-weight:800;">Payable</span>
+          <strong id="payableLabel" style="color:#ea580c;font-size:16px;">₹0</strong>
+        </div>
+        <div class="hint" style="margin:6px 0 0;">
+          Tip: Price shows only after selecting <b>Vehicle Type</b> + <b>Wash Type</b>.
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="centre-header">Select Area & Service Centre</div>
+      <div class="centre-subtitle">
+        Slots will be validated for the selected centre only (Self Drive).
+      </div>
+
+      <div class="centre-search-row">
+        <label for="areaSelect">Area</label>
+        <select id="areaSelect" onchange="onAreaChange()">
+          <option value="">-- Select Area --</option>
+        </select>
+      </div>
+
+      <div id="selectedCentrePill" class="centre-pill" style="display:none;">
+        <span>Selected:</span>
+        <strong id="selectedCentreNamePill"></strong>
+      </div>
+
+      <div id="centreList" class="centre-list">
+        <div style="font-size:12px;color:#6b7280;">Select an area to view centres.</div>
+      </div>
+    </div>
+
+    <div class="bottom-review-row">
+      <button class="btn btn-main" onclick="submitBooking()">Review Booking & Continue</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ✅ Gateway paths
+  const API_BOOKINGS     = "/bookings";
+  const API_CENTRES      = "/centres";
+  const API_MEMBERSHIPS  = "/memberships";
+  const API_RATES        = "/rates";
+  const SERVICE_TYPE     = "SELF_DRIVE";
+
+  const TIME_SLOTS = [
+    "08:00-09:00","09:00-10:00","10:00-11:00","11:00-12:00","12:00-13:00",
+    "13:00-14:00","14:00-15:00","15:00-16:00","16:00-17:00","17:00-18:00","18:00-19:00"
+  ];
+
+  const WASH_LEVELS = [
+    { value: "BASIC",   label: "Basic Wash (BASIC)" },
+    { value: "FOAM",    label: "Foam Wash (FOAM)" },
+    { value: "PREMIUM", label: "Premium Wash (PREMIUM)" }
+  ];
+
+  const CAR_TYPE_IMAGES = {
+    "Hatchback": "images/hatchback-car.png",
+    "Sedan":     "images/sedan-car.png",
+    "SUV":       "images/suv.png",
+    "MPV":       "images/car.png",
+    "Pickup":    "images/pickup-truck.png",
+    "Bike":      "images/motorbike.png"
+  };
+
+  function toVehicleEnum(uiName) {
+    if (!uiName) return "";
+    const s = uiName.trim().toUpperCase();
+    if (s === "HATCHBACK") return "HATCHBACK";
+    if (s === "SEDAN") return "SEDAN";
+    if (s === "SUV") return "SUV";
+    if (s === "MPV") return "MPV";
+    if (s === "PICKUP" || s === "PICKUP TRUCK") return "PICKUP";
+    if (s === "BIKE") return "BIKE";
+    // UI names in your page are Title Case (Hatchback/Sedan/...)
+    if (uiName === "Hatchback") return "HATCHBACK";
+    if (uiName === "Sedan") return "SEDAN";
+    if (uiName === "SUV") return "SUV";
+    if (uiName === "MPV") return "MPV";
+    if (uiName === "Pickup") return "PICKUP";
+    if (uiName === "Bike") return "BIKE";
+    return s;
+  }
+
+  // ✅ AUTH (JWT)
+  function readJwt() {
+    const t = (localStorage.getItem("jwt") || "").trim();
+    if (!t || t === "null" || t === "undefined") return "";
+    return t;
+  }
+
+  const phone = (localStorage.getItem("phone") || "").trim();
+  const jwt   = readJwt();
+
+  if (!phone || !jwt) {
+    localStorage.removeItem("jwt");
+    window.location.href = "/SignupLogin?mode=login";
+  }
+
+  document.getElementById("phoneLabel").textContent = "Phone: " + phone;
+
+  function authHeaders(extra) {
+    const h = Object.assign({}, extra || {});
+    if (jwt) h["Authorization"] = "Bearer " + jwt;
+    return h;
+  }
+
+  // ✅ Debug helpers (to see real error)
+  async function readTextSafe(res) {
+    try { return await res.text(); } catch { return ""; }
+  }
+
+  async function debugHttpError(label, url, res) {
+    const body = await readTextSafe(res);
+    console.error(`[${label}] FAILED`, {
+      url,
+      status: res.status,
+      statusText: res.statusText,
+      body: body
+    });
+    return body;
+  }
+
+  const carCountInput       = document.getElementById("carCount");
+  const carDetailsContainer = document.getElementById("carDetailsContainer");
+  const centreListEl        = document.getElementById("centreList");
+  const areaSelectEl        = document.getElementById("areaSelect");
+  const centreHintEl        = document.getElementById("centreHint");
+  const selectedCentrePill  = document.getElementById("selectedCentrePill");
+  const selectedCentreNamePill = document.getElementById("selectedCentreNamePill");
+
+  // ✅ Bill UI
+  const baseTotalLabelEl       = document.getElementById("baseTotalLabel");
+  const freeAppliedLabelEl     = document.getElementById("freeAppliedLabel");
+  const discountAppliedLabelEl = document.getElementById("discountAppliedLabel");
+  const payableLabelEl         = document.getElementById("payableLabel");
+
+  let centresInArea       = [];
+  let selectedCentreId    = null;
+  let selectedCentreLabel = null;
+  const centreSchedules   = {};
+  const centreAvailability = {};
+
+  // ✅ NEW: instant grey while loading (per centre)
+  const centreLoading = {};
+
+  // ✅ Membership cache
+  let cachedMembership = null;
+
+  // ✅ Rates cache: key = VT|WL
+  const rateCache = {};
+
+  function money(n) {
+    const v = Number(n || 0);
+    return "₹" + (isNaN(v) ? 0 : v);
+  }
+
+  function safeNum(v) {
+    const n = Number(v);
+    return isNaN(n) ? 0 : n;
+  }
+
+  function formatDateTime(val) {
+    if (!val) return "—";
+    try {
+      const d = new Date(val);
+      if (!isNaN(d.getTime())) return d.toLocaleString();
+      return String(val);
+    } catch {
+      return String(val);
+    }
+  }
+
+  function getMembershipField(m, keys, defVal) {
+    if (!m) return defVal;
+    for (const k of keys) {
+      if (m[k] !== undefined && m[k] !== null) return m[k];
+    }
+    return defVal;
+  }
+  async function fetchMembershipByPhone(phoneVal) {
+    try {
+      const url = `${API_MEMBERSHIPS}/by-phone?phone=${encodeURIComponent(phoneVal)}`;
+      const res = await fetch(url, { headers: authHeaders() });
+      if (!res.ok) {
+        await debugHttpError("MEMBERSHIP", url, res);
+        return null;
+      }
+      const m = await res.json();
+      return m || null;
+    } catch (e) {
+      console.error("[MEMBERSHIP] Network/JS error:", e);
+      return null;
+    }
+  }
+
+  function renderMembershipBlock(m) {
+    const block = document.getElementById("membershipBlock");
+    const pill  = document.getElementById("membershipStatusPill");
+
+    const plan = getMembershipField(m, ["planName","planCode"], "—");
+    const pct  = safeNum(getMembershipField(m, ["discountPercent"], 0));
+
+    const freeFoam = safeNum(getMembershipField(m, ["freeFoamRemaining"], 0));
+    const freePremium = safeNum(getMembershipField(m, ["freePremiumRemaining"], 0));
+
+    const validUntil = getMembershipField(m, ["endDate","validUntil","expiresAt"], null);
+    const txnId = getMembershipField(m, ["transactionId","txnId","transactionID"], "—");
+
+    document.getElementById("mPlan").textContent = plan || "—";
+    document.getElementById("mDiscount").textContent = (pct || 0) + "%";
+    document.getElementById("mFreeFoam").textContent = String(freeFoam || 0);
+    document.getElementById("mFreePremium").textContent = String(freePremium || 0);
+    document.getElementById("mValidUntil").textContent = validUntil ? formatDateTime(validUntil) : "—";
+    document.getElementById("mTxnId").textContent = txnId || "—";
+
+    const isActive = m && String(m.status || "").toUpperCase() === "ACTIVE";
+    pill.textContent = isActive ? "ACTIVE" : "INACTIVE";
+    pill.className = "status-pill" + (isActive ? "" : " inactive");
+
+    block.style.display = "block";
+  }
+
+  async function ensureMembershipLoaded() {
+    if (cachedMembership !== null) return cachedMembership;
+    cachedMembership = await fetchMembershipByPhone(phone);
+    renderMembershipBlock(cachedMembership);
+    return cachedMembership;
+  }
+
+  async function fetchRate(vehicleTypeEnum, washLevelEnum) {
+    if (!vehicleTypeEnum || !washLevelEnum) return null;
+    const key = vehicleTypeEnum + "|" + washLevelEnum;
+    if (rateCache[key] !== undefined) return rateCache[key];
+
+    try {
+      const url = `${API_RATES}?vehicleType=${encodeURIComponent(vehicleTypeEnum)}&washLevel=${encodeURIComponent(washLevelEnum)}`;
+      const res = await fetch(url, { headers: authHeaders() });
+      if (!res.ok) {
+        await debugHttpError("RATES", url, res);
+        rateCache[key] = null;
+        return null;
+      }
+      const data = await res.json();
+      // expected {vehicleType,washLevel,amount,currency}
+      const amt = data && data.amount != null ? safeNum(data.amount) : null;
+      rateCache[key] = (amt == null ? null : amt);
+      return rateCache[key];
+    } catch (e) {
+      console.error("[RATES] Network/JS error:", e);
+      rateCache[key] = null;
+      return null;
+    }
+  }
+
+  function todayYMD() {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  }
+
+  const DEFAULT_AREAS = [
+    "Ameerpet","Begumpet","SR Nagar","Punjagutta","Rasoolpura","Sanathnagar",
+    "Erragadda","Khairatabad","Lakdikapool","Masab Tank","Musheerabad",
+    "Chikkadpally","HITEC City","Manikonda","Financial District","Gachibowli",
+    "Gowlidoddi","Nanakramguda","Madhapur","Kondapur","Kothaguda",
+    "Jubilee Hills","Banjara Hills","Hafeezpet","Kukatpally","Serilingampally",
+    "Miyapur","Bachupally","KPHB Colony","Nizampet","Pragathi Nagar","Moosapet",
+    "Charminar","Afzal Gunj","Chandrayan Gutta","Uppal","Habsiguda","Ramanthapur",
+    "Boduppal","Nagole","Nacharam","Mallapur"
+  ];
+
+  function createCarTypeSelect(id) {
+    const select = document.createElement("select");
+    select.id = id;
+    select.style.display = "none";
+
+    const def = document.createElement("option");
+    def.value = "";
+    def.textContent = "-- Select --";
+    select.appendChild(def);
+
+    Object.keys(CAR_TYPE_IMAGES).forEach(t => {
+      const opt = document.createElement("option");
+      opt.value = t;
+      opt.textContent = t;
+      select.appendChild(opt);
+    });
+
+    return select;
+  }
+
+  function createVehicleTypeGrid(carIndex, hiddenSelect) {
+    const grid = document.createElement("div");
+    grid.className = "vehicle-type-grid";
+
+    Object.keys(CAR_TYPE_IMAGES).forEach(typeName => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "vehicle-type-item";
+      btn.dataset.type = typeName;
+
+      const iconWrap = document.createElement("div");
+      iconWrap.className = "vehicle-icon-wrap";
+
+      const img = document.createElement("img");
+      img.src = CAR_TYPE_IMAGES[typeName] || "images/car.png";
+      img.alt = typeName;
+
+      iconWrap.appendChild(img);
+
+      const label = document.createElement("div");
+      label.className = "vehicle-name";
+      label.textContent = typeName;
+
+      btn.appendChild(iconWrap);
+      btn.appendChild(label);
+
+      btn.addEventListener("click", async () => {
+        hiddenSelect.value = typeName;
+        grid.querySelectorAll(".vehicle-type-item").forEach(el => el.classList.remove("selected"));
+        btn.classList.add("selected");
+        await updateRateForCar(carIndex);
+        await updateTotals();
+      });
+
+      grid.appendChild(btn);
+    });
+
+    return grid;
+  }
+
+  function createWashTypeSelect(carIndex) {
+    const select = document.createElement("select");
+    select.id = `washType_${carIndex}`;
+
+    const def = document.createElement("option");
+    def.value = "";
+    def.textContent = "-- Select wash type --";
+    select.appendChild(def);
+
+    WASH_LEVELS.forEach(w => {
+      const opt = document.createElement("option");
+      opt.value = w.value;
+      opt.textContent = w.label;
+      select.appendChild(opt);
+    });
+
+    select.addEventListener("change", async () => {
+      await updateRateForCar(carIndex);
+      await updateTotals();
+    });
+
+    return select;
+  }
+
+  async function updateRateForCar(carIndex) {
+    const carType = (document.getElementById(`carType_${carIndex}`) || {}).value;
+    const washType = (document.getElementById(`washType_${carIndex}`) || {}).value;
+
+    const rateLabelEl = document.getElementById(`rateAmount_${carIndex}`);
+    const rateRowEl = document.getElementById(`rateRow_${carIndex}`);
+
+    if (!carType || !washType) {
+      if (rateRowEl) rateRowEl.style.display = "none";
+      if (rateLabelEl) rateLabelEl.textContent = "₹0";
+      setCarAmount(carIndex, 0);
+      return;
+    }
+
+    const vtEnum = toVehicleEnum(carType);
+    const wlEnum = String(washType).toUpperCase();
+
+    const amt = await fetchRate(vtEnum, wlEnum);
+
+    if (amt == null) {
+      // Rate not configured
+      if (rateRowEl) rateRowEl.style.display = "flex";
+      if (rateLabelEl) rateLabelEl.textContent = "Not set";
+      setCarAmount(carIndex, 0);
+      return;
+    }
+
+    if (rateRowEl) rateRowEl.style.display = "flex";
+    if (rateLabelEl) rateLabelEl.textContent = money(amt);
+    setCarAmount(carIndex, amt);
+  }
+
+  function setCarAmount(carIndex, amount) {
+    localStorage.setItem(`selfdrive_amount_${carIndex}`, String(safeNum(amount)));
+  }
+
+  function getCarAmount(carIndex) {
+    return safeNum(localStorage.getItem(`selfdrive_amount_${carIndex}`));
+  }
+
+  function renderCarDetails() {
+    carDetailsContainer.innerHTML = "";
+    const count = parseInt(carCountInput.value, 10) || 1;
+
+    for (let i = 1; i <= count; i++) {
+      const block = document.createElement("div");
+      block.className = "car-block";
+
+      const title = document.createElement("div");
+      title.className = "car-title";
+      title.innerHTML = `Car ${i} <span class="badge">Self Drive</span>`;
+      block.appendChild(title);
+
+      const labelNum = document.createElement("label");
+      labelNum.textContent = "Car Number";
+      block.appendChild(labelNum);
+
+      const inputNum = document.createElement("input");
+      inputNum.id = `carNumber_${i}`;
+      inputNum.placeholder = "e.g., TS09AB1234";
+      inputNum.addEventListener("input", validateCarNumbers);
+      block.appendChild(inputNum);
+
+      const errDiv = document.createElement("div");
+      errDiv.id = `carError_${i}`;
+      errDiv.className = "car-error";
+      block.appendChild(errDiv);
+
+      const labelType = document.createElement("label");
+      labelType.textContent = "Vehicle Type";
+      block.appendChild(labelType);
+
+      const hiddenSelect = createCarTypeSelect(`carType_${i}`);
+      block.appendChild(hiddenSelect);
+
+      const vehicleGrid = createVehicleTypeGrid(i, hiddenSelect);
+      block.appendChild(vehicleGrid);
+
+      const washLabel = document.createElement("label");
+      washLabel.textContent = "Wash Type";
+      block.appendChild(washLabel);
+
+      const washSelect = createWashTypeSelect(i);
+      block.appendChild(washSelect);
+
+      const sHint = document.createElement("div");
+      sHint.className = "service-hint";
+      sHint.textContent = "Select vehicle type, then select wash type to view price.";
+      block.appendChild(sHint);
+
+      const rateRow = document.createElement("div");
+      rateRow.className = "rate-row";
+      rateRow.id = `rateRow_${i}`;
+      rateRow.style.display = "none";
+      rateRow.innerHTML = `<span style="color:#64748b;">Rate</span> <strong id="rateAmount_${i}">₹0</strong>`;
+      block.appendChild(rateRow);
+
+      carDetailsContainer.appendChild(block);
+
+      // reset stored amount
+      setCarAmount(i, 0);
+    }
+
+    validateCarNumbers();
+  }
+
+  function changeCarCount(delta) {
+    let value = parseInt(carCountInput.value, 10) || 1;
+    value += delta;
+    if (value < 1) value = 1;
+    if (value > 10) value = 10;
+    carCountInput.value = value;
+
+    renderCarDetails();
+    updateTotals();
+  }
+  // ✅ THIS IS THE FIX: apply free ONLY if washType matches and remaining > 0
+  async function updateTotals() {
+    const count = parseInt(carCountInput.value, 10) || 1;
+
+    // base subtotal from rates
+    const cars = [];
+    let subtotal = 0;
+
+    for (let i = 1; i <= count; i++) {
+      const carType = (document.getElementById(`carType_${i}`) || {}).value;
+      const washType = (document.getElementById(`washType_${i}`) || {}).value;
+      const amt = getCarAmount(i);
+
+      cars.push({
+        carIndex: i,
+        carType,
+        washType: (washType || "").toUpperCase(),
+        amount: safeNum(amt)
+      });
+
+      subtotal += safeNum(amt);
+    }
+
+    // membership apply
+    await ensureMembershipLoaded();
+    const m = cachedMembership;
+
+    let freeAppliedAmount = 0;
+    let discountAppliedAmount = 0;
+    let payable = subtotal;
+
+    const isActive = m && String(m.status || "").toUpperCase() === "ACTIVE";
+
+    // remaining freebies (support possible field name variants)
+    let freeFoamRemaining = safeNum(getMembershipField(m, ["freeFoamRemaining"], 0));
+    let freePremiumRemaining = safeNum(getMembershipField(m, ["freePremiumRemaining"], 0));
+    let freeAnyRemaining = safeNum(getMembershipField(m, ["freeAnyRemaining","freeBasicRemaining"], 0)); // fallback
+
+    if (isActive && subtotal > 0) {
+      // Apply freebies per car depending on wash type
+      for (const c of cars) {
+        if (c.amount <= 0) continue;
+
+        if (c.washType === "PREMIUM" && freePremiumRemaining > 0) {
+          freeAppliedAmount += c.amount;
+          freePremiumRemaining -= 1;
+          c._freeApplied = true;
+        } else if (c.washType === "FOAM" && freeFoamRemaining > 0) {
+          freeAppliedAmount += c.amount;
+          freeFoamRemaining -= 1;
+          c._freeApplied = true;
+        } else if (freeAnyRemaining > 0) {
+          // optional "any" free
+          freeAppliedAmount += c.amount;
+          freeAnyRemaining -= 1;
+          c._freeApplied = true;
+        }
+      }
+
+      const afterFree = Math.max(0, subtotal - freeAppliedAmount);
+
+      const pct = safeNum(getMembershipField(m, ["discountPercent"], 0));
+      if (pct > 0 && afterFree > 0) {
+        discountAppliedAmount = Math.round(afterFree * pct / 100);
+        payable = Math.max(0, afterFree - discountAppliedAmount);
+      } else {
+        payable = afterFree;
+      }
+    }
+
+    // UI update
+    baseTotalLabelEl.textContent = money(subtotal);
+    freeAppliedLabelEl.textContent = "-" + money(freeAppliedAmount);
+    discountAppliedLabelEl.textContent = "-" + money(discountAppliedAmount);
+    payableLabelEl.textContent = money(payable);
+
+    // ✅ Store like home/payment flow expects
+    localStorage.setItem("billSubtotal", String(subtotal));
+    localStorage.setItem("billAmount", String(subtotal));
+    localStorage.setItem("totalAmount", String(subtotal));
+    localStorage.setItem("payableAmount", String(subtotal));
+
+    localStorage.setItem("freeAppliedAmount", String(freeAppliedAmount));
+    localStorage.setItem("membershipDiscountAmount", String(discountAppliedAmount));
+    localStorage.setItem(
+      "membershipDiscountPercent",
+      String(isActive ? safeNum(getMembershipField(m, ["discountPercent"], 0)) : 0)
+    );
+    localStorage.setItem("finalPayableAmount", String(payable));
+  }
+
+  function validateCarNumbers() {
+    const count = parseInt(carCountInput.value, 10) || 1;
+    for (let i = 1; i <= count; i++) {
+      const errDiv = document.getElementById(`carError_${i}`);
+      if (errDiv) errDiv.textContent = "";
+    }
+
+    const firstSeen = {};
+    for (let i = 1; i <= count; i++) {
+      const input = document.getElementById(`carNumber_${i}`);
+      if (!input) continue;
+      const raw = (input.value || "").trim();
+      if (!raw) continue;
+
+      const normalized = raw.replace(/\s+/g, "").toUpperCase();
+      if (firstSeen[normalized]) {
+        const firstIndex = firstSeen[normalized];
+        const firstInput = document.getElementById(`carNumber_${firstIndex}`);
+        const firstValue = firstInput ? firstInput.value.trim() : raw;
+
+        const errDiv = document.getElementById(`carError_${i}`);
+        if (errDiv) errDiv.textContent = `Car ${firstIndex} you entered is ${firstValue}, please select different number.`;
+      } else {
+        firstSeen[normalized] = i;
+      }
+    }
+  }
+
+  async function loadAreas() {
+    let areas = [];
+    try {
+      const url = `${API_CENTRES}/areas`;
+      const res = await fetch(url, { headers: authHeaders() });
+      if (res.ok) areas = await res.json();
+      else await debugHttpError("AREAS", url, res);
+    } catch (e) {
+      console.error("[AREAS] Network/JS error:", e);
+    }
+
+    if (!areas || !areas.length) areas = DEFAULT_AREAS;
+
+    areas.forEach(a => {
+      const opt = document.createElement("option");
+      opt.value = a;
+      opt.textContent = a;
+      areaSelectEl.appendChild(opt);
+    });
+  }
+
+  async function onAreaChange() {
+    const area = areaSelectEl.value;
+
+    centresInArea = [];
+    selectedCentreId = null;
+    selectedCentreLabel = null;
+    selectedCentrePill.style.display = "none";
+    centreHintEl.textContent = "Please select Area & Centre first – slots are per centre.";
+    centreListEl.innerHTML = "";
+
+    if (!area) {
+      centreListEl.innerHTML = "<div style='font-size:12px;color:#6b7280;'>Select an area to view centres.</div>";
+      return;
+    }
+
+    try {
+      const url = `${API_CENTRES}/search?area=${encodeURIComponent(area)}`;
+      const res = await fetch(url, { headers: authHeaders() });
+      if (!res.ok) {
+        await debugHttpError("CENTRES", url, res);
+        centreListEl.innerHTML = "<div style='font-size:12px;color:#ef4444;'>Error loading centres.</div>";
+        return;
+      }
+      centresInArea = await res.json();
+      renderCentres();
+    } catch (e) {
+      console.error("[CENTRES] Network/JS error:", e);
+      centreListEl.innerHTML = "<div style='font-size:12px;color:#ef4444;'>Error contacting server.</div>";
+    }
+  }
+
+  function renderCentres() {
+    centreListEl.innerHTML = "";
+    if (!centresInArea || centresInArea.length === 0) {
+      centreListEl.innerHTML = "<div style='font-size:12px;color:#6b7280;'>No centres found in this area.</div>";
+      return;
+    }
+
+    centresInArea.forEach(c => {
+      const centreId = c.id;
+      const centreName = c.centreName || c.name || "(No name)";
+      const area = c.area || areaSelectEl.value || "";
+
+      const card = document.createElement("div");
+      card.className = "centre-card";
+      card.id = `centreCard_${centreId}`;
+
+      const schedId = `centreSchedule_${centreId}`;
+      const dateId  = `centreDate_${centreId}`;
+      const slotsId = `centreSlots_${centreId}`;
+
+      card.innerHTML = `
+        <div class="centre-card-header">
+          <input type="checkbox" id="centreCheck_${centreId}">
+          <div>
+            <div class="centre-name">${centreName}${area ? " – " + area : ""}</div>
+            <div class="centre-address">${c.address || ""}</div>
+          </div>
+        </div>
+        <div id="${schedId}" class="centre-schedule" style="display:none;">
+          <div class="centre-schedule-row">
+            <span style="font-size:12px;">Date</span>
+            <input type="date" id="${dateId}" min="${todayYMD()}" style="flex:0 0 170px;">
+          </div>
+          <div id="${slotsId}" class="timeslot-group"></div>
+          <div class="slot-hint">Greyed slots are already booked for this centre (Self Drive).</div>
+        </div>
+      `;
+
+      centreListEl.appendChild(card);
+
+      const check = card.querySelector(`#centreCheck_${centreId}`);
+      const dateInput = card.querySelector(`#${dateId}`);
+
+      check.addEventListener("change", () => handleCentreCheck(centreId, centreName, area, check.checked));
+      dateInput.addEventListener("change", () => handleCentreDateChange(centreId, dateInput.value));
+    });
+  }
+
+  function handleCentreCheck(centreId, centreName, area, checked) {
+    const schedDivId = `centreSchedule_${centreId}`;
+    const cardEl = document.getElementById(`centreCard_${centreId}`);
+    const schedDiv = document.getElementById(schedDivId);
+
+    if (checked) {
+      document.querySelectorAll(".centre-card input[type='checkbox']").forEach(cb => {
+        if (cb.id !== `centreCheck_${centreId}`) cb.checked = false;
+      });
+      document.querySelectorAll(".centre-schedule").forEach(div => {
+        if (div.id !== schedDivId) div.style.display = "none";
+      });
+      document.querySelectorAll(".centre-card").forEach(div => div.classList.remove("selected"));
+
+      selectedCentreId = centreId;
+      selectedCentreLabel = centreName + (area ? " – " + area : "");
+      selectedCentreNamePill.textContent = selectedCentreLabel;
+      selectedCentrePill.style.display = "inline-flex";
+      centreHintEl.textContent = "Centre selected. Calendar & slots are now per this centre (Self Drive).";
+
+      if (schedDiv) schedDiv.style.display = "block";
+      if (cardEl) cardEl.classList.add("selected");
+
+      const existing = centreSchedules[centreId];
+      const dateInput = document.getElementById(`centreDate_${centreId}`);
+
+      if (existing && existing.date) {
+        dateInput.value = existing.date;
+        loadCentreAvailability(centreId, existing.date, existing.slot);
+      } else {
+        dateInput.value = "";
+        centreAvailability[centreId] = {};
+        centreLoading[centreId] = false;
+        renderCentreSlots(centreId, null);
+      }
+    } else {
+      if (schedDiv) schedDiv.style.display = "none";
+      if (cardEl) cardEl.classList.remove("selected");
+      selectedCentreId = null;
+      selectedCentreLabel = null;
+      selectedCentrePill.style.display = "none";
+      centreHintEl.textContent = "Please select Area & Centre first – slots are per centre.";
+    }
+  }
+
+  function handleCentreDateChange(centreId, dateVal) {
+    if (!dateVal) {
+      centreAvailability[centreId] = {};
+      centreLoading[centreId] = false;
+      renderCentreSlots(centreId, null);
+      return;
+    }
+    loadCentreAvailability(centreId, dateVal, null);
+  }
+
+  // ✅ UPDATED: fetch bookings list from DB and mark slots booked
+  async function loadCentreAvailability(centreId, dateVal, preselectedSlot) {
+    // instantly grey out all slots while loading
+    centreLoading[centreId] = true;
+    centreAvailability[centreId] = {};
+    centreSchedules[centreId] = centreSchedules[centreId] || {};
+    centreSchedules[centreId].date = dateVal;
+
+    renderCentreSlots(centreId, preselectedSlot);
+
+    try {
+      // PRIMARY: fetch bookings list
+      const listUrl =
+        `${API_BOOKINGS}?date=${encodeURIComponent(dateVal)}` +
+        `&serviceType=${encodeURIComponent(SERVICE_TYPE)}` +
+        `&centreId=${encodeURIComponent(centreId)}`;
+
+      const res = await fetch(listUrl, { headers: authHeaders() });
+
+      if (true) {
+        const data = await res.json();
+
+        const bookings =
+          Array.isArray(data) ? data :
+          (Array.isArray(data.content) ? data.content :
+          (Array.isArray(data.bookings) ? data.bookings : []));
+
+        const map = {};
+        TIME_SLOTS.forEach(s => map[s] = true);
+
+        for (const b of bookings) {
+          const slot = (b.timeslot || b.timeSlot || b.slot || "").trim();
+          if (slot) map[slot] = false;
+        }
+
+        centreAvailability[centreId] = map;
+      } else {
+        // FALLBACK: old availability endpoint
+        await debugHttpError("BOOKINGS_LIST", listUrl, res);
+
+        const fallbackUrl =
+          `${API_BOOKINGS}/availability?date=${encodeURIComponent(dateVal)}` +
+          `&serviceType=${encodeURIComponent(SERVICE_TYPE)}` +
+          `&centreId=${encodeURIComponent(centreId)}`;
+
+        const r2 = await fetch(fallbackUrl, { headers: authHeaders() });
+        if (r2.ok) {
+          const map = await r2.json();
+          centreAvailability[centreId] = map || {};
+        } else {
+          await debugHttpError("AVAILABILITY_FALLBACK", fallbackUrl, r2);
+          centreAvailability[centreId] = {};
+        }
+      }
+    } catch (e) {
+      console.error("[AVAILABILITY] Network/JS error:", e);
+
+      // fallback again
+      try {
+        const fallbackUrl =
+          `${API_BOOKINGS}/availability?date=${encodeURIComponent(dateVal)}` +
+          `&serviceType=${encodeURIComponent(SERVICE_TYPE)}` +
+          `&centreId=${encodeURIComponent(centreId)}`;
+
+        const r2 = await fetch(fallbackUrl, { headers: authHeaders() });
+        if (r2.ok) {
+          const map = await r2.json();
+          centreAvailability[centreId] = map || {};
+        } else {
+          await debugHttpError("AVAILABILITY_FALLBACK2", fallbackUrl, r2);
+          centreAvailability[centreId] = {};
+        }
+      } catch (e2) {
+        console.error("[AVAILABILITY_FALLBACK2] Network/JS error:", e2);
+        centreAvailability[centreId] = {};
+      }
+    } finally {
+      centreLoading[centreId] = false;
+      renderCentreSlots(centreId, preselectedSlot);
+    }
+  }
+
+  // ✅ UPDATED: instantly grey all slots while loading
+  function renderCentreSlots(centreId, preselectedSlot) {
+    const slotsDiv = document.getElementById(`centreSlots_${centreId}`);
+    if (!slotsDiv) return;
+
+    slotsDiv.innerHTML = "";
+    const isLoading = !!centreLoading[centreId];
+
+    const availMap = centreAvailability[centreId] || {};
+    const existing = centreSchedules[centreId];
+    const selectedSlot = preselectedSlot || (existing ? existing.slot : null);
+
+    TIME_SLOTS.forEach(slot => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "slot-btn";
+      btn.textContent = slot;
+
+      // loading -> grey
+      if (isLoading) {
+        btn.classList.add("booked");
+        btn.disabled = true;
+        slotsDiv.appendChild(btn);
+        return;
+      }
+
+      const isAvailable = (availMap[slot] !== false);
+
+      if (!isAvailable) {
+        btn.classList.add("booked");
+        btn.disabled = true;
+      } else {
+        if (slot === selectedSlot) btn.classList.add("selected");
+        btn.addEventListener("click", () => {
+          const dateInput = document.getElementById(`centreDate_${centreId}`);
+          const dateVal = dateInput ? dateInput.value : null;
+          if (!dateVal) { alert("Please select date first."); return; }
+          centreSchedules[centreId] = { date: dateVal, slot: slot };
+          renderCentreSlots(centreId, slot);
+        });
+      }
+      slotsDiv.appendChild(btn);
+    });
+  }
+
+  async function submitBooking() {
+    const count = parseInt(carCountInput.value, 10) || 1;
+    const bookings = [];
+
+    validateCarNumbers();
+
+    if (!selectedCentreId) { alert("Please select a service centre."); return; }
+
+    const sched = centreSchedules[selectedCentreId];
+    if (!sched || !sched.date || !sched.slot) {
+      alert("Please select date and time slot for the selected centre.");
+      return;
+    }
+
+    const chosenCentre = centresInArea.find(c => c.id === selectedCentreId);
+    const seen = new Set();
+
+    // Ensure membership loaded and totals stored
+    await updateTotals();
+
+    for (let i = 1; i <= count; i++) {
+      const numInput = document.getElementById(`carNumber_${i}`);
+      const carNumberRaw = (numInput && numInput.value ? numInput.value : "").trim();
+      if (!carNumberRaw) { alert(`Please enter car number for Car ${i}.`); return; }
+
+      const normalized = carNumberRaw.replace(/\s+/g, "").toUpperCase();
+      if (seen.has(normalized)) {
+        alert(`Car number "${carNumberRaw}" is entered more than once. Please keep each car number unique.`);
+        return;
+      }
+      seen.add(normalized);
+
+      const carType = (document.getElementById(`carType_${i}`) || {}).value;
+      const washType = (document.getElementById(`washType_${i}`) || {}).value;
+
+      if (!carType) { alert(`Please select vehicle type for Car ${i}.`); return; }
+      if (!washType) { alert(`Please select wash type for Car ${i}.`); return; }
+
+      const amount = getCarAmount(i);
+      if (!amount || amount <= 0) {
+        alert(`Rate not configured for Car ${i}. Please select valid Vehicle + Wash type (or configure rates).`);
+        return;
+      }
+
+      bookings.push({
+        phone: phone,
+        carIndex: i,
+        address: chosenCentre ? chosenCentre.address : "",
+        carNumber: carNumberRaw,
+        carType: toVehicleEnum(carType),
+        date: sched.date,
+        timeslot: sched.slot,
+        serviceType: SERVICE_TYPE,
+        washType: String(washType).toUpperCase(),
+        serviceCentreId: selectedCentreId,
+        centreName: chosenCentre ? (chosenCentre.centreName || chosenCentre.name || "") : "",
+        mapsUrl: chosenCentre ? chosenCentre.mapsUrl : "",
+        amount: amount
+      });
+    }
+
+    localStorage.setItem("pendingBookings", JSON.stringify(bookings));
+    localStorage.setItem("serviceType", SERVICE_TYPE);
+
+    window.location.href = "/selfdrivereview";
+  }
+
+  function goBack() { window.location.href = "/aspcare"; }
+
+  // init
+  renderCarDetails();
+  loadAreas();
+  ensureMembershipLoaded().then(() => updateTotals());
+
+  window.changeCarCount = changeCarCount;
+  window.submitBooking  = submitBooking;
+  window.goBack         = goBack;
+  window.onAreaChange   = onAreaChange;
+</script>
+</body>
+</html>

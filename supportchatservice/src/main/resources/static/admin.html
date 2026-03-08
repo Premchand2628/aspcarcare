@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #f4f4f4; }
+    .navbar {
+      background: #333; color: white; display: flex; justify-content: space-between;
+      align-items: center; padding: 12px 20px;
+    }
+    .navbar a { color: white; text-decoration: none; }
+    .tabs {
+      display: flex; justify-content: center; gap: 20px;
+      background: #222; color: white; padding: 10px 0;
+    }
+    .tabs button {
+      background: transparent; border: none; color: white; font-size: 16px;
+      cursor: pointer; padding: 6px 12px;
+    }
+    .tabs button.active { border-bottom: 2px solid #4CAF50; }
+    .container { max-width: 1100px; margin: 20px auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: center; }
+    th { background: #333; color: white; }
+    img { width: 80px; height: 80px; border-radius: 6px; object-fit: cover; }
+    button.update-btn {
+      background: #4CAF50; color: white; border: none; padding: 6px 10px; border-radius: 5px;
+      cursor: pointer;
+    }
+    .status-select {
+      padding: 5px; border-radius: 4px; border: 1px solid #aaa;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="navbar">
+    <h2>🧾 Admin Dashboard</h2>
+    <a href="index.html">🏠 Home</a>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button id="stockTab" class="active" onclick="showTab('stock')">📦 Manage Stock</button>
+    <button id="ordersTab" onclick="showTab('orders')">🚚 Manage Orders</button>
+  </div>
+
+  <!-- Stock Management -->
+  <div class="container" id="stockSection">
+    <h3>📦 Product Stock</h3>
+    <table id="stockTable">
+      <thead>
+        <tr><th>Image</th><th>Title</th><th>Category</th><th>Price</th><th>Stock</th><th>Update</th></tr>
+      </thead>
+      <tbody id="productTable"></tbody>
+    </table>
+  </div>
+
+  <!-- Orders Management -->
+  <div class="container" id="ordersSection" style="display:none;">
+    <h3>🚚 Orders & Delivery Status</h3>
+    <table id="orderTable">
+      <thead>
+        <tr><th>Order ID</th><th>User</th><th>Title</th><th>Qty</th><th>Subtotal</th><th>Status</th><th>Update</th></tr>
+      </thead>
+      <tbody id="ordersBody"></tbody>
+    </table>
+  </div>
+
+  <script>
+    // === TAB SWITCHING ===
+    function showTab(tab) {
+      document.getElementById("stockSection").style.display = (tab === "stock") ? "block" : "none";
+      document.getElementById("ordersSection").style.display = (tab === "orders") ? "block" : "none";
+      document.getElementById("stockTab").classList.toggle("active", tab === "stock");
+      document.getElementById("ordersTab").classList.toggle("active", tab === "orders");
+    }
+
+    // === FETCH PRODUCTS ===
+    function fetchProducts() {
+      fetch("http://localhost:8082/api/products")
+        .then(res => res.json())
+        .then(data => {
+          const table = document.getElementById("productTable");
+          table.innerHTML = data.map(p => `
+            <tr>
+              <td><img src="${p.img}" alt="${p.title}"></td>
+              <td>${p.title}</td>
+              <td>${p.category}</td>
+              <td>$${p.price.toFixed(2)}</td>
+              <td><input type="number" id="stock_${p.id}" value="${p.stock}" min="0"></td>
+              <td><button class="update-btn" onclick="updateStock(${p.id})">Update</button></td>
+            </tr>
+          `).join("");
+        });
+    }
+
+    function updateStock(id) {
+      const newStock = document.getElementById(`stock_${id}`).value;
+      fetch(`http://localhost:8082/api/products/${id}/stock?stock=${newStock}`, { method: "PUT" })
+        .then(res => res.text())
+        .then(msg => alert(msg))
+        .then(fetchProducts);
+    }
+
+    // === FETCH ORDERS ===
+    function fetchOrders() {
+      fetch("http://localhost:8082/api/orders")
+        .then(res => res.json())
+        .then(data => {
+          const body = document.getElementById("ordersBody");
+          body.innerHTML = data.map(o => `
+            <tr>
+              <td>${o.orderId}</td>
+              <td>${o.name}</td>
+              <td>${o.title}</td>
+              <td>${o.qty}</td>
+              <td>$${o.subtotal.toFixed(2)}</td>
+              <td>
+                <select class="status-select" id="status_${o.orderId}">
+                  <option value="In Progress" ${o.deliveryStatus === "In Progress" ? "selected" : ""}>In Progress</option>
+                  <option value="In Transit" ${o.deliveryStatus === "In Transit" ? "selected" : ""}>In Transit</option>
+                  <option value="Delivered" ${o.deliveryStatus === "Delivered" ? "selected" : ""}>Delivered</option>
+                </select>
+              </td>
+              <td><button class="update-btn" onclick="updateStatus('${o.orderId}')">Save</button></td>
+            </tr>
+          `).join("");
+        });
+    }
+
+    function updateStatus(orderId) {
+      const newStatus = document.getElementById(`status_${orderId}`).value;
+      fetch(`http://localhost:8082/api/orders/updateStatus/${orderId}?status=${newStatus}`, { method: "PUT" })
+        .then(res => res.text())
+        .then(msg => alert(msg))
+        .then(fetchOrders);
+    }
+
+    // === INIT ===
+    fetchProducts();
+    fetchOrders();
+  </script>
+
+</body>
+</html>

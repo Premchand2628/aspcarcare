@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Beauty Products</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin:0; background:#f2f2f2; }
+    .navbar { display:flex; justify-content:space-between; align-items:center; background:#333; color:#fff; padding:10px 20px; }
+    .nav-left img { width:32px; height:32px; cursor:pointer; }
+    .nav-right { display:flex; gap:20px; align-items:center; }
+    .nav-right a { color:white; text-decoration:none; }
+    .container { max-width:1200px; margin:20px auto; display:grid; grid-template-columns: repeat(auto-fit,minmax(250px,1fr)); gap:20px; }
+    .card { background:white; border-radius:10px; box-shadow:0 4px 8px rgba(0,0,0,.1); padding:16px; text-align:center; }
+    .card img { width:100%; height:200px; object-fit:cover; border-radius:10px; }
+    .title { font-weight:bold; margin:8px 0; }
+    .desc { font-size:14px; color:#555; margin-bottom:6px; min-height:40px; }
+    .price { font-weight:bold; color:green; margin-bottom:8px; }
+    .stock { margin-bottom:10px; }
+    .actions { display:flex; justify-content:space-around; gap:8px; }
+    .actions button { border:none; padding:6px 10px; border-radius:6px; cursor:pointer; font-size:14px; }
+    .wishlist-btn { background:#ff4081; color:#fff; }
+    .share-btn { background:#2196F3; color:#fff; }
+    .cart-btn { background:#ff9800; color:#fff; }
+    .buy-btn { background:#4CAF50; color:#fff; }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <div class="nav-left"><a href="index.html"><img src="Home.jpg" alt="Home"></a></div>
+    <div class="nav-right">
+      <a href="wishlist.html">❤ Wishlist</a>
+      <a href="cart.html">🛒 Go to Cart</a>
+    </div>
+  </div>
+
+  <div class="container" id="productContainer">
+    <p style="grid-column:1/-1; text-align:center; color:#777;">Loading...</p>
+  </div>
+
+  <script>
+    const container = document.getElementById("productContainer");
+
+    fetch("http://localhost:8082/api/products/beauty")
+      .then(r => r.json())
+      .then(products => {
+        container.innerHTML = "";
+        products.forEach(p => {
+          const stockHtml =
+            p.stock <= 0
+              ? "<b style='color:red'>Out of Stock</b>"
+              : p.stock < 10
+              ? `<b style='color:orange'>Only ${p.stock} left!</b>`
+              : "<b style='color:green'>In Stock</b>";
+
+          container.innerHTML += `
+            <div class="card">
+              <img src="${p.img}" alt="${p.title}">
+              <div class="title">${p.title}</div>
+              <div class="desc">${p.description ?? ""}</div>
+              <div class="price">$${p.price.toFixed(2)}</div>
+              <div class="stock">${stockHtml}</div>
+              <div class="actions">
+                <button class="wishlist-btn" onclick='addToWishlist(${JSON.stringify(p)})' title="Wishlist">❤</button>
+                <button class="share-btn" onclick='shareProduct(${JSON.stringify(p.title)})' title="Share">🔗</button>
+                ${
+                  p.stock > 0
+                  ? `
+                    <button class="cart-btn" onclick='addToCart(${JSON.stringify(p)})' title="Add to Cart">🛒</button>
+                    <button class="buy-btn"  onclick='buyNow(${JSON.stringify(p)})' title="Buy Now">⚡</button>`
+                  : `
+                    <button class="wishlist-btn" onclick='addToWishlist(${JSON.stringify(p)})' title="Wishlist Only">Wishlist</button>
+                  `
+                }
+              </div>
+            </div>`;
+        });
+      })
+      .catch(err => {
+        console.error(err);
+        container.innerHTML = `<p style="grid-column:1/-1; text-align:center; color:red;">⚠️ Failed to load products.</p>`;
+      });
+
+    function addToWishlist(item) {
+      const w = JSON.parse(localStorage.getItem("wishlistItems") || "[]");
+      if (!w.find(x => x.id === item.id)) w.push(item);
+      localStorage.setItem("wishlistItems", JSON.stringify(w));
+      alert(item.title + " added to wishlist ❤");
+    }
+    function shareProduct(title) {
+      navigator.clipboard.writeText("Check this product: " + title);
+      alert("Link copied!");
+    }
+    function addToCart(item) {
+      const cart = JSON.parse(localStorage.getItem("cartItems") || "[]");
+      const found = cart.find(c => c.id === item.id);
+      if (item.stock <= 0) { alert("❌ Out of Stock"); return; }
+      if (found) {
+        if (found.qty >= item.stock) { alert(`⚠️ Max Qty: ${item.stock} reached for ${item.title}`); return; }
+        found.qty++;
+      } else {
+        cart.push({ ...item, qty: 1, checked: false });
+      }
+      localStorage.setItem("cartItems", JSON.stringify(cart));
+      alert(item.title + " added to cart 🛒");
+    }
+    function buyNow(item) {
+      if (item.stock <= 0) { alert("❌ Out of Stock"); return; }
+      localStorage.setItem("checkoutItems", JSON.stringify([{ ...item, qty: 1 }]));
+      window.location.href = "review.html";
+    }
+  </script>
+</body>
+</html>

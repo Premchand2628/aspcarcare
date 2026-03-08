@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>CarWash – Payment</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-soft: #eff6ff;
+      --primary-strong: #1d4ed8;
+      --bg-card: #ffffff;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --danger: #dc2626;
+      --success: #16a34a;
+      --warn: #f59e0b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #e0f2fe 0, #f9fafb 40%, #f3e8ff 100%);
+      margin: 0;
+      padding: 0;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .top-bar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 24px;
+      background: rgba(15, 23, 42, 0.98);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 1px 4px rgba(15,23,42,0.3);
+      gap: 16px;
+      flex-wrap: nowrap;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 18px;
+      color: #e5e7eb;
+      letter-spacing: 0.03em;
+      flex-shrink: 0;
+    }
+
+    .logo-pill {
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 20% 20%, #38bdf8, #2563eb);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: #f9fafb;
+      box-shadow: 0 0 0 1px rgba(191,219,254,0.7);
+      cursor: pointer;
+    }
+
+    .search-container {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      gap: 12px;
+      max-width: 520px;
+    }
+
+    .search-box { flex: 1; position: relative; }
+
+    .search-box input {
+      width: 100%;
+      padding: 8px 30px 8px 30px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      font-size: 13px;
+      background: rgba(15,23,42,0.9);
+      color: #e5e7eb;
+      outline: none;
+    }
+
+    .search-box input::placeholder { color: #6b7280; }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      color: #6b7280;
+      cursor: pointer;
+    }
+
+    .profile-area {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 999px;
+      transition: background 0.12s ease;
+      flex-shrink: 0;
+    }
+
+    .profile-area:hover { background: rgba(31,41,55,0.8); }
+
+    .profile-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 20% 20%, #22c55e, #16a34a);
+      color: #e5fdf4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 600;
+      box-shadow: 0 0 0 1px rgba(34,197,94,0.6);
+    }
+
+    #profileName { color: #e5e7eb; font-weight: 500; font-size: 13px; }
+
+    .profile-dropdown {
+      position: absolute;
+      right: 0;
+      top: 42px;
+      background: #020617;
+      border-radius: 14px;
+      box-shadow: 0 18px 45px rgba(15,23,42,0.9);
+      min-width: 170px;
+      display: none;
+      overflow: hidden;
+      z-index: 20;
+      border: 1px solid rgba(51,65,85,0.9);
+    }
+
+    .profile-dropdown button {
+      width: 100%;
+      padding: 10px 12px;
+      border: none;
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
+      font-size: 13px;
+      color: #e5e7eb;
+    }
+
+    .profile-dropdown button:hover { background: rgba(15,23,42,0.9); }
+
+    .content {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20px 0 32px;
+    }
+
+    .page {
+      max-width: 1100px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    h1 { margin: 0 0 6px; font-size: 22px; }
+    .subtitle { font-size: 13px; color: var(--text-muted); }
+
+    .layout {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: 24px;
+      padding: 20px 22px;
+      box-shadow: 0 18px 45px rgba(15,23,42,0.08);
+      border: 1px solid rgba(226,232,240,0.9);
+    }
+
+    .summary-card { flex: 1 1 360px; min-width: 320px; }
+    .pay-card     { flex: 1 1 360px; min-width: 320px; }
+
+    .section-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .section-sub   { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
+
+    .total-row {
+      font-size: 18px;
+      font-weight: 800;
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 16px;
+      background: radial-gradient(circle at top, #eff6ff 0, #ffffff 60%);
+      border: 1px solid rgba(37,99,235,0.18);
+    }
+
+    .total-row span { color: var(--primary-strong); }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0 0;
+    }
+
+    .chip {
+      font-size: 11px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #0f172a;
+      color: #e5e7eb;
+      border: 1px solid rgba(148,163,184,0.6);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .chip .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 0 rgba(34,197,94,0.6);
+      animation: pulse 1.4s infinite;
+    }
+
+    @keyframes pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(34,197,94,0.7); }
+      70%  { box-shadow: 0 0 0 7px rgba(34,197,94,0); }
+      100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+    }
+
+    .booking-list {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 360px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .booking-item {
+      border-radius: 16px;
+      border: 1px solid rgba(226,232,240,0.95);
+      padding: 12px 12px 10px;
+      background: linear-gradient(180deg, #ffffff, #f8fafc);
+      font-size: 13px;
+      box-shadow: 0 10px 24px rgba(15,23,42,0.06);
+    }
+
+    .booking-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .booking-title {
+      font-weight: 800;
+      line-height: 1.2;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .badge {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(37,99,235,0.25);
+      background: rgba(37,99,235,0.08);
+      color: #1d4ed8;
+      font-weight: 700;
+    }
+
+    .amt-pill {
+      font-size: 12px;
+      font-weight: 800;
+      color: #0f172a;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(16,185,129,0.25);
+      background: rgba(16,185,129,0.12);
+      white-space: nowrap;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 10px;
+    }
+
+    .kv {
+      display: flex;
+      gap: 6px;
+      font-size: 12px;
+      color: #374151;
+      min-width: 0;
+    }
+
+    .k { color: #6b7280; min-width: 72px; flex: 0 0 auto; }
+
+    .v {
+      font-weight: 600;
+      color: #111827;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .map-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      font-size: 12px;
+      color: #1d4ed8;
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .map-link:hover { text-decoration: underline; }
+
+    .status-msg { margin-top: 10px; font-size: 12px; color: var(--text-muted); }
+    .status-msg.error   { color: var(--danger); }
+    .status-msg.success { color: var(--success); }
+    .status-msg.warn    { color: var(--warn); }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .btn {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid #e5e7eb;
+      background: #ffffff;
+      color: #111827;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s ease, transform 0.08s ease, box-shadow 0.15s ease;
+      text-decoration: none;
+    }
+
+    .btn:hover { background: #f3f4f6; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #ffffff;
+      border: none;
+      box-shadow: 0 10px 30px rgba(37,99,235,0.35);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 36px rgba(37,99,235,0.45);
+    }
+
+    .btn-secondary { background: #ffffff; color: #111827; border: 1px solid #e5e7eb; }
+
+    .empty-msg { margin-top: 12px; font-size: 13px; color: var(--text-muted); }
+
+    .upi-card {
+      margin-top: 12px;
+      border-radius: 20px;
+      padding: 14px;
+      background: radial-gradient(circle at top, #fff7ed 0, #ffffff 60%);
+      border: 1px solid rgba(245,158,11,0.18);
+      box-shadow: 0 14px 34px rgba(15,23,42,0.06);
+    }
+
+    .upi-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .upi-title { font-weight: 900; font-size: 13px; }
+    .upi-sub   { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+    .upi-wrap {
+      display: flex;
+      gap: 14px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    #upiQr {
+      width: 170px;
+      height: 170px;
+      border-radius: 16px;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .divider { height: 1px; background: rgba(226,232,240,0.9); margin: 12px 0; }
+
+    .field {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .field label {
+      font-size: 12px;
+      font-weight: 900;
+      color: #0f172a;
+    }
+    .field input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+      font-size: 13px;
+      outline: none;
+      background: #fff;
+    }
+    .field input:focus {
+      border-color: rgba(37,99,235,0.45);
+      box-shadow: 0 0 0 4px rgba(37,99,235,0.12);
+    }
+    .help { font-size: 11px; color: var(--text-muted); line-height: 1.35; }
+
+    .hidden { display: none !important; }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(2,6,23,0.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 999;
+    }
+    .modal {
+      width: 100%;
+      max-width: 440px;
+      background: #ffffff;
+      border-radius: 20px;
+      border: 1px solid rgba(226,232,240,0.95);
+      box-shadow: 0 24px 70px rgba(2,6,23,0.35);
+      padding: 18px 18px 14px;
+    }
+    .modal-title {
+      font-size: 14px;
+      font-weight: 900;
+      margin: 0 0 6px;
+      color: #0f172a;
+    }
+    .modal-text {
+      font-size: 12px;
+      color: #475569;
+      margin: 0 0 8px;
+      line-height: 1.45;
+    }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 800px) {
+      .card { border-radius: 18px; }
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 480px) {
+      #profileName { display: none; }
+      .top-bar { padding: 8px 10px; gap: 8px; }
+      .search-box input { font-size: 12px; }
+      #upiQr { width: 160px; height: 160px; }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="top-bar">
+  <div class="logo">
+    <div class="logo-pill" onclick="goDashboard()">ASP</div>
+    <span>Payment</span>
+  </div>
+
+  <div class="search-container">
+    <div class="search-box">
+      <span class="search-icon" onclick="handleSearchNavigation()">🔍</span>
+      <input
+        id="searchInput"
+        type="text"
+        placeholder="Search services, bookings…"
+        onkeydown="if(event.key === 'Enter'){ handleSearchNavigation(); }"
+      >
+    </div>
+  </div>
+
+  <div class="profile-area" id="profileArea">
+    <div class="profile-icon" id="profileIcon">U</div>
+    <div id="profileName">User</div>
+
+    <div class="profile-dropdown" id="profileDropdown">
+      <button onclick="goToEditProfile()">Edit Profile</button>
+      <button onclick="goToOrders()">My Bookings</button>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+  <div class="page">
+    <h1>Complete your payment</h1>
+    <div class="subtitle" id="pageSubtitle">
+      Scan the QR to pay, then enter transaction id and confirm order.
+    </div>
+
+    <div class="layout">
+      <div class="card summary-card">
+        <div class="section-title">Booking summary</div>
+        <div class="section-sub">
+          Please review your cars, schedule and address before confirming.
+        </div>
+
+        <div class="total-row">
+          <div>Total payable</div>
+          <div><span id="totalAmountLabel">₹0</span></div>
+        </div>
+
+        <div id="discountInfo" class="subtitle" style="margin-top:8px;"></div>
+
+        <div class="chip-row">
+          <div class="chip"><span class="dot"></span> Secure checkout</div>
+          <div class="chip" id="payModeChip">UPI / Wallet / Cards</div>
+          <div class="chip" id="carsCountChip">Cars: 0</div>
+        </div>
+
+        <div id="bookingList" class="booking-list"></div>
+
+        <div id="emptyMessage" class="empty-msg hidden">
+          No pending bookings found. Please go back and create a booking.
+        </div>
+      </div>
+
+      <div class="card pay-card">
+        <div class="section-title" id="payTitle">Pay via UPI QR</div>
+        <div class="section-sub" id="paySub">
+          Scan QR in PhonePe / GPay / Paytm. After payment, enter Transaction ID.
+        </div>
+
+        <div id="statusText" class="status-msg"></div>
+
+        <div class="upi-card" id="upiCard">
+          <div class="upi-head">
+            <div>
+              <div class="upi-title">Dynamic QR</div>
+              <div class="upi-sub">Scan & pay</div>
+            </div>
+            <div style="font-size:12px; font-weight:900;">
+              Pay: <span id="qrAmountLabel">₹0</span>
+            </div>
+          </div>
+
+          <div class="upi-wrap">
+            <div id="upiQr"></div>
+
+            <div style="flex:1; min-width:220px;">
+              <div style="font-size:11px; color:#6b7280; line-height:1.35;" id="qrHint">
+                After successful payment, copy the Transaction ID from your UPI app and paste it below.
+              </div>
+
+              <!-- ✅ Existing Back button for PAID flow (keep as-is) -->
+              <div class="btn-row" style="margin-top:10px;">
+                <button class="btn btn-secondary" onclick="goBack()">← Back</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="section-title">Confirm Order</div>
+        <div class="section-sub" style="margin-bottom:8px;" id="confirmSub">
+          Transaction ID will be validated (null check + duplicate check).
+        </div>
+
+        <div class="field" id="txnFieldWrap">
+          <label for="txnIdInput">Transaction ID</label>
+          <input id="txnIdInput" type="text" autocomplete="off" placeholder="Eg: T230915112233..." />
+          <div class="help">Same Transaction ID will be applied for all cars in this order.</div>
+        </div>
+
+        <!-- ✅ NEW: Freebie navigation buttons (visible only when payable = 0) -->
+        <div class="btn-row hidden" id="freebieNavRow">
+          <button class="btn btn-secondary" onclick="goReview()">← Back</button>
+          <button class="btn btn-secondary" onclick="goDashboard()">🏠 Back to Dashboard</button>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="confirmOrder()">✅ Confirm Order</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="holdModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="holdTitle">
+    <div class="modal-title" id="holdTitle">Order is on hold</div>
+
+    <p class="modal-text" id="holdMsg">
+      order is on hold it will take 5 mins to confirm
+    </p>
+
+    <p id="redirectMsg" class="modal-text" style="margin-top:6px;">
+      We will re-direct to Orders page automatically in
+      <b><span id="countdown">5</span></b> secs. If not, click OK.
+    </p>
+
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="closeHoldModal()">OK</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API_BASE = window.location.origin;
+  const API_USERS         = API_BASE + "/users";
+  const API_CONFIRM_ORDER = API_BASE + "/bookings/confirm-order";
+
+  const MERCHANT_UPI  = "9010340125@ybl";
+  const MERCHANT_NAME = "ASP Care";
+
+  // =========================
+  // AUTH (STANDARD)
+  // =========================
+  const JWT_KEY = "jwt";
+  const PHONE_KEY = "phone";
+
+  function getJwt() {
+    return (localStorage.getItem(JWT_KEY) || "").trim();
+  }
+
+  function getPhone() {
+    return (localStorage.getItem(PHONE_KEY) || "").trim();
+  }
+
+  function getAuthHeaders(extra = {}) {
+    const jwt = getJwt();
+    return {
+      ...(jwt ? { "Authorization": "Bearer " + jwt } : {}),
+      ...extra
+    };
+  }
+
+  const phone = getPhone();
+  const jwt   = getJwt();
+
+  // ✅ MUST have both for secured pages
+  if (!phone || !jwt) {
+    localStorage.setItem("pendingTarget", "/payment");
+    window.location.href = "/SignuLogin?mode=login";
+  }
+
+  const bookingListEl   = document.getElementById("bookingList");
+  const totalAmountEl   = document.getElementById("totalAmountLabel");
+  const discountInfoEl  = document.getElementById("discountInfo");
+  const emptyMessageEl  = document.getElementById("emptyMessage");
+  const statusTextEl    = document.getElementById("statusText");
+  const carsCountChipEl = document.getElementById("carsCountChip");
+  const txnIdInputEl    = document.getElementById("txnIdInput");
+
+  const upiCardEl       = document.getElementById("upiCard");
+  const txnFieldWrapEl  = document.getElementById("txnFieldWrap");
+  const pageSubtitleEl  = document.getElementById("pageSubtitle");
+  const confirmSubEl    = document.getElementById("confirmSub");
+  const payTitleEl      = document.getElementById("payTitle");
+  const paySubEl        = document.getElementById("paySub");
+  const payModeChipEl   = document.getElementById("payModeChip");
+  const holdMsgEl       = document.getElementById("holdMsg");
+  const holdTitleEl     = document.getElementById("holdTitle");
+
+  // ✅ Freebie nav row ref
+  const freebieNavRowEl = document.getElementById("freebieNavRow");
+
+  // ✅ Load bookings from localStorage
+  let bookings = JSON.parse(localStorage.getItem("pendingBookings") || "[]");
+
+  // ✅ Read water facility selection from localStorage (set in home.html)
+  function isWaterProvidedFromStorage() {
+    return (String(localStorage.getItem("waterFacilityYes") || "").toLowerCase() === "yes");
+  }
+
+  function normalizeWashType(v){
+    const x = String(v || "").toUpperCase().trim();
+    if (x.includes("PREMIUM")) return "PREMIUM";
+    if (x.includes("FOAM")) return "FOAM";
+    if (x.includes("BASIC")) return "BASIC";
+    return "";
+  }
+
+  function deriveWashTypeFromBooking(b){
+    const direct = normalizeWashType(b?.washType);
+    if (direct) return direct;
+
+    const fromLabel = normalizeWashType(b?.serviceLabel);
+    if (fromLabel) return fromLabel;
+
+    const fromKey = normalizeWashType(b?.serviceKey);
+    if (fromKey) return fromKey;
+
+    return "BASIC";
+  }
+
+  function normalizeTimeslot(b){
+    const v =
+      b?.timeslot ??
+      b?.timeSlot ??
+      b?.time_slot ??
+      b?.slot ??
+      b?.selectedSlot ??
+      "";
+    return String(v || "").trim();
+  }
+
+  function ensureWashTypeOnBookings(){
+    let changed = false;
+    (bookings || []).forEach(b => {
+      const wt = deriveWashTypeFromBooking(b);
+      if (!b.washType || normalizeWashType(b.washType) !== wt) {
+        b.washType = wt;
+        changed = true;
+      }
+      if (!b.serviceLabel) {
+        b.serviceLabel = `${wt} @Home`;
+        changed = true;
+      }
+      const slot = normalizeTimeslot(b);
+      if (slot && (!b.timeslot || String(b.timeslot).trim() !== slot)) {
+        b.timeslot = slot;
+        changed = true;
+      }
+    });
+    if (changed) {
+      localStorage.setItem("pendingBookings", JSON.stringify(bookings));
+    }
+  }
+
+  // Profile dropdown
+  const profileArea     = document.getElementById("profileArea");
+  const profileDropdown = document.getElementById("profileDropdown");
+  const profileNameEl   = document.getElementById("profileName");
+  const profileIconEl   = document.getElementById("profileIcon");
+
+  // ✅ Fetch profile WITH Authorization
+  fetch(API_USERS + "/profile?phone=" + encodeURIComponent(phone), {
+    method: "GET",
+    headers: getAuthHeaders({ "Content-Type": "application/json" })
+  })
+    .then(res => {
+      if (res.status === 401 || res.status === 403) {
+        localStorage.setItem("pendingTarget", "/payment");
+        window.location.href = "/SignuLogin?mode=login";
+        return Promise.reject();
+      }
+      return res.ok ? res.json() : Promise.reject();
+    })
+    .then(user => {
+      const name = user.lastName || user.firstName || "User";
+      profileNameEl.textContent = name;
+      profileIconEl.textContent = name.charAt(0).toUpperCase();
+    })
+    .catch(() => {
+      profileNameEl.textContent = "User";
+      profileIconEl.textContent = "U";
+    });
+
+  profileArea.onclick = (e) => {
+    e.stopPropagation();
+    profileDropdown.style.display =
+      profileDropdown.style.display === "block" ? "none" : "block";
+  };
+  document.addEventListener("click", () => { profileDropdown.style.display = "none"; });
+
+  function goDashboard() { window.location.href = "/aspcare"; }
+  function goToOrders()  { window.location.href = "/orders"; }
+  function goToEditProfile() { window.location.href = "/edit-profile"; }
+
+  // ✅ Logout should remove ONLY auth keys
+  function logout() {
+    localStorage.removeItem(JWT_KEY);
+    localStorage.removeItem(PHONE_KEY);
+    localStorage.removeItem("pendingTarget");
+    window.location.href = "/mainpage";
+  }
+
+  // navigation targets
+  function goReview() { window.location.href = "review.html"; }
+
+  function handleSearchNavigation() {
+    const input = document.getElementById("searchInput");
+    if (!input) return;
+    const query = input.value.trim().toLowerCase();
+    if (!query) return;
+
+    if (query === "orders" || query.includes("booking")) { goToOrders(); return; }
+    if (query.includes("dashboard") || query === "home") { goDashboard(); return; }
+    if (query.includes("self")) { window.location.href = "/selfdrive"; return; }
+    if (query.includes("home wash") || query.includes("homewash")) { window.location.href = "/homewash"; return; }
+
+    alert('No matching page. Try "orders", "dashboard", "self drive", or "home wash".');
+  }
+
+  function formatDate(ymd) {
+    if (!ymd) return "";
+    const parts = String(ymd).split("-");
+    if (parts.length !== 3) return ymd;
+    const [y,m,d] = parts;
+    return `${d}-${m}-${y}`;
+  }
+
+  function setStatus(msg, cls) {
+    statusTextEl.textContent = msg || "";
+    statusTextEl.className = "status-msg" + (cls ? " " + cls : "");
+  }
+
+  function getFinalAmountForBooking(b) {
+    const tryNum = (x) => {
+      const n = Number(x);
+      return (!isNaN(n) && n >= 0) ? n : null;
+    };
+    const a =
+      tryNum(b?.finalAmount) ??
+      tryNum(b?.amount) ??
+      tryNum(b?.baseAmount) ??
+      null;
+    return a == null ? 0 : a;
+  }
+
+  function readPayableFromReview() {
+    const v = localStorage.getItem("finalPayableAmount");
+    const n = Number(v);
+    return (!isNaN(n) && n >= 0) ? n : null;
+  }
+
+  function buildUpiUri(amount) {
+    const amt = Number(amount || 0).toFixed(2);
+    const note = `ASP Care Booking`.trim();
+    return "upi://pay" +
+      "?pa=" + encodeURIComponent(MERCHANT_UPI) +
+      "&pn=" + encodeURIComponent(MERCHANT_NAME) +
+      "&am=" + encodeURIComponent(amt) +
+      "&cu=INR" +
+      "&tn=" + encodeURIComponent(note);
+  }
+
+  function renderUpiQr(amount) {
+    const qrBox = document.getElementById("upiQr");
+    const amtLabel = document.getElementById("qrAmountLabel");
+    if (!qrBox || !amtLabel) return;
+
+    amtLabel.textContent = "₹" + Number(amount || 0);
+    qrBox.innerHTML = "";
+
+    new QRCode(qrBox, { text: buildUpiUri(amount), width: 140, height: 140 });
+  }
+
+  function makeKV(key, val) {
+    const wrap = document.createElement("div");
+    wrap.className = "kv";
+
+    const k = document.createElement("div");
+    k.className = "k";
+    k.textContent = key;
+
+    const v = document.createElement("div");
+    v.className = "v";
+    v.title = val || "";
+    v.textContent = val || "-";
+
+    wrap.appendChild(k);
+    wrap.appendChild(v);
+    return wrap;
+  }
+
+  let totalPayable = 0;
+
+  function toggleFreebieUI(isFreebie) {
+    if (isFreebie) {
+      upiCardEl.classList.add("hidden");
+      txnFieldWrapEl.classList.add("hidden");
+      pageSubtitleEl.textContent = "This booking is free (membership freebie). Just confirm your order.";
+      confirmSubEl.textContent = "No payment required. We will confirm and save your order.";
+      payTitleEl.textContent = "Free booking";
+      paySubEl.textContent = "No QR payment required for this order.";
+      payModeChipEl.textContent = "Freebie Applied";
+      holdTitleEl.textContent = "Order confirmed";
+      holdMsgEl.textContent = "Free booking confirmed successfully.";
+
+      if (freebieNavRowEl) freebieNavRowEl.classList.remove("hidden");
+    } else {
+      upiCardEl.classList.remove("hidden");
+      txnFieldWrapEl.classList.remove("hidden");
+      pageSubtitleEl.textContent = "Scan the QR to pay, then enter transaction id and confirm order.";
+      confirmSubEl.textContent = "Transaction ID will be validated (null check + duplicate check).";
+      payTitleEl.textContent = "Pay via UPI QR";
+      paySubEl.textContent = "Scan QR in PhonePe / GPay / Paytm. After payment, enter Transaction ID.";
+      payModeChipEl.textContent = "UPI / Wallet / Cards";
+      holdTitleEl.textContent = "Order is on hold";
+      holdMsgEl.textContent = "order is on hold it will take 5 mins to confirm";
+
+      if (freebieNavRowEl) freebieNavRowEl.classList.add("hidden");
+    }
+  }
+
+  function renderBookings() {
+    ensureWashTypeOnBookings();
+
+    if (!bookings || bookings.length === 0) {
+      emptyMessageEl.classList.remove("hidden");
+      totalAmountEl.textContent = "₹0";
+      discountInfoEl.textContent = "";
+      bookingListEl.innerHTML = "";
+      carsCountChipEl.textContent = "Cars: 0";
+      toggleFreebieUI(true);
+      totalPayable = 0;
+      return;
+    }
+
+    emptyMessageEl.classList.add("hidden");
+    bookingListEl.innerHTML = "";
+    carsCountChipEl.textContent = "Cars: " + bookings.length;
+
+    const reviewPayable = readPayableFromReview();
+    totalPayable = (reviewPayable != null) ? reviewPayable : 0;
+
+    if (reviewPayable == null) {
+      totalPayable = 0;
+      bookings.forEach(b => { totalPayable += getFinalAmountForBooking(b); });
+      if (totalPayable < 0) totalPayable = 0;
+    }
+
+    totalAmountEl.textContent = "₹" + totalPayable;
+
+    const reviewLine = localStorage.getItem("reviewPaymentSummary") || "";
+    discountInfoEl.textContent = reviewLine;
+
+    toggleFreebieUI(totalPayable === 0);
+
+    if (totalPayable > 0) renderUpiQr(totalPayable);
+
+    bookingListEl.innerHTML = "";
+
+    bookings.forEach((b, idx) => {
+      const amount = getFinalAmountForBooking(b);
+
+      const item = document.createElement("div");
+      item.className = "booking-item";
+
+      const head = document.createElement("div");
+      head.className = "booking-head";
+
+      const left = document.createElement("div");
+      const title = document.createElement("div");
+      title.className = "booking-title";
+
+      const svc = b.serviceType || "HOME";
+      const carIdx = b.carIndex || (idx + 1);
+
+      const badge = document.createElement("span");
+      badge.className = "badge";
+      badge.textContent = svc;
+
+      title.appendChild(badge);
+      title.appendChild(document.createTextNode(" Car " + carIdx));
+
+      const wt = b.washType ? normalizeWashType(b.washType) : "";
+      if (wt) {
+        const washBadge = document.createElement("span");
+        washBadge.className = "badge";
+        washBadge.style.borderColor = "rgba(16,185,129,0.25)";
+        washBadge.style.background = "rgba(16,185,129,0.10)";
+        washBadge.style.color = "#047857";
+        washBadge.textContent = wt;
+        title.appendChild(washBadge);
+      }
+
+      if (b.serviceLabel || b.serviceKey) {
+        const svcBadge = document.createElement("span");
+        svcBadge.className = "badge";
+        svcBadge.textContent = (b.serviceLabel || b.serviceKey);
+        title.appendChild(svcBadge);
+      }
+
+      left.appendChild(title);
+
+      const mini = document.createElement("div");
+      mini.className = "section-sub";
+      const slot = normalizeTimeslot(b);
+      mini.textContent = `Date: ${formatDate(b.date)} · Slot: ${slot || "-"}`;
+      left.appendChild(mini);
+
+      const amtPill = document.createElement("div");
+      amtPill.className = "amt-pill";
+      amtPill.textContent = `₹${amount}`;
+
+      head.appendChild(left);
+      head.appendChild(amtPill);
+
+      item.appendChild(head);
+
+      const grid = document.createElement("div");
+      grid.className = "grid";
+      grid.appendChild(makeKV("Car No", (b.carNumber || "-")));
+      grid.appendChild(makeKV("Car Type", (b.carType || "-")));
+      if (b.address) grid.appendChild(makeKV("Address", b.address));
+      item.appendChild(grid);
+
+      const mapsUrl = b.mapsUrl || b.mapsURL || b.mapsurl || "";
+      if (mapsUrl) {
+        const a = document.createElement("a");
+        a.className = "map-link";
+        a.href = mapsUrl;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.textContent = "🗺️ View address in Maps";
+        item.appendChild(a);
+      }
+
+      bookingListEl.appendChild(item);
+    });
+  }
+
+  function goBack() { window.history.back(); }
+
+  let redirectTimer = null;
+  let countdownValue = 5;
+
+  function showHoldModal() {
+    const modal = document.getElementById("holdModal");
+    const countdownEl = document.getElementById("countdown");
+
+    countdownValue = 5;
+    countdownEl.textContent = countdownValue;
+
+    modal.style.display = "flex";
+
+    if (redirectTimer) clearInterval(redirectTimer);
+
+    redirectTimer = setInterval(() => {
+      countdownValue--;
+      countdownEl.textContent = countdownValue;
+
+      if (countdownValue <= 0) {
+        clearInterval(redirectTimer);
+        redirectToOrders();
+      }
+    }, 1000);
+  }
+
+  function closeHoldModal() {
+    if (redirectTimer) clearInterval(redirectTimer);
+    redirectToOrders();
+  }
+
+  function redirectToOrders() {
+    const modal = document.getElementById("holdModal");
+    if (modal) modal.style.display = "none";
+
+    localStorage.removeItem("pendingBookings");
+    localStorage.removeItem("finalPayableAmount");
+    localStorage.removeItem("reviewPaymentSummary");
+
+    window.location.href = "/orders";
+  }
+
+  document.getElementById("holdModal").addEventListener("click", (e) => {
+    if (e.target && e.target.id === "holdModal") closeHoldModal();
+  });
+
+  function normalizeTxnId(s) { return (s || "").trim(); }
+
+  function computeWaterDiscountApplied(b, waterProvided) {
+    if (!waterProvided) return 0;
+
+    const asNum = (x) => {
+      const n = Number(x);
+      return isNaN(n) ? 0 : n;
+    };
+
+    const existing = asNum(b?.waterDiscountApplied);
+    if (existing > 0) return existing;
+
+    const base = asNum(b?.baseAmount);
+    const freeApplied = asNum(b?.freeApplied);
+    const discApplied = asNum(b?.discountApplied);
+
+    const beforeWater = Math.max(0, base - freeApplied - discApplied);
+    const waterDisc = beforeWater * 0.15;
+
+    return Math.round(waterDisc * 100) / 100;
+  }
+
+  async function confirmOrder() {
+    setStatus("", "");
+    ensureWashTypeOnBookings();
+
+    // ✅ re-check auth (avoid expired state)
+    const jwtNow = getJwt();
+    const phoneNow = getPhone();
+    if (!jwtNow || !phoneNow) {
+      localStorage.setItem("pendingTarget", "/payment");
+      window.location.href = "/SignuLogin?mode=login";
+      return;
+    }
+
+    if (!bookings || bookings.length === 0) {
+      alert("No pending bookings found.");
+      return;
+    }
+
+    for (let i = 0; i < bookings.length; i++) {
+      const b = bookings[i];
+      const slot = normalizeTimeslot(b);
+      if (!slot) {
+        alert("Time slot is missing for Car " + (b.carIndex || (i + 1)) + ". Please go back and select slot again.");
+        return;
+      }
+      if (!b.date) {
+        alert("Date is missing for Car " + (b.carIndex || (i + 1)) + ". Please go back and select date again.");
+        return;
+      }
+    }
+
+    const isFreebie = (Number(totalPayable || 0) === 0);
+
+    const txnId = normalizeTxnId(txnIdInputEl.value);
+    if (!isFreebie && !txnId) {
+      setStatus("Transaction ID is required.", "error");
+      alert("Please enter Transaction ID.");
+      return;
+    }
+
+    const mobileNumber = (bookings[0] && bookings[0].phone)
+      ? bookings[0].phone
+      : phoneNow;
+
+    if (!mobileNumber) {
+      alert("Mobile number is missing. Please login again.");
+      return;
+    }
+
+    const waterProvided = isWaterProvidedFromStorage();
+
+    const payload = bookings.map((b, idx) => {
+      const waterDiscountApplied = computeWaterDiscountApplied(b, waterProvided);
+
+      return {
+        phone: b.phone || mobileNumber,
+        date: String(b.date || "").trim(),
+        timeslot: normalizeTimeslot(b),
+        carType: b.carType,
+        serviceType: b.serviceType || "HOME",
+        washType: b.washType || deriveWashTypeFromBooking(b),
+
+        address: b.address || "",
+        carNumber: b.carNumber || "",
+        carIndex: (b.carIndex != null ? b.carIndex : (idx + 1)),
+        transactionId: isFreebie ? null : txnId,
+
+        serviceCentreId: (b.serviceCentreId ?? null),
+        centreName: b.centreName || "",
+        mapsUrl: b.mapsUrl || b.mapsURL || b.mapsurl || "",
+
+        waterProvided: !!waterProvided,
+        waterDiscountApplied: Number(waterDiscountApplied || 0)
+      };
+    });
+
+    try {
+      setStatus("Saving booking…", "warn");
+
+      const resp = await fetch(API_CONFIRM_ORDER, {
+        method: "POST",
+        headers: getAuthHeaders({ "Content-Type": "application/json" }),
+        body: JSON.stringify(payload)
+      });
+
+      // ✅ token expired -> login
+      if (resp.status === 401 || resp.status === 403) {
+        localStorage.setItem("pendingTarget", "/payment");
+        window.location.href = "/SignuLogin?mode=login";
+        return;
+      }
+
+      const text = await resp.text().catch(() => "");
+      let data = null;
+      try { data = text ? JSON.parse(text) : null; } catch {}
+
+      if (!resp.ok) {
+        const msg = (data && (data.message || data.error)) || (text && text.trim()) || "Failed to confirm order.";
+        setStatus(msg, "error");
+        alert(msg);
+        return;
+      }
+
+      const msg = (data && data.message)
+        ? data.message
+        : (isFreebie ? "Order confirmed successfully (Free booking)." : "order is on hold it will take 5 mins to confirm");
+
+      setStatus(msg, "success");
+      showHoldModal();
+
+    } catch (e) {
+      console.error("Confirm order network error:", e);
+      setStatus("Error contacting server. Please try again.", "error");
+      alert("Error contacting server. Please try again.");
+    }
+  }
+
+  renderBookings();
+
+  window.goDashboard = goDashboard;
+  window.goToOrders = goToOrders;
+  window.goToEditProfile = goToEditProfile;
+  window.logout = logout;
+  window.handleSearchNavigation = handleSearchNavigation;
+  window.goBack = goBack;
+  window.goReview = goReview;
+  window.confirmOrder = confirmOrder;
+  window.closeHoldModal = closeHoldModal;
+</script>
+
+</body>
+</html>

@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Car Centre – Service Board</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #2563eb;
+      --bg-page: #0b1120;
+      --bg-card: #020617;
+      --border-subtle: #1f2937;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --danger: #ef4444;
+      --success: #22c55e;
+      --warn: #facc15;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #1d4ed8 0, #020617 45%, #000000 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 18px 0;
+      color: var(--text-main);
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 20px;
+      background: rgba(15, 23, 42, 0.96);
+      border-radius: 20px;
+      box-shadow: 0 20px 45px rgba(0,0,0,0.60);
+      overflow: hidden;
+      border: 1px solid rgba(148,163,184,0.4);
+    }
+
+    .shell-header {
+      padding: 14px 20px;
+      background: linear-gradient(90deg, #1d4ed8, #4f46e5, #0f172a);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .logo-pill {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+      box-shadow: 0 0 0 1px rgba(191,219,254,0.45);
+    }
+
+    .title-block { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .title-block h1 {
+      margin: 0;
+      font-size: 18px;
+      color: #f9fafb;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .title-block span {
+      font-size: 12px;
+      color: #e5e7eb;
+      opacity: 0.9;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .header-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    .tag {
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.4);
+      color: #e5e7eb;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid rgba(191,219,254,0.25);
+    }
+
+    .tag-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34,197,94,0.35);
+    }
+
+    .btn {
+      padding: 6px 11px;
+      border-radius: 999px;
+      border: none;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: #0f172a;
+      color: #f9fafb;
+      border: 1px solid rgba(191,219,254,0.8);
+    }
+    .btn-primary:hover { background: #020617; }
+
+    .shell-body { padding: 14px 18px 18px; }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .section-header h2 { margin: 0 0 2px; font-size: 16px; }
+    .section-header span { font-size: 12px; color: var(--text-muted); }
+
+    .service-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .tab-btn {
+      padding: 7px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.45);
+      background: rgba(2,6,23,0.55);
+      color: #e5e7eb;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .tab-btn.active {
+      background: rgba(59,130,246,0.25);
+      border-color: rgba(147,197,253,0.85);
+      box-shadow: 0 10px 22px rgba(59,130,246,0.20);
+    }
+
+    .summary-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+      font-size: 11px;
+      align-items: center;
+    }
+
+    .summary-pill {
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      color: #e5e7eb;
+      background: rgba(2,6,23,0.55);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+    }
+    .summary-pill.active {
+      background: rgba(59,130,246,0.25);
+      border-color: rgba(147,197,253,0.85);
+    }
+
+    .status-dot { width: 8px; height: 8px; border-radius: 999px; }
+    .dot-pending { background: var(--warn); }
+    .dot-servicing { background: #38bdf8; }
+    .dot-completed { background: var(--success); }
+
+    .table-wrapper {
+      margin-top: 12px;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(55,65,81,0.9);
+      background: #020617;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      table-layout: fixed;
+    }
+
+    thead { background: rgba(15,23,42,0.95); color: #e5e7eb; }
+
+    th, td {
+      padding: 8px 8px;
+      text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      border-bottom: 1px solid rgba(31,41,55,0.85);
+      vertical-align: top;
+    }
+
+    th { font-weight: 600; font-size: 12px; border-bottom: 1px solid #1f2937; }
+
+    td.addr-cell {
+      white-space: normal;
+      word-break: break-word;
+      line-height: 1.35;
+    }
+
+    td.addr-cell a {
+      color: #60a5fa;
+      text-decoration: underline;
+      font-size: 11px;
+    }
+
+    tbody tr:hover td { background: #030712; }
+
+    .status-pill {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .status-PENDING { background: #facc15; color: #1f2937; }
+    .status-IN_SERVICING { background: #0ea5e9; color: #022c22; }
+    .status-COMPLETED { background: #22c55e; color: #022c22; }
+
+    select.status-select {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid #4b5563;
+      background: #020617;
+      color: #e5e7eb;
+      font-size: 11px;
+      cursor: pointer;
+      width: 100%;
+      max-width: 160px;
+    }
+    select.status-select:disabled { opacity: 0.6; cursor: wait; }
+
+    .muted { font-size: 11px; color: var(--text-muted); }
+
+    .message-row {
+      margin-top: 10px;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .msg-left { color: var(--text-muted); }
+    .msg-right { text-align: right; }
+    .msg-success { color: var(--success); }
+    .msg-error { color: var(--danger); }
+
+    /* MOBILE CARDS */
+    .mobile-cards { display: none; }
+    .order-card {
+      border-radius: 16px;
+      border: 1px solid rgba(55,65,81,0.9);
+      background: #020617;
+      padding: 12px 12px;
+      box-shadow: 0 10px 26px rgba(0,0,0,0.35);
+    }
+    .order-card + .order-card { margin-top: 10px; }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .card-title {
+      font-weight: 700;
+      font-size: 13px;
+      color: #f9fafb;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .card-title .mini {
+      font-size: 11px;
+      color: #cbd5f5;
+      font-weight: 600;
+      background: rgba(59,130,246,0.15);
+      border: 1px solid rgba(59,130,246,0.35);
+      padding: 2px 8px;
+      border-radius: 999px;
+      flex-shrink: 0;
+    }
+
+    .card-sub {
+      margin-top: 8px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      font-size: 12px;
+      color: #e5e7eb;
+    }
+
+    .kv {
+      display: grid;
+      grid-template-columns: 94px 1fr;
+      gap: 8px;
+      align-items: start;
+    }
+
+    .kv .k { color: #9ca3af; font-size: 11px; }
+    .kv .v { color: #e5e7eb; min-width: 0; }
+
+    .card-row {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      width: 100%;
+    }
+
+    .card-actions select.status-select { max-width: none; flex: 1; }
+
+    .maps-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #60a5fa;
+      text-decoration: underline;
+      font-size: 11px;
+      margin-top: 4px;
+    }
+
+    @media (max-width: 860px) { .shell { margin: 0 12px; } }
+    @media (max-width: 720px) {
+      body { padding: 12px 0; }
+      .shell { margin: 0 10px; border-radius: 18px; }
+      .shell-header { flex-direction: column; align-items: stretch; gap: 10px; }
+      .header-right { width: 100%; flex-direction: row; justify-content: space-between; align-items: center; }
+      .table-wrapper { display: none; }
+      .mobile-cards { display: block; margin-top: 12px; }
+      .btn { padding: 8px 12px; }
+    }
+  </style>
+</head>
+
+<body>
+<div class="shell">
+
+  <div class="shell-header">
+    <div class="header-left">
+      <div class="logo-pill">🧼</div>
+      <div class="title-block">
+        <h1>Car Centre – Service Board</h1>
+        <span>Shows only Payment SUCCESS/PAID bookings.</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="tag"><span class="tag-dot"></span>Car centre online</div>
+      <button class="btn btn-primary" onclick="reloadBookings()">⟳ Refresh</button>
+    </div>
+  </div>
+
+  <div class="shell-body">
+    <div class="section-header">
+      <div>
+        <h2>Service Orders</h2>
+        <span id="subLine">Showing HOME · Paid orders only</span>
+
+        <div class="summary-row" style="margin-top:10px;">
+          <div class="summary-pill active" id="pillAll" onclick="setStatusFilter('ALL')">Total orders: <span id="countAll">0</span></div>
+          <div class="summary-pill" id="pillPending" onclick="setStatusFilter('PENDING')">
+            <span class="status-dot dot-pending"></span>Pending (<span id="countPending">0</span>)
+          </div>
+          <div class="summary-pill" id="pillServicing" onclick="setStatusFilter('IN_SERVICING')">
+            <span class="status-dot dot-servicing"></span>In servicing (<span id="countServicing">0</span>)
+          </div>
+          <div class="summary-pill" id="pillCompleted" onclick="setStatusFilter('COMPLETED')">
+            <span class="status-dot dot-completed"></span>Completed (<span id="countCompleted">0</span>)
+          </div>
+        </div>
+      </div>
+
+      <div class="service-tabs">
+        <button class="tab-btn active" id="tabHome" onclick="setServiceFilter('HOME')">🏠 Home</button>
+        <button class="tab-btn" id="tabSelf" onclick="setServiceFilter('SELF_DRIVE')">🚗 Self Drive</button>
+        <button class="tab-btn" id="tabAsp" onclick="setServiceFilter('ASP_CARE')">🛠️ ASP Care</button>
+      </div>
+    </div>
+
+    <!-- DESKTOP TABLE -->
+    <div class="table-wrapper">
+      <table>
+        <thead>
+        <tr>
+          <th style="width:70px;">Booking #</th>
+          <th style="width:90px;">Car #</th>
+          <th style="width:90px;">Service</th>
+          <th style="width:90px;">Date</th>
+          <th style="width:90px;">Slot</th>
+          <th>Address</th>
+          <th style="width:120px;">Service Status</th>
+          <th style="width:170px;">Update</th>
+        </tr>
+        </thead>
+        <tbody id="ordersBody"></tbody>
+      </table>
+    </div>
+
+    <!-- MOBILE CARDS -->
+    <div class="mobile-cards" id="ordersCards"></div>
+
+    <div class="message-row">
+      <div class="msg-left" id="summaryText">Loading orders…</div>
+      <div class="msg-right" id="statusMessage"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ✅ With your gateway yml:
+  // /bookings/** -> booking service 8082
+  const BOOKINGS_LIST_ENDPOINT = "/bookings/all";
+  const BOOKINGS_STATUS_ENDPOINT = (id) => `/bookings/${id}/status`;
+
+  let allBookings = [];
+
+  // Filters
+  let serviceFilter = "HOME";     // HOME | SELF_DRIVE | ASP_CARE
+  let statusFilter  = "ALL";      // ALL | PENDING | IN_SERVICING | COMPLETED
+
+  function normalizeService(raw) {
+    const s = String(raw || "").toLowerCase();
+
+    // Adjust these mappings if your DB values differ
+    if (s.includes("home")) return "HOME";
+    if (s.includes("self")) return "SELF_DRIVE";
+    if (s.includes("asp"))  return "ASP_CARE";
+
+    return "HOME";
+  }
+
+  function isPaid(booking) {
+    const p = String(booking.paymentStatus || booking.payment || booking.payStatus || "").toUpperCase();
+    return (p === "SUCCESS" || p === "PAID");
+  }
+
+  function formatDate(iso) {
+    if (!iso) return "";
+    if (iso.length === 10 && iso.indexOf("T") === -1) return iso;
+    try {
+      const d = new Date(iso);
+      if (isNaN(d.getTime())) return iso;
+      return d.toLocaleDateString();
+    } catch (e) { return iso; }
+  }
+
+  function labelForStatus(raw) {
+    const s = (raw || "").toUpperCase();
+    if (s === "IN_SERVICING") return "In servicing";
+    if (s === "COMPLETED")   return "Completed";
+    return "Pending";
+  }
+
+  function pillClassForStatus(raw) {
+    const s = (raw || "").toUpperCase();
+    if (s === "IN_SERVICING") return "status-IN_SERVICING";
+    if (s === "COMPLETED")    return "status-COMPLETED";
+    return "status-PENDING";
+  }
+
+  function showStatusMessage(text, ok) {
+    const el = document.getElementById("statusMessage");
+    if (!text) { el.textContent = ""; el.className = ""; return; }
+    el.textContent = text;
+    el.className = ok ? "msg-right msg-success" : "msg-right msg-error";
+    setTimeout(() => { el.textContent = ""; el.className = "msg-right"; }, 3500);
+  }
+
+  function safeText(v) { return (v == null ? "" : String(v)); }
+
+  function setServiceFilter(val) {
+    serviceFilter = val;
+
+    document.getElementById("tabHome").classList.toggle("active", val === "HOME");
+    document.getElementById("tabSelf").classList.toggle("active", val === "SELF_DRIVE");
+    document.getElementById("tabAsp").classList.toggle("active", val === "ASP_CARE");
+
+    document.getElementById("subLine").textContent =
+      `Showing ${val.replace("_"," ")} · Paid orders only`;
+
+    applyFilters();
+  }
+
+  function setStatusFilter(val) {
+    statusFilter = val;
+
+    document.getElementById("pillAll").classList.toggle("active", val === "ALL");
+    document.getElementById("pillPending").classList.toggle("active", val === "PENDING");
+    document.getElementById("pillServicing").classList.toggle("active", val === "IN_SERVICING");
+    document.getElementById("pillCompleted").classList.toggle("active", val === "COMPLETED");
+
+    applyFilters();
+  }
+
+  function applyFilters() {
+    const paidOnly = allBookings.filter(isPaid);
+    const byService = paidOnly.filter(b => normalizeService(b.serviceType || b.service || b.service_name) === serviceFilter);
+
+    // counts (service + paid)
+    const counts = { ALL: byService.length, PENDING: 0, IN_SERVICING: 0, COMPLETED: 0 };
+    byService.forEach(b => {
+      const s = String(b.status || "PENDING").toUpperCase();
+      if (s === "IN_SERVICING") counts.IN_SERVICING++;
+      else if (s === "COMPLETED") counts.COMPLETED++;
+      else counts.PENDING++;
+    });
+
+    document.getElementById("countAll").textContent = counts.ALL;
+    document.getElementById("countPending").textContent = counts.PENDING;
+    document.getElementById("countServicing").textContent = counts.IN_SERVICING;
+    document.getElementById("countCompleted").textContent = counts.COMPLETED;
+
+    let finalList = byService;
+    if (statusFilter !== "ALL") {
+      finalList = byService.filter(b => String(b.status || "PENDING").toUpperCase() === statusFilter);
+    }
+
+    renderSummary(finalList);
+    renderTable(finalList);
+    renderCards(finalList);
+  }
+
+  function renderSummary(list) {
+    const summaryText = document.getElementById("summaryText");
+
+    if (!list || list.length === 0) {
+      summaryText.textContent = "No orders to show for this service / filter.";
+      return;
+    }
+
+    let pending = 0, inServicing = 0, completed = 0;
+    list.forEach(b => {
+      const s = (b.status || "PENDING").toUpperCase();
+      if (s === "IN_SERVICING") inServicing++;
+      else if (s === "COMPLETED") completed++;
+      else pending++;
+    });
+
+    summaryText.textContent = `Pending: ${pending} · In servicing: ${inServicing} · Completed: ${completed}`;
+  }
+
+  function renderTable(list) {
+    const tbody = document.getElementById("ordersBody");
+    tbody.innerHTML = "";
+
+    if (!list || list.length === 0) {
+      const tr = document.createElement("tr");
+      const td = document.createElement("td");
+      td.colSpan = 8;
+      td.textContent = "No orders found for this service / filter.";
+      td.className = "muted";
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+      return;
+    }
+
+    list.forEach(b => {
+      const tr = document.createElement("tr");
+
+      function addCell(text) {
+        const td = document.createElement("td");
+        td.textContent = text == null ? "" : text;
+        tr.appendChild(td);
+      }
+
+      addCell(b.id);
+      addCell(b.carNumber || "");
+      addCell(b.serviceType || "");
+      addCell(formatDate(b.bookingDate));
+      addCell(b.timeSlot || "");
+
+      const addrTd = document.createElement("td");
+      addrTd.className = "addr-cell";
+      const addrText = document.createElement("div");
+      addrText.textContent = b.address || "";
+      addrTd.appendChild(addrText);
+
+      if (b.mapsUrl) {
+        const mapDiv = document.createElement("div");
+        mapDiv.style.marginTop = "3px";
+        const a = document.createElement("a");
+        a.href = b.mapsUrl;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.textContent = "View in Maps";
+        mapDiv.appendChild(a);
+        addrTd.appendChild(mapDiv);
+      }
+      tr.appendChild(addrTd);
+
+      const statusTd = document.createElement("td");
+      const statusSpan = document.createElement("span");
+      const statusVal = (b.status || "PENDING").toUpperCase();
+      statusSpan.className = "status-pill " + pillClassForStatus(statusVal);
+      statusSpan.textContent = labelForStatus(statusVal);
+      statusSpan.id = "status-pill-" + b.id;
+      statusTd.appendChild(statusSpan);
+      tr.appendChild(statusTd);
+
+      const updateTd = document.createElement("td");
+      const select = document.createElement("select");
+      select.className = "status-select";
+      select.dataset.bookingId = b.id;
+
+      const options = [
+        { value: "PENDING",      label: "Pending" },
+        { value: "IN_SERVICING", label: "In servicing" },
+        { value: "COMPLETED",    label: "Completed" }
+      ];
+
+      options.forEach(opt => {
+        const o = document.createElement("option");
+        o.value = opt.value;
+        o.textContent = opt.label;
+        if (opt.value === statusVal) o.selected = true;
+        select.appendChild(o);
+      });
+
+      select.addEventListener("change", (e) => {
+        updateBookingStatus(e.target.dataset.bookingId, e.target.value, e.target);
+      });
+
+      updateTd.appendChild(select);
+      tr.appendChild(updateTd);
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  function renderCards(list) {
+    const cardsWrap = document.getElementById("ordersCards");
+    cardsWrap.innerHTML = "";
+
+    if (!list || list.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "muted";
+      empty.textContent = "No orders found for this service / filter.";
+      cardsWrap.appendChild(empty);
+      return;
+    }
+
+    list.forEach(b => {
+      const statusVal = (b.status || "PENDING").toUpperCase();
+
+      const card = document.createElement("div");
+      card.className = "order-card";
+
+      const top = document.createElement("div");
+      top.className = "card-top";
+
+      const title = document.createElement("div");
+      title.className = "card-title";
+      title.innerHTML = `
+        <span class="mini">#${safeText(b.id)}</span>
+        <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${safeText(b.carNumber || "—")}</span>
+      `;
+
+      const pills = document.createElement("div");
+      pills.style.display = "flex";
+      pills.style.gap = "8px";
+      pills.style.flexWrap = "wrap";
+      pills.style.justifyContent = "flex-end";
+
+      const stP = document.createElement("span");
+      stP.className = "status-pill " + pillClassForStatus(statusVal);
+      stP.textContent = labelForStatus(statusVal);
+      stP.id = "status-pill-" + b.id;
+
+      pills.appendChild(stP);
+
+      top.appendChild(title);
+      top.appendChild(pills);
+
+      const sub = document.createElement("div");
+      sub.className = "card-sub";
+
+      const kv1 = document.createElement("div");
+      kv1.className = "kv";
+      kv1.innerHTML = `<div class="k">Service</div><div class="v">${safeText(b.serviceType || "—")}</div>`;
+
+      const kv2 = document.createElement("div");
+      kv2.className = "kv";
+      kv2.innerHTML = `<div class="k">Date</div><div class="v">${safeText(formatDate(b.bookingDate) || "—")}</div>`;
+
+      const kv3 = document.createElement("div");
+      kv3.className = "kv";
+      kv3.innerHTML = `<div class="k">Slot</div><div class="v">${safeText(b.timeSlot || "—")}</div>`;
+
+      const kv4 = document.createElement("div");
+      kv4.className = "kv";
+      kv4.innerHTML = `<div class="k">Address</div><div class="v">${safeText(b.address || "—")}</div>`;
+
+      sub.appendChild(kv1);
+      sub.appendChild(kv2);
+      sub.appendChild(kv3);
+      sub.appendChild(kv4);
+
+      if (b.mapsUrl) {
+        const maps = document.createElement("a");
+        maps.href = b.mapsUrl;
+        maps.target = "_blank";
+        maps.rel = "noopener noreferrer";
+        maps.className = "maps-link";
+        maps.textContent = "📍 View in Maps";
+        sub.appendChild(maps);
+      }
+
+      const actionRow = document.createElement("div");
+      actionRow.className = "card-row";
+
+      const actions = document.createElement("div");
+      actions.className = "card-actions";
+
+      const select = document.createElement("select");
+      select.className = "status-select";
+      select.dataset.bookingId = b.id;
+
+      const options = [
+        { value: "PENDING",      label: "Pending" },
+        { value: "IN_SERVICING", label: "In servicing" },
+        { value: "COMPLETED",    label: "Completed" }
+      ];
+
+      options.forEach(opt => {
+        const o = document.createElement("option");
+        o.value = opt.value;
+        o.textContent = opt.label;
+        if (opt.value === statusVal) o.selected = true;
+        select.appendChild(o);
+      });
+
+      select.addEventListener("change", (e) => {
+        updateBookingStatus(e.target.dataset.bookingId, e.target.value, e.target);
+      });
+
+      actions.appendChild(select);
+      actionRow.appendChild(actions);
+
+      card.appendChild(top);
+      card.appendChild(sub);
+      card.appendChild(actionRow);
+
+      cardsWrap.appendChild(card);
+    });
+  }
+
+  async function reloadBookings() {
+    const summaryText = document.getElementById("summaryText");
+    summaryText.textContent = "Loading orders…";
+    showStatusMessage("", true);
+
+    try {
+      const res = await fetch(BOOKINGS_LIST_ENDPOINT, { headers: { "Accept": "application/json" } });
+      if (!res.ok) {
+        const t = await res.text().catch(() => "");
+        showStatusMessage(`Error ${res.status}: ${t.slice(0,120)}`, false);
+        allBookings = [];
+        applyFilters();
+        summaryText.textContent = "Failed to load orders.";
+        return;
+      }
+      const data = await res.json();
+      allBookings = Array.isArray(data) ? data : (data.content || data.data || []);
+      if (!Array.isArray(allBookings)) allBookings = [];
+      applyFilters();
+      showStatusMessage("Orders loaded.", true);
+    } catch (e) {
+      console.error(e);
+      showStatusMessage("Error loading orders from server.", false);
+      allBookings = [];
+      applyFilters();
+      summaryText.textContent = "Failed to load orders.";
+    }
+  }
+
+  async function updateBookingStatus(id, newStatus, selectEl) {
+    if (!id) return;
+
+    const oldValue = selectEl ? (selectEl.getAttribute("data-prev") || selectEl.value) : null;
+    if (selectEl) {
+      selectEl.disabled = true;
+      selectEl.setAttribute("data-prev", oldValue || "");
+    }
+
+    showStatusMessage("Updating status…", true);
+
+    try {
+      const res = await fetch(BOOKINGS_STATUS_ENDPOINT(id), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({ status: newStatus })
+      });
+
+      if (!res.ok) {
+        const t = await res.text().catch(() => "");
+        if (selectEl && oldValue != null) selectEl.value = oldValue;
+        showStatusMessage(`Failed to update (${res.status}) ${t.slice(0,120)}`, false);
+        return;
+      }
+
+      try { await res.json(); } catch (_) {}
+
+      const pill = document.getElementById("status-pill-" + id);
+      if (pill) {
+        pill.className = "status-pill " + pillClassForStatus(newStatus);
+        pill.textContent = labelForStatus(newStatus);
+      }
+
+      const idx = allBookings.findIndex(b => String(b.id) === String(id));
+      if (idx !== -1) allBookings[idx].status = newStatus;
+
+      showStatusMessage("Status updated.", true);
+      applyFilters();
+    } catch (e) {
+      console.error(e);
+      if (selectEl && oldValue != null) selectEl.value = oldValue;
+      showStatusMessage("Error contacting server while updating status.", false);
+    } finally {
+      if (selectEl) selectEl.disabled = false;
+    }
+  }
+
+  (function init() {
+    // default filters
+    setServiceFilter("HOME");
+    setStatusFilter("ALL");
+    reloadBookings();
+  })();
+</script>
+</body>
+</html>

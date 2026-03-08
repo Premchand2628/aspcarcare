@@ -1,0 +1,7 @@
+com\carwashcommon\security\JwtTokenService.class
+com\carwashcommon\security\SecurityAutoConfig.class
+com\carwashcommon\security\JwtProperties.class
+com\carwashcommon\logging\HttpLoggingAutoConfig.class
+com\carwashcommon\security\JwtUserPrincipal.class
+com\carwashcommon\security\JwtAuthenticationFilter.class
+com\carwashcommon\logging\HttpRequestResponseLoggingFilter.class

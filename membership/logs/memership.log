@@ -1,0 +1,26 @@
+2025-12-28 06:39:19 INFO  [] com.carwash.membership.MembershipApplication - Starting MembershipApplication using Java 17.0.7 with PID 18124 (D:\Codes\membership\target\classes started by chand in D:\Codes\membership)
+2025-12-28 06:39:19 INFO  [] com.carwash.membership.MembershipApplication - No active profile set, falling back to 1 default profile: "default"
+2025-12-28 06:39:19 INFO  [] org.springframework.data.repository.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-28 06:39:19 INFO  [] org.springframework.data.repository.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 55 ms. Found 1 JPA repository interface.
+2025-12-28 06:39:20 INFO  [] org.springframework.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8085 (http)
+2025-12-28 06:39:20 INFO  [] org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8085"]
+2025-12-28 06:39:20 INFO  [] org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2025-12-28 06:39:20 INFO  [] org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.24]
+2025-12-28 06:39:20 INFO  [] org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-12-28 06:39:20 INFO  [] org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1259 ms
+2025-12-28 06:39:20 INFO  [] org.hibernate.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-12-28 06:39:20 INFO  [] org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.2.Final
+2025-12-28 06:39:20 INFO  [] org.hibernate.cache.internal.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-12-28 06:39:21 INFO  [] org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-12-28 06:39:21 INFO  [] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-12-28 06:39:21 INFO  [] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@6591f8ea
+2025-12-28 06:39:21 INFO  [] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-12-28 06:39:22 INFO  [] org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-28 06:39:22 INFO  [] org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-12-28 06:39:22 WARN  [] org.springframework.boot.autoconfigure.orm.jpa.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-28 06:39:22 INFO  [] org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8085"]
+2025-12-28 06:39:23 INFO  [] org.springframework.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8085 (http) with context path '/'
+2025-12-28 06:39:23 INFO  [] com.carwash.membership.MembershipApplication - Started MembershipApplication in 4.433 seconds (process running for 5.217)
+2025-12-28 06:44:26 INFO  [] org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-12-28 06:44:26 INFO  [] org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-12-28 06:44:26 INFO  [] org.springframework.web.servlet.DispatcherServlet - Completed initialization in 31 ms

@@ -1,0 +1,172 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ---------------------< com.carwash:bookingservice >---------------------
+[INFO] Building bookingservice 1.0.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.2.1:run (default-cli) > test-compile @ bookingservice >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ bookingservice ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] Copying 2 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.8.1:compile (default-compile) @ bookingservice ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ bookingservice ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] skip non existing resourceDirectory D:\aspcare\bookingservice\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.8.1:testCompile (default-testCompile) @ bookingservice ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] <<< spring-boot:3.2.1:run (default-cli) < test-compile @ bookingservice <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.2.1:run (default-cli) @ bookingservice ---
+[INFO] Attaching agents: []
+09:54:36,574 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - Processing appender named [FILE]
+09:54:36,574 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - About to instantiate appender of type [ch.qos.logback.core.rolling.RollingFileAppender]
+09:54:36,699 |-INFO in c.q.l.core.rolling.TimeBasedRollingPolicy@752011518 - No compression will be used
+09:54:36,702 |-INFO in c.q.l.core.rolling.TimeBasedRollingPolicy@752011518 - Will use the pattern C:/Users/chand/grafana-loki/logs/bookingservice.%d{yyyy-MM-dd}.log for the active file
+09:54:36,834 |-INFO in c.q.l.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy - The date pattern is 'yyyy-MM-dd' from file name pattern 'C:/Users/chand/grafana-loki/logs/bookingservice.%d{yyyy-MM-dd}.log'.
+09:54:36,834 |-INFO in c.q.l.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy - Roll-over at midnight.
+09:54:36,893 |-INFO in c.q.l.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy - Setting initial period to 2026-03-01T04:21:30.746Z
+09:54:36,985 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [net.logstash.logback.composite.loggingevent.LoggingEventJsonProviders] for [providers] property
+09:54:37,040 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [net.logstash.logback.composite.loggingevent.LoggingEventFormattedTimestampJsonProvider] for [timestamp] property
+09:54:37,058 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [net.logstash.logback.composite.loggingevent.LogLevelJsonProvider] for [logLevel] property
+09:54:37,062 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [net.logstash.logback.composite.loggingevent.LoggerNameJsonProvider] for [loggerName] property
+09:54:37,068 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [net.logstash.logback.composite.loggingevent.LoggingEventThreadNameJsonProvider] for [threadName] property
+09:54:37,072 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [net.logstash.logback.composite.loggingevent.MessageJsonProvider] for [message] property
+09:54:37,075 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [net.logstash.logback.composite.loggingevent.MdcJsonProvider] for [mdc] property
+09:54:37,077 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [net.logstash.logback.composite.loggingevent.StackTraceJsonProvider] for [stackTrace] property
+09:54:37,094 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [net.logstash.logback.composite.GlobalCustomFieldsJsonProvider] for [globalCustomFields] property
+09:54:37,096 |-WARN in ch.qos.logback.core.joran.util.beans.BeanDescriptionFactory@7d61eccf - Class 'net.logstash.logback.composite.GlobalCustomFieldsJsonProvider' contains multiple setters for the same property 'customFieldsNode'.
+09:54:38,160 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[FILE] - Active log file name: C:/Users/chand/grafana-loki/logs/bookingservice.log
+09:54:38,161 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[FILE] - File property is set to [C:/Users/chand/grafana-loki/logs/bookingservice.log]
+09:54:38,169 |-INFO in ch.qos.logback.classic.model.processor.RootLoggerModelHandler - Setting level of ROOT logger to INFO
+09:54:38,171 |-INFO in ch.qos.logback.classic.jul.LevelChangePropagator@cc6460c - Propagating INFO level on Logger[ROOT] onto the JUL framework
+09:54:38,190 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [FILE] to Logger[ROOT]
+09:54:38,190 |-INFO in ch.qos.logback.core.model.processor.DefaultProcessor@52350abb - End of configuration.
+09:54:38,191 |-INFO in org.springframework.boot.logging.logback.SpringBootJoranConfigurator@681aad3b - Registering current configuration as safe fallback point
+
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.2.1)
+
+Hibernate: 
+    select
+        distinct sc1_0.area 
+    from
+        carwash_service_centre sc1_0 
+    where
+        sc1_0.active=true 
+    order by
+        sc1_0.area
+Hibernate: 
+    select
+        b1_0.id,
+        b1_0.address,
+        b1_0.booking_date,
+        b1_0.car_index,
+        b1_0.car_number,
+        b1_0.car_type,
+        b1_0.centre_name,
+        b1_0.created_at,
+        b1_0.discount_percent_applied,
+        b1_0.free_applied,
+        b1_0.maps_url,
+        b1_0.membership_id_used,
+        b1_0.original_amount,
+        b1_0.original_booking_date,
+        b1_0.original_time_slot,
+        b1_0.payable_amount,
+        b1_0.payment_status,
+        b1_0.phone,
+        b1_0.refund_amount,
+        b1_0.refund_initiated_at,
+        b1_0.refund_status,
+        b1_0.rescheduled,
+        b1_0.rescheduled_at,
+        b1_0.rescheduled_count,
+        b1_0.rescheduled_reason,
+        b1_0.service_centre_id,
+        b1_0.service_type,
+        b1_0.status,
+        b1_0.time_slot,
+        b1_0.transaction_id,
+        b1_0.upgrade_status,
+        b1_0.upgraded_from,
+        b1_0.upgraded_to,
+        b1_0.wash_type,
+        b1_0.water_discount_applied,
+        b1_0.water_provided 
+    from
+        carwash_booking b1_0 
+    where
+        b1_0.phone=? 
+    order by
+        b1_0.created_at desc
+Hibernate: 
+    select
+        b1_0.id,
+        b1_0.address,
+        b1_0.booking_date,
+        b1_0.car_index,
+        b1_0.car_number,
+        b1_0.car_type,
+        b1_0.centre_name,
+        b1_0.created_at,
+        b1_0.discount_percent_applied,
+        b1_0.free_applied,
+        b1_0.maps_url,
+        b1_0.membership_id_used,
+        b1_0.original_amount,
+        b1_0.original_booking_date,
+        b1_0.original_time_slot,
+        b1_0.payable_amount,
+        b1_0.payment_status,
+        b1_0.phone,
+        b1_0.refund_amount,
+        b1_0.refund_initiated_at,
+        b1_0.refund_status,
+        b1_0.rescheduled,
+        b1_0.rescheduled_at,
+        b1_0.rescheduled_count,
+        b1_0.rescheduled_reason,
+        b1_0.service_centre_id,
+        b1_0.service_type,
+        b1_0.status,
+        b1_0.time_slot,
+        b1_0.transaction_id,
+        b1_0.upgrade_status,
+        b1_0.upgraded_from,
+        b1_0.upgraded_to,
+        b1_0.wash_type,
+        b1_0.water_discount_applied,
+        b1_0.water_provided 
+    from
+        carwash_booking b1_0 
+    where
+        b1_0.phone=? 
+    order by
+        b1_0.created_at desc
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  24:47 min
+[INFO] Finished at: 2026-03-01T10:18:54+05:30
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:3.2.1:run (default-cli) on project bookingservice: Process terminated with exit code: -1 -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException

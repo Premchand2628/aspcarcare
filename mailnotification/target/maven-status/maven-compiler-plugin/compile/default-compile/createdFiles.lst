@@ -1,0 +1,6 @@
+com\carwash\mailnotification\logging\HttpRequestResponseLoggingFilter.class
+com\carwash\mailnotification\MailNotificationApplication.class
+com\carwash\mailnotification\dto\EmailRequest.class
+com\carwash\mailnotification\dto\EmailRequest$EmailRequestBuilder.class
+com\carwash\mailnotification\service\EmailService.class
+com\carwash\mailnotification\config\EmailConfig.class

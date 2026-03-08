@@ -1,0 +1,968 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ASP Car Care - Login / Signup</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      font-family:"Inter",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background: linear-gradient(135deg, #eef2ff, #f9fafb);
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+      color:#111827;
+      padding:24px 0;
+    }
+
+    .page-shell{ width:100%; max-width:980px; padding:0 16px; }
+
+    .auth-card{
+      display:grid;
+      grid-template-columns: minmax(0,1.1fr) minmax(0,0.9fr);
+      background:#fff;
+      border-radius:24px;
+      box-shadow: 0 22px 50px rgba(15,23,42,0.18), 0 0 0 1px rgba(148,163,184,0.25);
+      overflow:hidden;
+      min-height:560px;
+    }
+
+    @media (max-width: 800px){
+      .auth-card{ grid-template-columns:1fr; }
+      .auth-visual{ display:none; }
+    }
+    @media (max-width: 480px){
+      body{ padding:16px 0; }
+      .auth-card{ border-radius:18px; min-height:auto; }
+    }
+
+    .auth-main{ padding:22px 22px 24px; position:relative; }
+    @media (min-width:600px){ .auth-main{ padding:26px 30px; } }
+
+    .brand-row{ display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+    .brand-pill{
+      width:36px;height:36px;border-radius:999px;
+      background: radial-gradient(circle at 20% 20%, #2563eb, #1d4ed8);
+      color:#fff; display:flex; align-items:center; justify-content:center;
+      font-weight:800; font-size:14px; letter-spacing:.02em;
+      box-shadow:0 0 0 1px rgba(191,219,254,0.9);
+      flex-shrink:0;
+    }
+    .brand-name{ font-weight:800; font-size:18px; letter-spacing:.03em; line-height:1.1; }
+    .brand-tagline{ font-size:12px; color:#6b7280; margin-top:2px; }
+
+    .auth-title{ margin-top:10px; font-size:22px; font-weight:800; }
+    .auth-subtitle{ margin-top:4px; font-size:13px; color:#6b7280; line-height:1.45; }
+
+    .switch-buttons{
+      display:inline-flex;
+      margin-top:16px;
+      padding:4px;
+      border-radius:999px;
+      background:#f3f4f6;
+      border:1px solid #e5e7eb;
+    }
+    .tab-btn{
+      border:none; background:transparent;
+      padding:8px 18px; border-radius:999px;
+      font-size:13px; font-weight:800;
+      color:#6b7280; cursor:pointer;
+      transition:all .2s ease;
+      white-space:nowrap;
+    }
+    .tab-btn.active{
+      background:#111827;
+      color:#f9fafb;
+      box-shadow:0 6px 14px rgba(15,23,42,0.35);
+    }
+
+    .forms-wrapper{ margin-top:12px; position:relative; }
+
+    .form-box{
+      display:none;
+      opacity:0;
+      transform: translateY(4px);
+      pointer-events:none;
+      transition: opacity .2s ease, transform .2s ease;
+    }
+    .form-box.active{
+      display:block;
+      opacity:1;
+      transform: translateY(0);
+      pointer-events:auto;
+    }
+
+    .method-switch{
+      margin-top:12px;
+      padding:4px;
+      border-radius:999px;
+      background:#f8fafc;
+      border:1px solid #e5e7eb;
+      display:inline-flex;
+      gap:6px;
+    }
+    .method-btn{
+      border:none;background:transparent;
+      padding:7px 14px;border-radius:999px;
+      font-size:12px;font-weight:800;
+      color:#6b7280; cursor:pointer;
+      transition: all .18s ease;
+      white-space:nowrap;
+    }
+    .method-btn.active{
+      background: linear-gradient(to right, #2563eb, #1d4ed8);
+      color:#fff;
+      box-shadow:0 10px 20px rgba(37,99,235,0.28);
+    }
+
+    .form-row{ margin-bottom:10px; }
+    label{ display:block; font-size:12px; font-weight:700; color:#374151; margin-bottom:3px; }
+    input{
+      width:100%;
+      padding:9px 10px;
+      border-radius:10px;
+      border:1px solid #d1d5db;
+      font-size:14px;
+      outline:none;
+      transition: border-color .15s ease, box-shadow .15s ease;
+      background:#f9fafb;
+    }
+    input:focus{
+      border-color:#2563eb;
+      box-shadow:0 0 0 2px rgba(37,99,235,0.12);
+      background:#fff;
+    }
+
+    .password-wrapper{ position:relative; }
+    .toggle-password{
+      position:absolute; right:10px; top:50%;
+      transform:translateY(-50%);
+      font-size:11px; color:#2563eb;
+      font-weight:800; cursor:pointer; user-select:none;
+    }
+
+    .btn-primary{
+      margin-top:6px;
+      width:100%;
+      padding:10px 12px;
+      border-radius:999px;
+      border:none;
+      background: linear-gradient(to right, #2563eb, #1d4ed8);
+      color:#fff;
+      font-size:14px;
+      font-weight:900;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      box-shadow:0 12px 25px rgba(37,99,235,0.35);
+      transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+    }
+    .btn-primary:hover:not([disabled]){
+      transform: translateY(-1px);
+      box-shadow:0 16px 35px rgba(37,99,235,0.5);
+    }
+    .btn-primary[disabled]{ opacity:.65; cursor:not-allowed; box-shadow:0 8px 18px rgba(148,163,184,0.35); }
+
+    .spinner{
+      border:2px solid rgba(255,255,255,0.9);
+      border-top:2px solid transparent;
+      border-radius:50%;
+      width:15px;height:15px;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin{ to{ transform:rotate(360deg); } }
+
+    .hint-text{ font-size:11px; color:#9ca3af; margin-top:4px; line-height:1.45; }
+    .btn-caption{ margin-top:10px; font-size:11px; color:#9ca3af; text-align:center; line-height:1.6; }
+    .linkish{ cursor:pointer; color:#2563eb; font-weight:900; text-decoration:none; }
+
+    .alert{
+      margin-bottom:8px;
+      padding:8px 10px;
+      border-radius:10px;
+      font-size:12px;
+      display:none;
+      align-items:flex-start;
+      gap:6px;
+    }
+    .alert span.icon{ font-size:14px; margin-top:1px; }
+    .alert-error{ background:#fef2f2; color:#b91c1c; border:1px solid #fecaca; }
+    .alert-success{ background:#ecfdf5; color:#166534; border:1px solid #bbf7d0; }
+
+    .fp-backdrop{
+      position:fixed; inset:0;
+      background: rgba(2,6,23,0.60);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:999;
+      padding:12px;
+    }
+    .fp-card{
+      width:min(520px,100%);
+      background:#fff;
+      border-radius:18px;
+      box-shadow:0 24px 70px rgba(0,0,0,0.45);
+      border:1px solid rgba(148,163,184,0.35);
+      overflow:hidden;
+    }
+    .fp-head{
+      background:#0b1120;
+      color:#f9fafb;
+      padding:12px 14px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+    }
+    .fp-head strong{ font-size:13px; }
+    .fp-close{
+      border:none;
+      background: rgba(255,255,255,0.12);
+      color:#fff;
+      padding:7px 10px;
+      border-radius:999px;
+      cursor:pointer;
+      font-size:12px;
+      font-weight:900;
+      white-space:nowrap;
+    }
+    .fp-body{ padding:14px; }
+    .fp-actions{ padding:0 14px 14px; display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap; }
+    .fp-btn{
+      border:none;border-radius:999px;
+      padding:10px 14px;
+      cursor:pointer;
+      font-weight:900;
+      font-size:12px;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+    }
+    .fp-btn.primary{ background:#2563eb; color:#fff; }
+    .fp-btn.ghost{ background:#f3f4f6; color:#111827; }
+
+    .fp-step{ display:none; }
+    .fp-step.active{ display:block; }
+
+    .auth-visual{
+      background: radial-gradient(circle at top left, #2563eb, #0f172a);
+      color:#e5e7eb;
+      padding:26px 26px 22px;
+      position:relative;
+      overflow:hidden;
+    }
+    .visual-title{ font-size:24px; font-weight:900; margin-bottom:6px; }
+    .visual-sub{ font-size:13px; color:#cbd5f5; max-width:320px; line-height:1.5; margin-bottom:16px; }
+    .visual-chip-row{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px; }
+    .visual-chip{
+      padding:4px 10px; border-radius:999px;
+      font-size:11px;
+      background: rgba(15,23,42,0.8);
+      border:1px solid rgba(191,219,254,0.5);
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+    }
+    .dot-green{
+      width:7px;height:7px;border-radius:999px;
+      background:#22c55e;
+      box-shadow: 0 0 0 0 rgba(34,197,94,0.7);
+      animation:pulse 1.5s infinite;
+    }
+    @keyframes pulse{
+      0%{ box-shadow:0 0 0 0 rgba(34,197,94,0.7); }
+      70%{ box-shadow:0 0 0 8px rgba(34,197,94,0); }
+      100%{ box-shadow:0 0 0 0 rgba(34,197,94,0); }
+    }
+    .visual-footer{
+      font-size:11px;
+      color:#9ca3af;
+      position:absolute;
+      bottom:18px;
+      left:26px;
+      right:26px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+    }
+    .visual-badge{
+      padding:3px 8px;
+      border-radius:999px;
+      border:1px solid rgba(129,140,248,0.7);
+      background: rgba(15,23,42,0.8);
+      font-size:11px;
+    }
+
+    .back-btn{
+      position:fixed;
+      top:14px; left:14px;
+      z-index:998;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,0.25);
+      background: rgba(2,6,23,0.55);
+      color:#fff;
+      font-weight:900;
+      font-size:13px;
+      cursor:pointer;
+      backdrop-filter: blur(8px);
+    }
+    .back-btn:hover{ background: rgba(2,6,23,0.75); }
+    @media (max-width:640px){
+      .back-btn{ top:10px; left:10px; padding:7px 11px; font-size:12px; }
+    }
+  </style>
+</head>
+
+<body>
+<button class="back-btn" type="button" onclick="window.location.href='/mainpage'">← Back</button>
+
+<div class="page-shell">
+  <div class="auth-card">
+
+    <div class="auth-main">
+      <div class="brand-row">
+        <div class="brand-pill">ASP</div>
+        <div>
+          <div class="brand-name">Car Care</div>
+          <div class="brand-tagline">Book washes, track visits, manage refunds.</div>
+        </div>
+      </div>
+
+      <div class="auth-title">Welcome back</div>
+      <div class="auth-subtitle">
+        Login using OTP (Phone) or Email + Password. Signup creates your account using OTP.
+      </div>
+
+      <div class="switch-buttons">
+        <button class="tab-btn active" id="loginTab" type="button" onclick="showLogin()">Login</button>
+        <button class="tab-btn" id="signupTab" type="button" onclick="showSignup()">Signup</button>
+      </div>
+
+      <div class="forms-wrapper">
+        <!-- LOGIN -->
+        <div id="loginForm" class="form-box active">
+          <div id="loginAlert" class="alert alert-error"><span class="icon">⚠️</span><span class="text"></span></div>
+          <div id="loginSuccess" class="alert alert-success"><span class="icon">✅</span><span class="text"></span></div>
+
+          <div class="method-switch">
+            <button class="method-btn active" id="loginOtpBtn" type="button" onclick="setLoginMethod('otp')">Phone OTP</button>
+            <button class="method-btn" id="loginPwdBtn" type="button" onclick="setLoginMethod('password')">Email Login</button>
+          </div>
+
+          <!-- OTP Login -->
+          <div id="loginOtpPanel" style="margin-top:12px;">
+            <div class="form-row">
+              <label for="loginPhone">Mobile number</label>
+              <input type="tel" id="loginPhone" placeholder="Enter registered mobile number" inputmode="numeric">
+              <div class="hint-text">Enter 10 digits (no spaces).</div>
+            </div>
+
+            <button class="btn-primary" id="loginSendBtn" type="button" onclick="sendLoginOtp()">
+              <span id="loginBtnText">Send OTP</span>
+              <div class="spinner" id="loginSpinner" style="display:none;"></div>
+            </button>
+          </div>
+
+          <!-- Email + Password Login -->
+          <div id="loginPwdPanel" style="margin-top:12px; display:none;">
+            <div class="form-row">
+              <label for="loginEmail">Email</label>
+              <input type="email" id="loginEmail" placeholder="name@example.com">
+            </div>
+
+            <div class="form-row">
+              <label for="loginPassword">Password</label>
+              <div class="password-wrapper">
+                <input type="password" id="loginPassword" placeholder="Enter your password">
+                <span class="toggle-password" onclick="togglePasswordField('loginPassword', this)">Show</span>
+              </div>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; margin-top:-2px; margin-bottom:8px;">
+              <span class="linkish" onclick="openForgotPassword()">Forgot password?</span>
+            </div>
+
+            <button class="btn-primary" id="pwdLoginBtn" type="button" onclick="loginWithPassword()">
+              <span id="pwdLoginBtnText">Login</span>
+              <div class="spinner" id="pwdLoginSpinner" style="display:none;"></div>
+            </button>
+          </div>
+
+          <div class="btn-caption">
+            New here? <span class="linkish" onclick="showSignup()">Create an account</span>
+          </div>
+        </div>
+
+        <!-- SIGNUP -->
+        <div id="signupForm" class="form-box">
+          <div id="signupAlert" class="alert alert-error"><span class="icon">⚠️</span><span class="text"></span></div>
+          <div id="signupSuccess" class="alert alert-success"><span class="icon">✅</span><span class="text"></span></div>
+
+          <div class="form-row">
+            <label for="firstName">First name</label>
+            <input type="text" id="firstName" placeholder="Enter first name">
+          </div>
+
+          <div class="form-row">
+            <label for="lastName">Last name</label>
+            <input type="text" id="lastName" placeholder="Enter last name">
+          </div>
+
+          <div class="form-row">
+            <label for="email">Email</label>
+            <input type="email" id="email" placeholder="name@example.com">
+          </div>
+
+          <div class="form-row">
+            <label for="age">Age</label>
+            <input type="number" id="age" placeholder="Age">
+          </div>
+
+          <div class="form-row">
+            <label for="signupPhone">Mobile number</label>
+            <input type="tel" id="signupPhone" placeholder="Phone number to receive OTP" inputmode="numeric">
+          </div>
+
+          <div class="form-row">
+            <label for="signupPassword">Password</label>
+            <div class="password-wrapper">
+              <input type="password" id="signupPassword" placeholder="Create a password">
+              <span class="toggle-password" onclick="togglePasswordField('signupPassword', this)">Show</span>
+            </div>
+            <div class="hint-text">Minimum 6 characters.</div>
+          </div>
+
+          <button class="btn-primary" id="signupSendBtn" type="button" onclick="sendSignupOtp()">
+            <span id="signupBtnText">Send OTP</span>
+            <div class="spinner" id="signupSpinner" style="display:none;"></div>
+          </button>
+
+          <div class="btn-caption">
+            Already have an account? <span class="linkish" onclick="showLogin()">Login</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="auth-visual">
+      <div class="visual-title">Hyderabad</div>
+      <div class="visual-sub">
+        Premium car care at your fingertips. Same-day slots, trusted partners, and transparent pricing.
+      </div>
+
+      <div class="visual-chip-row">
+        <div class="visual-chip"><span class="dot-green"></span>Live in <strong>Hyderabad · Kondapur</strong></div>
+        <div class="visual-chip">🧾 Secure payments & refunds</div>
+        <div class="visual-chip">⏱️ Same-day slots available</div>
+      </div>
+
+      <div class="visual-footer">
+        <span>Next: <strong>Go to dashboard</strong></span>
+        <span class="visual-badge">ASP Car Care</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Forgot Password Modal -->
+<div id="fpBackdrop" class="fp-backdrop" onclick="closeForgotIfBackdrop(event)">
+  <div class="fp-card" onclick="event.stopPropagation()">
+    <div class="fp-head">
+      <strong>Reset Password</strong>
+      <button class="fp-close" onclick="closeForgotPassword()">Close</button>
+    </div>
+
+    <div class="fp-body">
+      <div id="fpAlert" class="alert alert-error" style="display:none;">
+        <span class="icon">⚠️</span><span class="text"></span>
+      </div>
+      <div id="fpSuccess" class="alert alert-success" style="display:none;">
+        <span class="icon">✅</span><span class="text"></span>
+      </div>
+
+      <div id="fpStep1" class="fp-step active">
+        <div class="form-row">
+          <label for="fpEmail">Email</label>
+          <input type="email" id="fpEmail" placeholder="Enter your registered email">
+          <div class="hint-text">We will send OTP to your email.</div>
+        </div>
+      </div>
+
+      <div id="fpStep2" class="fp-step">
+        <div class="form-row">
+          <label for="fpOtp">OTP</label>
+          <input type="text" id="fpOtp" placeholder="Enter 6-digit OTP">
+          <div class="hint-text">OTP valid for 5 minutes.</div>
+        </div>
+      </div>
+
+      <div id="fpStep3" class="fp-step">
+        <div class="form-row">
+          <label for="fpNewPassword">New Password</label>
+          <div class="password-wrapper">
+            <input type="password" id="fpNewPassword" placeholder="New password">
+            <span class="toggle-password" onclick="togglePasswordField('fpNewPassword', this)">Show</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label for="fpConfirmPassword">Confirm Password</label>
+          <div class="password-wrapper">
+            <input type="password" id="fpConfirmPassword" placeholder="Confirm password">
+            <span class="toggle-password" onclick="togglePasswordField('fpConfirmPassword', this)">Show</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fp-actions">
+      <button class="fp-btn ghost" id="fpBackBtn" style="display:none;" onclick="fpBack()">Back</button>
+      <button class="fp-btn primary" id="fpNextBtn" onclick="fpNext()">Send OTP</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // =========================
+  // API PATHS
+  // =========================
+  const API_BASE = "";
+  const AUTH = `${API_BASE}/auth`;
+
+  // =========================
+  // ✅ CORRELATION HELPERS
+  // =========================
+  const CID_KEY = "cid";
+
+  function getCid() {
+    return localStorage.getItem(CID_KEY) || "";
+  }
+
+  function captureCid(res) {
+    // Works only if backend exposes header via CORS: Access-Control-Expose-Headers
+    const cid = res.headers.get("X-Correlation-Id") || res.headers.get("x-correlation-id");
+    if (cid) localStorage.setItem(CID_KEY, cid);
+  }
+
+  function withCidHeaders(extra) {
+    const cid = getCid();
+    return {
+      ...(extra || {}),
+      ...(cid ? { "X-Correlation-Id": cid } : {})
+    };
+  }
+
+  // ====== Elements ======
+  const loginTab   = document.getElementById("loginTab");
+  const signupTab  = document.getElementById("signupTab");
+  const loginForm  = document.getElementById("loginForm");
+  const signupForm = document.getElementById("signupForm");
+
+  let loginMethod = "otp"; // otp | password
+
+  // Forgot password state
+  const fpBackdrop = document.getElementById("fpBackdrop");
+  const fpAlert = document.getElementById("fpAlert");
+  const fpSuccess = document.getElementById("fpSuccess");
+  const fpNextBtn = document.getElementById("fpNextBtn");
+  const fpBackBtn = document.getElementById("fpBackBtn");
+  let fpStep = 1;
+  let fpEmailValue = "";
+  let fpResetToken = "";
+
+  function clearAlerts() {
+    ["loginAlert","loginSuccess","signupAlert","signupSuccess"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.style.display = "none";
+        const textSpan = el.querySelector(".text");
+        if (textSpan) textSpan.textContent = "";
+      }
+    });
+  }
+
+  function showError(targetId, message) {
+    const el = document.getElementById(targetId);
+    if (!el) return;
+    const textSpan = el.querySelector(".text");
+    if (textSpan) textSpan.textContent = message;
+    el.style.display = "flex";
+  }
+
+  function showSuccess(targetId, message) {
+    const el = document.getElementById(targetId);
+    if (!el) return;
+    const textSpan = el.querySelector(".text");
+    if (textSpan) textSpan.textContent = message;
+    el.style.display = "flex";
+  }
+
+  function showLogin() {
+    loginTab.classList.add("active");
+    signupTab.classList.remove("active");
+    loginForm.classList.add("active");
+    signupForm.classList.remove("active");
+    clearAlerts();
+  }
+
+  function showSignup() {
+    signupTab.classList.add("active");
+    loginTab.classList.remove("active");
+    signupForm.classList.add("active");
+    loginForm.classList.remove("active");
+    clearAlerts();
+  }
+
+  function setLoginMethod(method) {
+    loginMethod = method;
+    clearAlerts();
+
+    const otpBtn   = document.getElementById("loginOtpBtn");
+    const pwdBtn   = document.getElementById("loginPwdBtn");
+    const otpPanel = document.getElementById("loginOtpPanel");
+    const pwdPanel = document.getElementById("loginPwdPanel");
+
+    if (method === "otp") {
+      otpBtn.classList.add("active");
+      pwdBtn.classList.remove("active");
+      otpPanel.style.display = "block";
+      pwdPanel.style.display = "none";
+    } else {
+      pwdBtn.classList.add("active");
+      otpBtn.classList.remove("active");
+      pwdPanel.style.display = "block";
+      otpPanel.style.display = "none";
+    }
+  }
+
+  function togglePasswordField(inputId, toggleEl) {
+    const pwdInput = document.getElementById(inputId);
+    if (!pwdInput) return;
+    if (pwdInput.type === "password") { pwdInput.type = "text"; toggleEl.textContent = "Hide"; }
+    else { pwdInput.type = "password"; toggleEl.textContent = "Show"; }
+  }
+
+  function setLoading(btnId, spinnerId, labelId, loading, labelText, loadingText) {
+    const btn = document.getElementById(btnId);
+    const spinner = document.getElementById(spinnerId);
+    const label = document.getElementById(labelId);
+    if (!btn || !spinner || !label) return;
+    btn.disabled = loading;
+    spinner.style.display = loading ? "block" : "none";
+    label.textContent = loading ? loadingText : labelText;
+  }
+
+  function onlyDigits(s) { return (s || "").replace(/\D/g, ""); }
+
+  async function safeJson(res){
+    try { return await res.json(); } catch(e) { return {}; }
+  }
+
+  // ====== OTP LOGIN ======
+  function sendLoginOtp() {
+    clearAlerts();
+    const phoneInput = document.getElementById("loginPhone");
+    const phone = onlyDigits(phoneInput.value || "");
+
+    if (!phone) { showError("loginAlert", "Please enter mobile number."); phoneInput.focus(); return; }
+    if (phone.length < 10) { showError("loginAlert", "Enter a valid 10-digit mobile number."); phoneInput.focus(); return; }
+
+    setLoading("loginSendBtn","loginSpinner","loginBtnText", true, "Send OTP", "Sending…");
+
+    fetch(`${AUTH}/login/send-otp`, {
+      method: "POST",
+      headers: withCidHeaders({"Content-Type":"application/json"}),
+      body: JSON.stringify({ mobileNumber: phone })
+    })
+    .then(async res => {
+      // If server generated a cid, capture it (optional at this stage)
+      captureCid(res);
+
+      const data = await safeJson(res);
+      if (!res.ok || data.success === false) {
+        showError("loginAlert", data.message || "Unable to send OTP");
+        return;
+      }
+
+      localStorage.setItem("phone", phone);
+      showSuccess("loginSuccess", "OTP sent. Please verify.");
+      window.location.href = `otp-verification.html?phone=${encodeURIComponent(phone)}&type=login`;
+    })
+    .catch(() => showError("loginAlert","Network error while sending OTP"))
+    .finally(() => setLoading("loginSendBtn","loginSpinner","loginBtnText", false, "Send OTP", "Sending…"));
+  }
+
+  // ====== EMAIL LOGIN ======
+  function loginWithPassword() {
+    clearAlerts();
+    const email = (document.getElementById("loginEmail").value || "").trim();
+    const password = (document.getElementById("loginPassword").value || "").trim();
+
+    if (!email || !password) { showError("loginAlert", "Email and password are required."); return; }
+
+    const btn = document.getElementById("pwdLoginBtn");
+    const sp = document.getElementById("pwdLoginSpinner");
+    const txt = document.getElementById("pwdLoginBtnText");
+    btn.disabled = true; sp.style.display="block"; txt.textContent="Logging in…";
+
+    fetch(`${AUTH}/login/password`, {
+      method: "POST",
+      headers: withCidHeaders({"Content-Type":"application/json"}),
+      body: JSON.stringify({ email, password })
+    })
+    .then(async res => {
+      // ✅ THIS IS IMPORTANT: store correlation id from login response
+      captureCid(res);
+
+      const data = await safeJson(res);
+
+      if (!res.ok || data.success === false) {
+        showError("loginAlert", data.message || "Invalid credentials");
+        return;
+      }
+
+      localStorage.setItem("authToken", data.token || "");
+      localStorage.setItem("phone", data.phone || "");
+      localStorage.setItem("email", data.email || "");
+      localStorage.setItem("firstName", data.firstName || "");
+      localStorage.setItem("lastName", data.lastName || "");
+
+      window.location.href = "/aspcare";
+    })
+    .catch(() => showError("loginAlert","Unable to login. Please try again."))
+    .finally(() => { btn.disabled=false; sp.style.display="none"; txt.textContent="Login"; });
+  }
+
+  // ====== SIGNUP SEND OTP ======
+  function sendSignupOtp() {
+    clearAlerts();
+    const first = (document.getElementById("firstName").value || "").trim();
+    const last  = (document.getElementById("lastName").value || "").trim();
+    const email = (document.getElementById("email").value || "").trim();
+    const age   = (document.getElementById("age").value || "").trim();
+    const phone = onlyDigits(document.getElementById("signupPhone").value || "");
+    const password = (document.getElementById("signupPassword").value || "").trim();
+
+    if (!first || !last || !email || !age || !phone || !password) {
+      showError("signupAlert","Please fill all fields.");
+      return;
+    }
+    if (phone.length < 10) { showError("signupAlert","Enter a valid 10-digit mobile number."); return; }
+    if (password.length < 6) { showError("signupAlert","Password must be at least 6 characters."); return; }
+
+    const signupData = {
+      firstName:first,
+      lastName:last,
+      email:email,
+      age: parseInt(age,10),
+      phone:phone,
+      password:password
+    };
+
+    sessionStorage.setItem("signupData", JSON.stringify(signupData));
+
+    setLoading("signupSendBtn","signupSpinner","signupBtnText", true, "Send OTP", "Sending…");
+
+    fetch(`${AUTH}/signup/send-otp`, {
+      method:"POST",
+      headers: withCidHeaders({"Content-Type":"application/json"}),
+      body: JSON.stringify(signupData)
+    })
+    .then(async res => {
+      captureCid(res);
+
+      const data = await safeJson(res);
+      if (!res.ok || data.success === false) { showError("signupAlert", data.message || "Unable to send OTP"); return; }
+
+      localStorage.setItem("phone", phone);
+      localStorage.setItem("email", email);
+      showSuccess("signupSuccess", "OTP sent. Please verify.");
+      window.location.href = `otp-verification.html?phone=${encodeURIComponent(phone)}&type=signup`;
+    })
+    .catch(()=>showError("signupAlert","Network error while sending OTP"))
+    .finally(()=>setLoading("signupSendBtn","signupSpinner","signupBtnText", false, "Send OTP", "Sending…"));
+  }
+
+  // ====== Forgot Password Modal ======
+  function openForgotPassword(){
+    fpBackdrop.style.display="flex";
+    fpStep = 1;
+    fpResetToken = "";
+    fpEmailValue = (document.getElementById("loginEmail").value || "").trim();
+    document.getElementById("fpEmail").value = fpEmailValue || "";
+    document.getElementById("fpOtp").value = "";
+    document.getElementById("fpNewPassword").value = "";
+    document.getElementById("fpConfirmPassword").value = "";
+    fpBackBtn.style.display="none";
+    fpNextBtn.textContent="Send OTP";
+    fpHideAlerts();
+    fpShowStep(1);
+  }
+  function closeForgotPassword(){ fpBackdrop.style.display="none"; }
+  function closeForgotIfBackdrop(e){ if(e.target===fpBackdrop) closeForgotPassword(); }
+
+  function fpHideAlerts(){
+    fpAlert.style.display="none"; fpAlert.querySelector(".text").textContent="";
+    fpSuccess.style.display="none"; fpSuccess.querySelector(".text").textContent="";
+  }
+  function fpShowError(msg){
+    fpHideAlerts();
+    fpAlert.style.display="flex";
+    fpAlert.querySelector(".text").textContent = msg;
+  }
+  function fpShowSuccess(msg){
+    fpHideAlerts();
+    fpSuccess.style.display="flex";
+    fpSuccess.querySelector(".text").textContent = msg;
+  }
+  function fpShowStep(step){
+    ["fpStep1","fpStep2","fpStep3"].forEach(id => document.getElementById(id).classList.remove("active"));
+    document.getElementById("fpStep"+step).classList.add("active");
+  }
+
+  function fpBack(){
+    fpHideAlerts();
+    if(fpStep===2){ fpStep=1; fpBackBtn.style.display="none"; fpNextBtn.textContent="Send OTP"; fpShowStep(1); return; }
+    if(fpStep===3){ fpStep=2; fpBackBtn.style.display="inline-flex"; fpNextBtn.textContent="Verify OTP"; fpShowStep(2); return; }
+  }
+
+  function fpNext(){
+    fpHideAlerts();
+
+    if(fpStep === 1){
+      const email = (document.getElementById("fpEmail").value || "").trim();
+      if(!email){ fpShowError("Email is required"); return; }
+      fpEmailValue = email;
+
+      fpNextBtn.disabled = true;
+      fpNextBtn.textContent = "Sending…";
+
+      fetch(`${AUTH}/password/forgot/send-otp`,{
+        method:"POST",
+        headers: withCidHeaders({"Content-Type":"application/json"}),
+        body: JSON.stringify({ email })
+      })
+      .then(async res => {
+        captureCid(res);
+
+        const data = await safeJson(res);
+        if(!res.ok || data.success === false){
+          fpShowError(data.message || "Unable to send OTP");
+          return;
+        }
+
+        fpShowSuccess("OTP sent to your email.");
+        fpStep = 2;
+        fpBackBtn.style.display="inline-flex";
+        fpNextBtn.textContent="Verify OTP";
+        fpShowStep(2);
+      })
+      .catch(()=>fpShowError("Unable to send OTP. Please try again."))
+      .finally(()=>{ fpNextBtn.disabled=false; if(fpStep===1) fpNextBtn.textContent="Send OTP"; });
+
+      return;
+    }
+
+    if(fpStep === 2){
+      const otp = (document.getElementById("fpOtp").value || "").trim();
+      if(!otp){ fpShowError("OTP is required"); return; }
+
+      fpNextBtn.disabled = true;
+      fpNextBtn.textContent = "Verifying…";
+
+      fetch(`${AUTH}/password/forgot/verify-otp`,{
+        method:"POST",
+        headers: withCidHeaders({"Content-Type":"application/json"}),
+        body: JSON.stringify({ email: fpEmailValue, otp })
+      })
+      .then(async res => {
+        captureCid(res);
+
+        const data = await safeJson(res);
+
+        if(!res.ok || data.success === false){
+          fpShowError(data.message || "Invalid OTP");
+          return;
+        }
+
+        fpResetToken = data.data || data.token || "";
+        if(!fpResetToken){
+          fpShowError("Reset token not received. Please try again.");
+          return;
+        }
+
+        fpShowSuccess("OTP verified. Set your new password.");
+        fpStep = 3;
+        fpBackBtn.style.display="inline-flex";
+        fpNextBtn.textContent="Save Password";
+        fpShowStep(3);
+      })
+      .catch(()=>fpShowError("Unable to verify OTP. Please try again."))
+      .finally(()=>{ fpNextBtn.disabled=false; if(fpStep===2) fpNextBtn.textContent="Verify OTP"; });
+
+      return;
+    }
+
+    if(fpStep === 3){
+      const np = (document.getElementById("fpNewPassword").value || "").trim();
+      const cp = (document.getElementById("fpConfirmPassword").value || "").trim();
+      if(!np || !cp){ fpShowError("Enter new password and confirm password"); return; }
+      if(np.length < 6){ fpShowError("Password must be at least 6 characters"); return; }
+      if(np !== cp){ fpShowError("Passwords do not match"); return; }
+      if(!fpResetToken){ fpShowError("Reset session expired. Verify OTP again."); return; }
+
+      fpNextBtn.disabled = true;
+      fpNextBtn.textContent = "Saving…";
+
+      fetch(`${AUTH}/password/forgot/reset`,{
+        method:"POST",
+        headers: withCidHeaders({"Content-Type":"application/json"}),
+        body: JSON.stringify({ resetToken: fpResetToken, newPassword: np })
+      })
+      .then(async res => {
+        captureCid(res);
+
+        const data = await safeJson(res);
+        if(!res.ok || data.success === false){
+          fpShowError(data.message || "Unable to reset password");
+          return;
+        }
+        fpShowSuccess("Password updated successfully. Please login.");
+        setTimeout(()=>closeForgotPassword(), 900);
+      })
+      .catch(()=>fpShowError("Unable to reset password. Please try again."))
+      .finally(()=>{ fpNextBtn.disabled=false; fpNextBtn.textContent="Save Password"; });
+
+      return;
+    }
+  }
+
+  function getQueryParam(key){
+    const params = new URLSearchParams(window.location.search);
+    return params.get(key);
+  }
+
+  (function init(){
+    const mode = getQueryParam("mode");
+    if(mode === "signup") showSignup();
+    else showLogin();
+    setLoginMethod("otp");
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>My Profile - CarWash</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .card {
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      width: 380px;
+    }
+    h2 { margin-top: 0; }
+    label { font-size: 13px; color: #444; }
+    input {
+      width: 100%;
+      padding: 8px;
+      margin: 4px 0 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+    .btn {
+      width: 100%;
+      padding: 10px;
+      border-radius: 20px;
+      border: none;
+      background: #4e54c8;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+    .btn-secondary {
+      background: #eee;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h2>My Profile</h2>
+  <p id="phoneLabel"></p>
+
+  <label>First Name</label>
+  <input type="text" id="firstName">
+
+  <label>Last Name</label>
+  <input type="text" id="lastName">
+
+  <label>Email</label>
+  <input type="email" id="email">
+
+  <label>Age</label>
+  <input type="number" id="age">
+
+  <button class="btn" onclick="saveProfile()">Save Profile</button>
+  <button class="btn btn-secondary" onclick="goBack()">Back to Dashboard</button>
+</div>
+
+<script>
+	const API_BASE = window.location.origin;
+  const API_USERS = "${API_BASE}/users";
+  const token = localStorage.getItem("authToken");
+  const phone = localStorage.getItem("phone");
+
+  if (!token || !phone) {
+    window.location.href = "SignupLogin.html";
+  }
+
+  document.getElementById("phoneLabel").textContent = "Phone: " + phone;
+
+  // Load profile
+  fetch(API_USERS + "/profile?phone=" + encodeURIComponent(phone))
+    .then(res => res.json())
+    .then(user => {
+      // Assuming backend returns a JSON object with these fields
+      document.getElementById("firstName").value = user.firstName || "";
+      document.getElementById("lastName").value = user.lastName || "";
+      document.getElementById("email").value = user.email || "";
+      document.getElementById("age").value = user.age || "";
+    })
+    .catch(() => alert("Error loading profile"));
+
+  function saveProfile() {
+    const body = {
+      phone: phone,
+      firstName: document.getElementById("firstName").value.trim(),
+      lastName: document.getElementById("lastName").value.trim(),
+      email: document.getElementById("email").value.trim(),
+      age: parseInt(document.getElementById("age").value.trim() || "0", 10)
+    };
+
+    fetch(API_USERS + "/profile", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(body)
+    })
+    .then(res => res.json())
+    .then(data => {
+      alert(data.message || "Profile updated");
+    })
+    .catch(() => alert("Error saving profile"));
+  }
+
+  function goBack() {
+    window.location.href = "/aspcare";
+  }
+</script>
+
+</body>
+</html>

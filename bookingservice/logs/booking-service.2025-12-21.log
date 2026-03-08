@@ -1,0 +1,33 @@
+2025-12-21 22:54:29 INFO  c.c.b.BookingServiceApplication - Starting BookingServiceApplication using Java 17.0.7 with PID 19180 (D:\Codes\bookingservice\target\classes started by chand in D:\Codes\bookingservice)
+2025-12-21 22:54:29 INFO  c.c.b.BookingServiceApplication - No active profile set, falling back to 1 default profile: "default"
+2025-12-21 22:54:30 INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8082"]
+2025-12-21 22:54:30 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-12-21 22:54:30 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.24]
+2025-12-21 22:54:31 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-12-21 22:54:31 INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-12-21 22:54:31 INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.2.Final
+2025-12-21 22:54:31 INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-12-21 22:54:31 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-12-21 22:54:32 INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@4b09d1c3
+2025-12-21 22:54:32 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-12-21 22:54:33 INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-21 22:54:34 WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-21 22:54:34 INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8082"]
+2025-12-21 22:54:34 INFO  c.c.b.BookingServiceApplication - Started BookingServiceApplication in 6.181 seconds (process running for 13.717)
+2025-12-21 22:58:39 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-12-21 22:58:40 DEBUG org.hibernate.SQL - select distinct sc1_0.area from carwash_service_centre sc1_0 where sc1_0.active=true order by sc1_0.area
+2025-12-21 23:12:03 DEBUG org.hibernate.SQL - select distinct sc1_0.area from carwash_service_centre sc1_0 where sc1_0.active=true order by sc1_0.area
+2025-12-21 23:13:11 DEBUG org.hibernate.SQL - select sc1_0.id,sc1_0.active,sc1_0.address,sc1_0.area,sc1_0.created_at,sc1_0.latitude,sc1_0.longitude,sc1_0.maps_url,sc1_0.name,sc1_0.rating,sc1_0.updated_at from carwash_service_centre sc1_0 where sc1_0.active and upper(sc1_0.area) like upper(?) escape '\' or sc1_0.active and upper(sc1_0.address) like upper(?) escape '\'
+2025-12-21 23:13:15 DEBUG org.hibernate.SQL - select count(b1_0.id) from carwash_booking b1_0 where b1_0.booking_date=? and b1_0.time_slot=? and upper(b1_0.service_type)=? and b1_0.status<>'CANCELLED' and (? is null or b1_0.service_centre_id=? or b1_0.service_centre_id is null)
+2025-12-21 23:13:15 DEBUG org.hibernate.SQL - select count(b1_0.id) from carwash_booking b1_0 where b1_0.booking_date=? and b1_0.time_slot=? and upper(b1_0.service_type)=? and b1_0.status<>'CANCELLED' and (? is null or b1_0.service_centre_id=? or b1_0.service_centre_id is null)
+2025-12-21 23:13:15 DEBUG org.hibernate.SQL - select count(b1_0.id) from carwash_booking b1_0 where b1_0.booking_date=? and b1_0.time_slot=? and upper(b1_0.service_type)=? and b1_0.status<>'CANCELLED' and (? is null or b1_0.service_centre_id=? or b1_0.service_centre_id is null)
+2025-12-21 23:13:15 DEBUG org.hibernate.SQL - select count(b1_0.id) from carwash_booking b1_0 where b1_0.booking_date=? and b1_0.time_slot=? and upper(b1_0.service_type)=? and b1_0.status<>'CANCELLED' and (? is null or b1_0.service_centre_id=? or b1_0.service_centre_id is null)
+2025-12-21 23:13:15 DEBUG org.hibernate.SQL - select count(b1_0.id) from carwash_booking b1_0 where b1_0.booking_date=? and b1_0.time_slot=? and upper(b1_0.service_type)=? and b1_0.status<>'CANCELLED' and (? is null or b1_0.service_centre_id=? or b1_0.service_centre_id is null)
+2025-12-21 23:13:15 DEBUG org.hibernate.SQL - select count(b1_0.id) from carwash_booking b1_0 where b1_0.booking_date=? and b1_0.time_slot=? and upper(b1_0.service_type)=? and b1_0.status<>'CANCELLED' and (? is null or b1_0.service_centre_id=? or b1_0.service_centre_id is null)
+2025-12-21 23:13:15 DEBUG org.hibernate.SQL - select count(b1_0.id) from carwash_booking b1_0 where b1_0.booking_date=? and b1_0.time_slot=? and upper(b1_0.service_type)=? and b1_0.status<>'CANCELLED' and (? is null or b1_0.service_centre_id=? or b1_0.service_centre_id is null)
+2025-12-21 23:13:15 DEBUG org.hibernate.SQL - select count(b1_0.id) from carwash_booking b1_0 where b1_0.booking_date=? and b1_0.time_slot=? and upper(b1_0.service_type)=? and b1_0.status<>'CANCELLED' and (? is null or b1_0.service_centre_id=? or b1_0.service_centre_id is null)
+2025-12-21 23:13:15 DEBUG org.hibernate.SQL - select count(b1_0.id) from carwash_booking b1_0 where b1_0.booking_date=? and b1_0.time_slot=? and upper(b1_0.service_type)=? and b1_0.status<>'CANCELLED' and (? is null or b1_0.service_centre_id=? or b1_0.service_centre_id is null)
+2025-12-21 23:13:15 DEBUG org.hibernate.SQL - select count(b1_0.id) from carwash_booking b1_0 where b1_0.booking_date=? and b1_0.time_slot=? and upper(b1_0.service_type)=? and b1_0.status<>'CANCELLED' and (? is null or b1_0.service_centre_id=? or b1_0.service_centre_id is null)
+2025-12-21 23:13:15 DEBUG org.hibernate.SQL - select count(b1_0.id) from carwash_booking b1_0 where b1_0.booking_date=? and b1_0.time_slot=? and upper(b1_0.service_type)=? and b1_0.status<>'CANCELLED' and (? is null or b1_0.service_centre_id=? or b1_0.service_centre_id is null)
+2025-12-21 23:13:21 DEBUG org.hibernate.SQL - select count(b1_0.id) from carwash_booking b1_0 where b1_0.phone=?
+2025-12-21 23:13:46 DEBUG org.hibernate.SQL - select cq1_0.id,cq1_0.exterior,cq1_0.exterior_teflon,cq1_0.interior,cq1_0.interior_exterior,cq1_0.interior_exterior_teflon,cq1_0.save_exterior_teflon,cq1_0.save_full,cq1_0.teflon,cq1_0.vehicle_type from carwash_quotation cq1_0 order by cq1_0.vehicle_type

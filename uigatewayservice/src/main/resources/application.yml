@@ -1,0 +1,90 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: uigatewayservice
+
+  main:
+    web-application-type: reactive
+
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          "[/**]":
+            allowedOrigins:
+               - "http://localhost:8080"
+               - "http://127.0.0.1:8080"
+               - "http://localhost:3000"       # Add this
+               - "http://127.0.0.1:3000"       # Add this
+               - "http://localhost:3001"
+               - "http://127.0.0.1:3001"
+               - "http://192.168.1.233:3000"
+               - "http://192.168.1.233:8080"
+               - "https://garth-clannish-michelle.ngrok-free.dev"
+
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - PATCH
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+
+      routes:
+        # ---------- AUTH USER SERVICE (8081) ----------
+        - id: auth-user-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/users/**,/auth/**,/otp/**
+
+        # ---------- BOOKING SERVICE (8082) ----------
+        - id: booking-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=/bookings/**,/quotations/**,/centres/**
+
+        # ---------- PAYMENT SERVICE (8083) ----------
+        - id: payment-service
+          uri: http://localhost:8083
+          predicates:
+            - Path=/payments/**
+
+        # ---------- SUPPORT CHAT SERVICE (8084) ----------
+        - id: support-chat-service
+          uri: http://localhost:8084
+          predicates:
+            - Path=/support/**,/chat/**,/agent-chat/**,/tickets/**
+
+        # ---------- MEMBERSHIP SERVICE (8085) ----------
+        - id: membership-service
+          uri: http://localhost:8085
+          predicates:
+            - Path=/memberships/**
+       
+        # ---------- CARWASH RATES SERVICE (8086) ----------
+        - id: carwash-rates-service
+          uri: http://localhost:8086
+          predicates:
+            - Path=/rates/**,/carwashrates/**,/api/deal-prices/**
+            
+        # ---------- REFERRAL COUPON SERVICE (8088) ----------
+        - id: coupon-service
+          uri: http://localhost:8088
+          predicates:
+            - Path=/coupons/**
+            # ---------- CARWASHER SERVICE (8090) ----------
+        - id: carwasher-service
+          uri: http://localhost:8090
+          predicates:
+            - Path=/api/auth/**,/api/orders/**,/api/washer/**
+          
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Review Self Drive Booking</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 24px 0 32px;
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #0f172a 0, #020617 40%, #000 100%);
+      color: #e5e7eb;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+
+    .page { width: 100%; max-width: 1180px; padding: 0 16px; }
+
+    .shell {
+      width: 100%;
+      background: radial-gradient(circle at top left, #020617 0, #020617 40%, #020617 80%);
+      border-radius: 24px;
+      border: 1px solid rgba(148,163,184,0.4);
+      box-shadow: 0 24px 70px rgba(0,0,0,0.75);
+      padding: 18px 20px 20px;
+    }
+
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(30,64,175,0.85));
+      border: 1px solid rgba(129,140,248,0.8);
+      margin-bottom: 16px;
+      font-size: 13px;
+    }
+
+    .header-step {
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #e0f2fe;
+    }
+
+    .header-main { font-size: 15px; font-weight: 600; color: #f9fafb; }
+
+    .header-right {
+      text-align: right;
+      font-size: 12px;
+      color: #dbeafe;
+      white-space: nowrap;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, 1fr);
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .left-column, .right-column { display: flex; flex-direction: column; gap: 12px; }
+
+    .card {
+      border-radius: 18px;
+      padding: 14px 16px 14px;
+      border: 1px solid rgba(30,64,175,0.7);
+      background: radial-gradient(circle at top left, #020617 0, #020617 55%, #020617 100%);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.7);
+    }
+
+    .card.soft {
+      background: radial-gradient(circle at top left, #020617 0, #020617 40%, #020617 100%);
+      border-color: rgba(252,211,77,0.8);
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #a5b4fc;
+      margin-bottom: 8px;
+      text-align: left;
+    }
+
+    .address-block { text-align: left; font-size: 13px; line-height: 1.45; }
+    .address-line { margin: 1px 0; }
+
+    .centre-name-highlight { font-weight: 700; color: #fde68a; margin-bottom: 4px; }
+    .phone-highlight { margin-top: 6px; font-weight: 600; color: #f97316; font-size: 13px; }
+    .schedule-line { margin-top: 6px; font-size: 13px; color: #cbd5f5; }
+
+    .maps-link { margin-top: 8px; font-size: 13px; }
+    .maps-link a { color: #38bdf8; text-decoration: underline; cursor: pointer; }
+
+    .car-list { list-style: none; padding-left: 0; margin: 0; font-size: 13px; text-align: left; }
+    .car-list li { position: relative; padding-left: 18px; margin: 6px 0; line-height: 1.4; }
+    .car-list li::before {
+      content: "•";
+      position: absolute;
+      left: 4px;
+      top: 0;
+      color: #22c55e;
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .empty-msg { margin-top: 4px; font-size: 13px; color: #9ca3af; text-align: left; }
+
+    .summary-card {
+      background: radial-gradient(circle at top, #22c55e 0, #022c22 55%);
+      border-radius: 20px;
+      border: 1px solid rgba(187,247,208,0.9);
+      box-shadow: 0 20px 60px rgba(22,163,74,0.9);
+      padding: 14px 16px 14px;
+      color: #ecfdf5;
+    }
+
+    .summary-header {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #bbf7d0;
+      margin-bottom: 4px;
+    }
+
+    .summary-total { font-size: 26px; font-weight: 800; margin-bottom: 4px; }
+    .summary-tagline { font-size: 12px; color: #dcfce7; margin-bottom: 10px; }
+
+    .summary-row { display: flex; justify-content: space-between; font-size: 13px; margin: 2px 0; }
+    .summary-row .label { color: #ecfdf5; }
+    .summary-row .amount { min-width: 90px; text-align: right; }
+
+    .summary-row.discount .amount { color: #bef264; font-weight: 700; }
+
+    .summary-row.total {
+      margin-top: 6px;
+      padding-top: 4px;
+      border-top: 1px dashed rgba(187,247,208,0.8);
+      font-weight: 800;
+    }
+
+    .summary-note { margin-top: 8px; font-size: 12px; color: #dcfce7; }
+    .summary-note strong { color: #facc15; }
+
+    .summary-actions {
+      margin-top: 10px;
+      font-size: 13px;
+      text-align: center;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .summary-actions a {
+      color: #022c22;
+      background: #ecfdf5;
+      padding: 4px 10px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(6,95,70,0.6);
+    }
+
+    .summary-actions a.primary { background: #047857; color: #ecfdf5; }
+
+    @media (max-width: 880px) {
+      body { padding: 16px 0 24px; }
+      .shell { padding: 14px 12px 16px; border-radius: 20px; }
+      .layout { grid-template-columns: minmax(0, 1fr); }
+      .right-column { order: -1; }
+      .header-bar { flex-direction: column; align-items: flex-start; }
+      .header-right { align-self: flex-end; }
+    }
+
+    @media (max-width: 540px) {
+      .page { padding: 0 10px; }
+      .shell { padding: 12px 10px 14px; }
+      .header-bar { padding: 8px 10px; font-size: 12px; }
+      .header-main { font-size: 14px; }
+      .card, .summary-card { padding: 10px 10px 12px; border-radius: 16px; }
+      .summary-total { font-size: 22px; }
+      .summary-row, .car-list { font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="shell">
+
+    <div class="header-bar">
+      <div>
+        <div class="header-step">Step 2 • Review</div>
+        <div class="header-main">Review Self Drive booking</div>
+      </div>
+      <div class="header-right">
+        <div>Service: Self Drive</div>
+      </div>
+    </div>
+
+    <div class="layout">
+      <div class="left-column">
+        <div class="card">
+          <div class="card-title">Service centre details</div>
+          <div class="address-block">
+            <div id="centreName" class="centre-name-highlight"></div>
+            <div id="centreAddress" class="address-line"></div>
+            <div id="centrePhone" class="address-line phone-highlight"></div>
+            <div id="centreDateSlot" class="schedule-line"></div>
+            <div class="maps-link">
+              <a id="centreMapsLink" href="#" target="_blank" style="display:none;">View in Maps</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card soft">
+          <div class="card-title">Car details</div>
+          <ul id="carsList" class="car-list"></ul>
+          <div id="emptyMessage" class="empty-msg" style="display:none;">
+            No pending bookings found. Please go back and create a booking.
+          </div>
+        </div>
+      </div>
+
+      <div class="right-column">
+        <div class="summary-card">
+          <div class="summary-header">Price summary</div>
+          <div id="totalAmount" class="summary-total">₹0</div>
+          <div id="summarySubText" class="summary-tagline">Self Drive service</div>
+
+          <div class="summary-row">
+            <div class="label">Base total</div>
+            <div id="billAmountValue" class="amount">₹0</div>
+          </div>
+
+          <div id="freeRow" class="summary-row discount" style="display:none;">
+            <div class="label">Free booking applied</div>
+            <div id="freeAmountValue" class="amount">-₹0</div>
+          </div>
+
+          <div id="membershipRow" class="summary-row discount" style="display:none;">
+            <div id="membershipLabel" class="label">Membership discount</div>
+            <div id="membershipAmountValue" class="amount">-₹0</div>
+          </div>
+
+          <div class="summary-row total">
+            <div class="label">Payable amount</div>
+            <div id="payableAmountLabel" class="amount">₹0</div>
+          </div>
+
+          <div id="discountLine" class="summary-note" style="display:none;"></div>
+
+          <div class="summary-actions">
+            <a href="javascript:void(0)" onclick="goBack()">Back</a>
+            <a href="javascript:void(0)" class="primary" onclick="confirmBooking()">Confirm booking</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ===== AUTH (same as dashboard) =====
+  const AUTH_TOKEN_KEY = "jwt";
+  const PHONE_KEY = "phone";
+
+  function getAuthToken() {
+    return localStorage.getItem(AUTH_TOKEN_KEY);
+  }
+
+  function getPhone() {
+    return (localStorage.getItem(PHONE_KEY) || "").trim();
+  }
+
+  function getAuthHeaders() {
+    const t = getAuthToken();
+    return t ? { "Authorization": `Bearer ${t}` } : {};
+  }
+
+  function requireAuth() {
+    const t = getAuthToken();
+    const p = getPhone();
+    if (!t || !p) {
+      // keep user flow
+      localStorage.setItem("pendingTarget", window.location.pathname + window.location.search);
+      window.location.href = "/SignuLogin?mode=login";
+      return false;
+    }
+    return true;
+  }
+
+  if (!requireAuth()) {
+    // stop script execution
+    throw new Error("Not authenticated - redirecting to login");
+  }
+
+  const phoneLS = getPhone(); // user phone
+
+  const centreNameEl       = document.getElementById("centreName");
+  const centreAddressEl    = document.getElementById("centreAddress");
+  const centrePhoneEl      = document.getElementById("centrePhone");
+  const centreDateSlotEl   = document.getElementById("centreDateSlot");
+  const centreMapsLinkEl   = document.getElementById("centreMapsLink");
+
+  const carsListEl         = document.getElementById("carsList");
+  const emptyMessageEl     = document.getElementById("emptyMessage");
+
+  const totalAmountEl      = document.getElementById("totalAmount");
+  const billAmountEl       = document.getElementById("billAmountValue");
+  const payableAmountEl    = document.getElementById("payableAmountLabel");
+
+  const freeRowEl          = document.getElementById("freeRow");
+  const freeAmtEl          = document.getElementById("freeAmountValue");
+
+  const membershipRowEl    = document.getElementById("membershipRow");
+  const membershipLabelEl  = document.getElementById("membershipLabel");
+  const membershipAmountEl = document.getElementById("membershipAmountValue");
+
+  const discountLineEl     = document.getElementById("discountLine");
+  const summarySubTextEl   = document.getElementById("summarySubText");
+
+  const bookings = JSON.parse(localStorage.getItem("pendingBookings") || "[]");
+
+  function formatDate(ymd) {
+    if (!ymd) return "";
+    const parts = ymd.split("-");
+    if (parts.length !== 3) return ymd;
+    const [y, m, d] = parts;
+    return `${d}-${m}-${y}`;
+  }
+
+  function safeNum(v) {
+    const n = Number(v);
+    return isNaN(n) ? 0 : n;
+  }
+
+  function renderSummaryFromStorage() {
+    const subtotal = safeNum(localStorage.getItem("billSubtotal"));
+    const freeApplied = safeNum(localStorage.getItem("freeAppliedAmount"));
+    const memDisc = safeNum(localStorage.getItem("membershipDiscountAmount"));
+    const memPct = safeNum(localStorage.getItem("membershipDiscountPercent"));
+    const payable = safeNum(localStorage.getItem("finalPayableAmount"));
+
+    billAmountEl.textContent = `₹${subtotal}`;
+    payableAmountEl.textContent = `₹${payable}`;
+    totalAmountEl.textContent = `₹${payable}`;
+
+    // free
+    if (freeApplied > 0) {
+      freeRowEl.style.display = "flex";
+      freeAmtEl.textContent = `-₹${freeApplied}`;
+    } else {
+      freeRowEl.style.display = "none";
+      freeAmtEl.textContent = "-₹0";
+    }
+
+    // membership discount
+    if (memDisc > 0) {
+      membershipRowEl.style.display = "flex";
+      membershipLabelEl.textContent = memPct > 0 ? `Membership discount (${memPct}%)` : "Membership discount";
+      membershipAmountEl.textContent = `-₹${memDisc}`;
+    } else {
+      membershipRowEl.style.display = "none";
+      membershipAmountEl.textContent = "-₹0";
+      membershipLabelEl.textContent = "Membership discount";
+    }
+
+    const notes = [];
+    if (freeApplied > 0) notes.push(`Free wash applied, you save ₹${freeApplied}.`);
+    if (memDisc > 0) notes.push(`Membership discount applied, you save ₹${memDisc}.`);
+    if (notes.length) {
+      discountLineEl.style.display = "block";
+      discountLineEl.innerHTML = notes.join(" ");
+    } else {
+      discountLineEl.style.display = "none";
+      discountLineEl.textContent = "";
+    }
+  }
+
+  async function renderPage() {
+    if (!bookings || bookings.length === 0) {
+      emptyMessageEl.style.display = "block";
+      carsListEl.innerHTML = "";
+      summarySubTextEl.textContent = "Self Drive service";
+      renderSummaryFromStorage();
+      return;
+    }
+
+    emptyMessageEl.style.display = "none";
+    carsListEl.innerHTML = "";
+
+    bookings.forEach((b, idx) => {
+      const li = document.createElement("li");
+
+      const date = b.date ? formatDate(b.date) : "-";
+      const slot = b.timeslot || b.timeSlot || b.timeslot || "-";
+      const wash = b.washType ? String(b.washType).toUpperCase() : "";
+      const amount = safeNum(b.amount);
+
+      let text = `Car ${b.carIndex || (idx + 1)} – ${b.carType || "Car"} (${b.carNumber || "-"})`;
+      if (wash) text += ` · ${wash}`;
+      text += ` · ${date} ${slot} · Amount: ₹${amount}`;
+
+      li.textContent = text;
+      carsListEl.appendChild(li);
+    });
+
+    const first = bookings[0];
+
+    const centreName = first.centreName || first.centre || "Selected service centre";
+    const centreAddr = first.address || "";
+    const date       = first.date || "";
+    const slot       = first.timeslot || first.timeSlot || "";
+    const mapsUrl    = first.mapsUrl || first.mapsURL || first.mapsurl || "";
+
+    // Optional: if your booking stores centre phone, show that; else fallback to user phone
+    const centreContact = (first.centrePhone || first.contactPhone || "").trim();
+
+    centreNameEl.textContent    = centreName;
+    centreAddressEl.textContent = centreAddr;
+    centrePhoneEl.textContent   = `Contact: ${centreContact || phoneLS}`;
+    centreDateSlotEl.textContent =
+      date ? `Schedule: ${formatDate(date)} · ${slot || "-"}` : `Slot: ${slot || "-"}`;
+
+    if (mapsUrl) {
+      centreMapsLinkEl.href = mapsUrl;
+      centreMapsLinkEl.style.display = "inline";
+    } else {
+      centreMapsLinkEl.style.display = "none";
+    }
+
+    summarySubTextEl.textContent =
+      `${bookings.length} car${bookings.length > 1 ? "s" : ""} • ${centreName}`;
+
+    renderSummaryFromStorage();
+  }
+
+  function goBack() { window.history.back(); }
+
+  // keep your payment route
+  function confirmBooking() { window.location.href = "/payment?serviceType=SELF_DRIVE"; }
+
+  renderPage();
+</script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+2025-12-18 00:16:03 WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=14h22m53s838ms368µs200ns).
+2025-12-18 02:28:20 WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=2h10m40s278ms926µs100ns).
+2025-12-18 04:42:36 DEBUG org.hibernate.SQL - select count(b1_0.id) from carwash_booking b1_0 where b1_0.phone=?
+2025-12-18 04:43:57 DEBUG org.hibernate.SQL - select count(b1_0.id) from carwash_booking b1_0 where b1_0.phone=?
+2025-12-18 04:44:26 DEBUG org.hibernate.SQL - select count(b1_0.id) from carwash_booking b1_0 where b1_0.phone=?
+2025-12-18 04:46:05 DEBUG org.hibernate.SQL - select count(b1_0.id) from carwash_booking b1_0 where b1_0.phone=?
+2025-12-18 04:46:29 DEBUG org.hibernate.SQL - select distinct sc1_0.area from carwash_service_centre sc1_0 where sc1_0.active=true order by sc1_0.area
+2025-12-18 18:21:52 WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=8h48m49s830ms176µs800ns).

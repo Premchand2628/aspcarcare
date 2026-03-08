@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin – Live Chat</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f3f4f6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .chat-shell {
+      width: 480px;
+      height: 620px;
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .chat-header {
+      background: #4f46e5;
+      color: #fff;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .chat-header-left {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-header-title {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .chat-header-sub {
+      font-size: 12px;
+      opacity: 0.9;
+    }
+
+    .chat-header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+    }
+
+    .header-close {
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: 700;
+      border: none;
+      background: transparent;
+      color: #fff;
+    }
+
+    .chat-body {
+      flex: 1;
+      padding: 10px 14px;
+      background: #f9fafb;
+      overflow-y: auto;
+      font-size: 13px;
+    }
+
+    .msg-row { margin-bottom: 8px; display: flex; }
+    .msg-row.user  { justify-content: flex-start; }
+    .msg-row.admin { justify-content: flex-end; }
+    .msg-row.note  { justify-content: center; }
+
+    .msg-bubble {
+      max-width: 80%;
+      padding: 8px 10px;
+      border-radius: 12px;
+      white-space: pre-line;
+      font-size: 13px;
+    }
+
+    .msg-user {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .msg-admin {
+      background: #4f46e5;
+      color: #fff;
+    }
+
+    .msg-note {
+      background: #fef3c7;
+      color: #92400e;
+      border-radius: 10px;
+    }
+
+    .msg-time {
+      font-size: 10px;
+      color: #6b7280;
+      margin-top: 2px;
+    }
+
+    .chat-footer {
+      border-top: 1px solid #e5e7eb;
+      padding: 8px 10px 10px;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 12px;
+    }
+
+    .status-line {
+      color: #6b7280;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 8px;
+      border-radius: 18px;
+      border: 1px solid #cbd5f5;
+      font-size: 13px;
+    }
+
+    .send-btn {
+      padding: 8px 16px;
+      border-radius: 18px;
+      border: none;
+      background: #4f46e5;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .send-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .end-btn {
+      background: #f97373;
+      color: #fff;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      cursor: pointer;
+      margin-left: 6px;
+    }
+
+    .end-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .online-label.offline {
+      color: #b91c1c;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+<div class="chat-shell">
+  <div class="chat-header">
+    <div class="chat-header-left">
+      <div class="chat-header-title">Admin – Live Chat</div>
+      <div class="chat-header-sub" id="chatHeaderSub"></div>
+    </div>
+    <div class="chat-header-right">
+      <span id="onlineLabel">Online</span>
+      <button id="endChatBtn" class="end-btn">End Chat</button>
+      <button id="headerClose" class="header-close">&times;</button>
+    </div>
+  </div>
+
+  <div id="chatBody" class="chat-body"></div>
+
+  <div class="chat-footer">
+    <div id="statusLine" class="status-line">Connecting...</div>
+    <div class="input-row">
+      <input id="adminInput" class="chat-input" type="text"
+             placeholder="Type your reply..." />
+      <button id="sendBtn" class="send-btn">Send</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ✅ PATH FIXES ONLY (no logic/UI changes)
+  const API_BASE = window.location.origin;
+  const API_CHAT = API_BASE + "/chat";
+
+  const chatBody    = document.getElementById("chatBody");
+  const adminInput  = document.getElementById("adminInput");
+  const sendBtn     = document.getElementById("sendBtn");
+  const statusLine  = document.getElementById("statusLine");
+  const headerSub   = document.getElementById("chatHeaderSub");
+  const headerClose = document.getElementById("headerClose");
+  const endChatBtn  = document.getElementById("endChatBtn");
+  const onlineLabel = document.getElementById("onlineLabel");
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const phone     = urlParams.get("phone");
+  const userName  = urlParams.get("username") || "Customer";
+
+  if (!phone) {
+    alert("Phone is missing in URL. Please open this window via Admin dashboard.");
+  }
+
+  headerSub.textContent = `Chatting with ${userName} (${phone || "unknown"})`;
+
+  let lastMessageId = 0;
+  let pollTimer     = null;
+  let chatEnded     = false;
+  const sessionStartTime = new Date(); // used to ignore older messages if needed
+
+  /* ---------- Helpers ---------- */
+
+  function scrollToBottom() {
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
+
+  function appendNote(text, createdAt) {
+    const row = document.createElement("div");
+    row.className = "msg-row note";
+
+    const wrapper = document.createElement("div");
+    const bubble = document.createElement("div");
+    bubble.className = "msg-bubble msg-note";
+    bubble.innerText = text;
+    wrapper.appendChild(bubble);
+
+    if (createdAt) {
+      const time = document.createElement("div");
+      time.className = "msg-time";
+      time.textContent = new Date(createdAt).toLocaleTimeString();
+      wrapper.appendChild(time);
+    }
+
+    row.appendChild(wrapper);
+    chatBody.appendChild(row);
+    scrollToBottom();
+  }
+
+  function appendMsg(sender, text, createdAt) {
+    // System messages "User has ended..." and "Admin has ended..." are rendered as notes
+    if (text === "User has ended the chat" || text === "Admin has ended the chat") {
+      appendNote(text, createdAt);
+      return;
+    }
+
+    const row = document.createElement("div");
+    row.className = "msg-row " + (sender === "ADMIN" ? "admin" : "user");
+
+    const wrapper = document.createElement("div");
+
+    const bubble = document.createElement("div");
+    bubble.className = "msg-bubble " + (sender === "ADMIN" ? "msg-admin" : "msg-user");
+    bubble.innerText = text;
+    wrapper.appendChild(bubble);
+
+    if (createdAt) {
+      const time = document.createElement("div");
+      time.className = "msg-time";
+      time.textContent = new Date(createdAt).toLocaleTimeString();
+      wrapper.appendChild(time);
+    }
+
+    row.appendChild(wrapper);
+    chatBody.appendChild(row);
+    scrollToBottom();
+  }
+
+  function disableInputWithMessage(msg) {
+    chatEnded = true;
+    statusLine.textContent = msg;
+    sendBtn.disabled        = true;
+    adminInput.disabled     = true;
+    endChatBtn.disabled     = true;
+    onlineLabel.textContent = "Offline";
+    onlineLabel.classList.add("offline");
+  }
+
+  /* ---------- Poll messages from backend ---------- */
+
+  async function pollMessages() {
+    if (chatEnded || !phone) return;
+
+    try {
+      const res = await fetch(
+        `${API_CHAT}/messages?phone=${encodeURIComponent(phone)}&afterId=${lastMessageId}`
+      );
+      if (!res.ok) return;
+
+      const list = await res.json();
+      if (!Array.isArray(list)) return;
+
+      list.forEach(m => {
+        const id        = m.id || 0;
+        const text      = m.message || "";
+        const senderRaw = (m.sender || "").toUpperCase();
+        const createdAt = m.createdAt ? new Date(m.createdAt) : null;
+
+        if (id > lastMessageId) {
+          lastMessageId = id;
+        }
+
+        // Optionally ignore very old messages from previous sessions
+        if (createdAt && createdAt < sessionStartTime) {
+          return;
+        }
+
+        const sender = senderRaw === "ADMIN" ? "ADMIN" : "USER";
+        appendMsg(sender, text, m.createdAt);
+
+        // If user ended chat, lock UI & move to closed list
+        if (sender === "USER" && text === "User has ended the chat") {
+          disableInputWithMessage("User has ended the chat.");
+          if (pollTimer) {
+            clearInterval(pollTimer);
+            pollTimer = null;
+          }
+
+          if (window.opener && typeof window.opener.markChatClosed === "function") {
+            window.opener.markChatClosed(phone);
+          }
+        }
+      });
+
+      if (!chatEnded) {
+        statusLine.textContent = "Connected. You can reply to the customer now.";
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  /* ---------- Send admin message ---------- */
+
+  async function sendAdminMessage() {
+    if (chatEnded) return;
+    const text = adminInput.value.trim();
+    if (!text || !phone) return;
+
+    appendMsg("ADMIN", text, new Date().toISOString());
+    adminInput.value = "";
+
+    try {
+      await fetch(`${API_CHAT}/admin-message`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone: phone,
+          username: "Admin",
+          message: text
+        })
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  /* ---------- End chat by Admin ---------- */
+
+  async function endChat() {
+    if (chatEnded || !phone) return;
+    chatEnded = true;
+
+    const endText = "Admin has ended the chat";
+    appendMsg("ADMIN", endText, new Date().toISOString());
+    disableInputWithMessage("Chat ended.");
+
+    try {
+      // 1) store system message
+      await fetch(`${API_CHAT}/admin-message`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone: phone,
+          username: "Admin",
+          message: endText
+        })
+      });
+
+      // 2) CLOSE the session in DB
+      await fetch(`${API_CHAT}/end`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone: phone,
+          endedBy: "ADMIN"
+        })
+      });
+    } catch (e) {
+      console.error("Error ending chat", e);
+    }
+
+    if (pollTimer) {
+      clearInterval(pollTimer);
+      pollTimer = null;
+    }
+
+    // tell parent window to move this chat to CLOSED list, if implemented
+    if (window.opener && typeof window.opener.markChatClosed === "function") {
+      window.opener.markChatClosed(phone);
+    }
+  }
+
+  /* ---------- Wire events ---------- */
+
+  sendBtn.onclick = sendAdminMessage;
+
+  adminInput.addEventListener("keydown", e => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sendAdminMessage();
+    }
+  });
+
+  headerClose.onclick = () => window.close();
+  endChatBtn.onclick  = endChat;
+
+  /* ---------- Init ---------- */
+
+  pollTimer = setInterval(pollMessages, 2000);
+  pollMessages();
+  statusLine.textContent = "Connecting...";
+</script>
+
+</body>
+</html>

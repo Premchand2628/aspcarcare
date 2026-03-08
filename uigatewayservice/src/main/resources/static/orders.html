@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>My Bookings | ASP Care</title>
+
+  <!-- Mobile responsive -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Inter font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+                   sans-serif;
+      background: radial-gradient(circle at top, #e0f2fe, #eef2ff 40%, #f9fafb 100%);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      width: 100vw;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      color: #0f172a;
+    }
+
+    /* TOP BAR (same style as home.html / selfdrive.html) */
+    .top-bar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 24px;
+      background: rgba(15, 23, 42, 0.98);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 1px 4px rgba(15,23,42,0.3);
+      gap: 16px;
+      flex-wrap: nowrap;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 18px;
+      color: #e5e7eb;
+      letter-spacing: 0.03em;
+      flex-shrink: 0;
+    }
+
+    .logo-pill {
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 20% 20%, #38bdf8, #1d4ed8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: #f9fafb;
+      box-shadow: 0 0 0 1px rgba(191,219,254,0.7);
+      cursor: pointer;
+    }
+
+    .search-container {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      gap: 12px;
+      max-width: 520px;
+    }
+
+    .search-box {
+      flex: 1;
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 8px 30px 8px 30px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      font-size: 13px;
+      background: rgba(15,23,42,0.9);
+      color: #e5e7eb;
+      outline: none;
+    }
+
+    .search-box input::placeholder {
+      color: #6b7280;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      color: #6b7280;
+      cursor: pointer;
+    }
+
+    .profile-area {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 999px;
+      transition: background 0.12s ease;
+      flex-shrink: 0;
+    }
+
+    .profile-area:hover {
+      background: rgba(31,41,55,0.8);
+    }
+
+    .profile-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 20% 20%, #22c55e, #16a34a);
+      color: #e5fdf4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 600;
+      box-shadow: 0 0 0 1px rgba(34,197,94,0.6);
+    }
+
+    #profileName {
+      color: #e5e7eb;
+      font-weight: 500;
+      font-size: 13px;
+    }
+
+    .profile-dropdown {
+      position: absolute;
+      right: 0;
+      top: 42px;
+      background: #020617;
+      border-radius: 14px;
+      box-shadow: 0 18px 45px rgba(15,23,42,0.9);
+      min-width: 170px;
+      display: none;
+      overflow: hidden;
+      z-index: 20;
+      border: 1px solid rgba(51,65,85,0.9);
+    }
+
+    .profile-dropdown button {
+      width: 100%;
+      padding: 10px 12px;
+      border: none;
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
+      font-size: 13px;
+      color: #e5e7eb;
+    }
+
+    .profile-dropdown button:hover {
+      background: rgba(15,23,42,0.9);
+    }
+
+    /* PAGE CONTENT WRAPPER */
+    .content {
+      flex: 1;
+      padding: 24px 16px 40px;
+      display: flex;
+      justify-content: center;
+    }
+
+    /* OUTER SHELL – similar to selfdrive */
+    .shell {
+      width: 100%;
+      max-width: 1080px;
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow:
+        0 20px 60px rgba(15, 23, 42, 0.18),
+        0 0 0 1px rgba(148, 163, 184, 0.25);
+      overflow: hidden;
+      border: 1px solid rgba(226,232,240,0.9);
+    }
+
+    /* HEADER BAR */
+    .shell-header {
+      padding: 20px 24px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      background:
+        radial-gradient(circle at top left, #bfdbfe, #2563eb 45%, #1d4ed8 70%, #0f172a 100%);
+      color: #e5e7eb;
+    }
+
+    .shell-header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .shell-logo-pill {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      background: #020617;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 0 0 2px rgba(191,219,254,0.8);
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .shell-title {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .shell-title h1 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      color: #f9fafb;
+    }
+
+    .shell-title span {
+      font-size: 13px;
+      opacity: 0.92;
+      color: #dbeafe;
+    }
+
+    .shell-header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .header-tag {
+      font-size: 11px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.45);
+      border: 1px solid rgba(191,219,254,0.9);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .btn {
+      padding: 7px 14px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+      transition: transform 0.08s ease, box-shadow 0.12s ease, background 0.12s ease;
+    }
+
+    .btn-primary {
+      background: #f97316;
+      color: #111827;
+      box-shadow: 0 10px 24px rgba(248,150,68,0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      background: #ea580c;
+      box-shadow: 0 14px 30px rgba(248,150,68,0.55);
+    }
+
+    .btn-secondary {
+      background: #111827;
+      color: #e5e7eb;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+    }
+
+    .btn-secondary:hover {
+      background: #020617;
+    }
+
+    .btn-danger {
+      background: #dc2626;
+      color: #fff;
+    }
+
+    .btn-danger:hover {
+      background: #b91c1c;
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    /* INNER BODY */
+    .shell-body {
+      padding: 20px 22px 22px;
+      background: linear-gradient(to bottom, #ffffff, #f9fafb);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .section-title-block h2 {
+      margin: 0;
+      font-size: 18px;
+      color: #0f172a;
+    }
+
+    .section-title-block span {
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    .summary-pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .summary-pill {
+      font-size: 11px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      color: #111827;
+      background: #eff6ff;
+    }
+
+    /* TABS */
+    .tabs-row {
+      margin: 14px 0 12px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tab-chip {
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.5);
+      color: #6b7280;
+      background: #f9fafb;
+      cursor: default;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .tab-chip.active {
+      background: #e0f2fe;
+      color: #0f172a;
+      border-color: #60a5fa;
+    }
+
+    /* BOOKINGS LIST – single column vertical rectangles */
+    .bookings-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 4px;
+    }
+
+    .booking-card {
+      background: #f9fafb;
+      border-radius: 16px;
+      padding: 14px 16px 12px;
+      box-shadow: 0 10px 24px rgba(15,23,42,0.10);
+      border: 1px solid rgba(209,213,219,0.9);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .booking-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top left, rgba(59,130,246,0.20), transparent 65%);
+      opacity: 0.8;
+      pointer-events: none;
+    }
+
+    .booking-card-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .booking-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .booking-title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .booking-title {
+      font-weight: 700;
+      font-size: 15px;
+      color: #0f172a;
+    }
+
+    .booking-id-label {
+      font-size: 11px;
+      color: #6b7280;
+    }
+
+    .chip-small {
+      font-size: 11px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.7);
+      color: #111827;
+      background: #e0f2fe;
+      white-space: nowrap;
+    }
+
+    .booking-meta-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin: 4px 0 8px;
+      font-size: 12px;
+      color: #111827;
+    }
+
+    .booking-meta-row span.label {
+      color: #6b7280;
+      font-weight: 500;
+    }
+
+    .booking-field {
+      font-size: 12px;
+      color: #111827;
+    }
+
+    .muted {
+      color: #6b7280;
+      font-size: 11px;
+    }
+
+    /* status pills row */
+    .pill-row {
+      margin-top: 4px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .pill-status-PENDING   { background: #fef3c7; color: #92400e; }
+    .pill-status-CONFIRMED { background: #bbf7d0; color: #166534; }
+    .pill-status-CANCELLED { background: #fee2e2; color: #b91c1c; }
+    .pill-status-REFUNDED  { background: #e0f2fe; color: #075985; }
+
+    .pill-pay-PENDING   { background: #fee2e2; color: #7f1d1d; }
+    .pill-pay-SUCCESS   { background: #dcfce7; color: #065f46; }
+    .pill-pay-REFUNDED  { background: #dbeafe; color: #1e40af; }
+
+    .pill-refund-INITIATED { background: #e0f2fe; color: #075985; }
+    .pill-refund-COMPLETED { background: #dcfce7; color: #14532d; }
+
+    /* BUTTON ROW AT BOTTOM OF CARD */
+    .btn-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      gap: 8px;
+      border-top: 1px dashed rgba(209,213,219,0.9);
+      padding-top: 8px;
+    }
+
+    .btn-row-right {
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+    }
+
+    .empty-msg {
+      margin-top: 12px;
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    .empty-state-card {
+      margin-top: 10px;
+      background: #f9fafb;
+      border-radius: 16px;
+      padding: 16px 18px;
+      border: 1px dashed rgba(148,163,184,0.9);
+      text-align: center;
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    .empty-state-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 4px;
+    }
+
+    /* MODAL (kept dark to stand out) */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(15,23,42,0.75);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-box {
+      background: #020617;
+      padding: 18px 18px 16px;
+      border-radius: 16px;
+      width: 360px;
+      max-width: 95vw;
+      box-shadow: 0 20px 45px rgba(0,0,0,0.6);
+      font-size: 13px;
+      border: 1px solid rgba(148,163,184,0.7);
+      color: #e5e7eb;
+    }
+
+    .modal-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .modal-title span.icon {
+      font-size: 16px;
+    }
+
+    .modal-row {
+      margin: 3px 0;
+      font-size: 13px;
+    }
+
+    .modal-row span.label {
+      color: #9ca3af;
+    }
+
+    .modal-btn-row {
+      margin-top: 14px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .small-text {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: 6px;
+    }
+
+    @media (max-width: 600px) {
+      .content {
+        padding: 16px 10px 32px;
+      }
+      .shell {
+        border-radius: 18px;
+      }
+      .shell-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-width: 480px) {
+      #profileName {
+        display: none;
+      }
+      .top-bar {
+        padding: 8px 10px;
+        gap: 8px;
+      }
+      .search-box input {
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- TOP NAV BAR -->
+<div class="top-bar">
+  <div class="logo">
+    <div class="logo-pill" onclick="goDashboard()">ASP</div>
+  </div>
+
+  <div class="search-container">
+    <div class="search-box">
+      <span class="search-icon" onclick="handleSearchNavigation()">🔍</span>
+      <input
+        id="searchInput"
+        type="text"
+        placeholder="Search services, bookings…"
+        onkeydown="if(event.key === 'Enter'){ handleSearchNavigation(); }"
+      >
+    </div>
+  </div>
+
+  <div class="profile-area" id="profileArea">
+    <div class="profile-icon" id="profileIcon">U</div>
+    <div id="profileName">User</div>
+
+    <div class="profile-dropdown" id="profileDropdown">
+      <button onclick="goToEditProfile()">Edit Profile</button>
+      <button onclick="goToOrders()">My Bookings</button>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE CONTENT -->
+<div class="content">
+  <div class="shell">
+    <!-- HEADER -->
+    <div class="shell-header">
+      <div class="shell-header-left">
+        <div class="shell-logo-pill" onclick="goDashboard()" title="Back to dashboard">🚗</div>
+        <div class="shell-title">
+          <h1>My Bookings</h1>
+          <span>Track, manage and cancel your ASP Care car wash bookings.</span>
+        </div>
+      </div>
+      <div class="shell-header-right">
+        <div class="header-tag">Signed in as Customer</div>
+        <button class="btn btn-primary" onclick="goDashboard()">← Back to Dashboard</button>
+      </div>
+    </div>
+
+    <!-- BODY -->
+    <div class="shell-body">
+      <div class="section-header">
+        <div class="section-title-block">
+          <h2>Booking History</h2>
+          <span>View all bookings, their status, payment and refunds in one place.</span>
+
+          <div class="summary-pill-row">
+            <div class="summary-pill" id="summaryCount">Total Bookings: –</div>
+            <div class="summary-pill">Tap “Cancel Booking” to see refund preview (if eligible).</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabs-row">
+        <div class="tab-chip active">📅 All Bookings</div>
+        <div class="tab-chip">✅ Confirmed / Completed</div>
+        <div class="tab-chip">🧾 Refund & Cancellations</div>
+      </div>
+
+      <!-- Vertical cards list -->
+      <div id="bookingsContainer" class="bookings-list"></div>
+
+      <!-- Empty State -->
+      <div id="emptyMessage" class="empty-msg" style="display:none;">
+        <div class="empty-state-card">
+          <div class="empty-state-title">No bookings found</div>
+          <div>You haven’t booked any car wash yet. Head back to the dashboard and make your first booking!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Cancel + Refund modal -->
+<div class="modal-overlay" id="refundModal">
+  <div class="modal-box">
+    <div class="modal-title">
+      <span class="icon">⚠️</span>
+      Cancel Booking & Refund Preview
+    </div>
+    <div class="modal-row" id="modalBookingId"></div>
+    <div class="modal-row" id="modalDateSlot"></div>
+    <div class="modal-row" id="modalHours"></div>
+    <div class="modal-row" id="modalPercent"></div>
+    <div class="modal-row" id="modalAmount"></div>
+
+    <div class="small-text">
+      Refund is based on remaining hours before your scheduled slot.
+      If remaining time is less than 6 hours, refund will be ₹0 and only cancellation is applied.
+    </div>
+
+    <div class="modal-btn-row">
+      <button class="btn btn-secondary" onclick="closeRefundModal()">Close</button>
+      <button class="btn btn-danger" onclick="confirmRefund()">Confirm Cancel & Refund</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ✅ Use RELATIVE paths (works in prod + localhost)
+  const API_USERS    = "/users";
+  const API_BOOKINGS = "/bookings";
+
+  // ✅ AUTH KEYS (STANDARD)
+  const JWT_KEY   = "jwt";
+  const PHONE_KEY = "phone";
+
+  function getJwt() {
+    return (localStorage.getItem(JWT_KEY) || "").trim();
+  }
+  function getPhone() {
+    return (localStorage.getItem(PHONE_KEY) || "").trim();
+  }
+
+  function getAuthHeaders() {
+    const jwt = getJwt();
+    return jwt ? { "Authorization": "Bearer " + jwt } : {};
+  }
+
+  const phone = getPhone();
+  const jwt   = getJwt();
+
+  // ✅ If missing auth -> go login
+  if (!phone || !jwt) {
+    localStorage.setItem("pendingTarget", "/orders");
+    window.location.href = "/SignuLogin?mode=login";
+  }
+
+  let allBookings = [];
+  let currentRefundBookingId = null;
+  let currentRefundQuote = null;
+
+  // ---------- TOP BAR PROFILE / SEARCH ----------
+  const profileArea     = document.getElementById("profileArea");
+  const profileDropdown = document.getElementById("profileDropdown");
+  const profileNameEl   = document.getElementById("profileName");
+  const profileIconEl   = document.getElementById("profileIcon");
+
+  // load profile name (✅ with Authorization)
+  fetch(API_USERS + "/profile?phone=" + encodeURIComponent(phone), {
+    method: "GET",
+    headers: {
+      ...getAuthHeaders(),
+      "Content-Type": "application/json"
+    }
+  })
+    .then(res => res.ok ? res.json() : Promise.reject(res))
+    .then(user => {
+      const name = user.lastName || user.firstName || "User";
+      profileNameEl.textContent = name;
+      profileIconEl.textContent = name.charAt(0).toUpperCase();
+    })
+    .catch(() => {
+      profileNameEl.textContent = "User";
+      profileIconEl.textContent = "U";
+    });
+
+  profileArea.onclick = (e) => {
+    e.stopPropagation();
+    if (!getPhone() || !getJwt()) {
+      localStorage.setItem("pendingTarget", "/orders");
+      window.location.href = "/SignuLogin?mode=login";
+      return;
+    }
+    profileDropdown.style.display =
+      profileDropdown.style.display === "block" ? "none" : "block";
+  };
+
+  document.addEventListener("click", () => {
+    profileDropdown.style.display = "none";
+  });
+
+  function goDashboard() {
+    window.location.href = "/aspcare";
+  }
+
+  function goToOrders() {
+    window.location.href = "/orders";
+  }
+
+  function goToEditProfile() {
+    // protect
+    if (!getJwt() || !getPhone()) {
+      localStorage.setItem("pendingTarget", "/edit-profile");
+      window.location.href = "/SignuLogin?mode=login";
+      return;
+    }
+    window.location.href = "/edit-profile";
+  }
+
+  function logout() {
+    if (!confirm("Are you sure you want to logout?")) return;
+
+    localStorage.removeItem(JWT_KEY);
+    localStorage.removeItem(PHONE_KEY);
+    localStorage.removeItem("pendingTarget");
+
+    window.location.href = "/mainpage";
+  }
+
+  function handleSearchNavigation() {
+    const input = document.getElementById("searchInput");
+    if (!input) return;
+    const query = input.value.trim().toLowerCase();
+    if (!query) return;
+
+    if (query === "orders" || query === "order" || query.includes("booking")) {
+      goToOrders();
+      return;
+    }
+    if (query.includes("dashboard") || query === "home") {
+      goDashboard();
+      return;
+    }
+    if (query.includes("self")) {
+      window.location.href = "/selfdrive";
+      return;
+    }
+    if (query.includes("homewash") || query.includes("home wash")) {
+      window.location.href = "/homewash";
+      return;
+    }
+
+    alert('No matching page. Try "orders", "dashboard", or "self drive".');
+  }
+
+  // ---------- HELPER: FORMAT DATE ----------
+  function formatDate(iso) {
+    if (!iso) return "";
+    if (iso.length === 10 && iso.indexOf("T") === -1) return iso; // yyyy-mm-dd
+    try {
+      const d = new Date(iso);
+      if (isNaN(d.getTime())) return iso;
+      return d.toLocaleString();
+    } catch (e) {
+      return iso;
+    }
+  }
+
+  // ---------- LOAD BOOKINGS ----------
+  async function loadBookings() {
+    try {
+      const livePhone = getPhone();
+      const liveJwt = getJwt();
+
+      if (!livePhone || !liveJwt) {
+        localStorage.setItem("pendingTarget", "/orders");
+        window.location.href = "/SignuLogin?mode=login";
+        return;
+      }
+
+      // ✅ GET /bookings/by-phone?phone=xxxx  (✅ with Authorization)
+      const url = `${API_BOOKINGS}/by-phone?phone=${encodeURIComponent(livePhone)}`;
+
+      const res = await fetch(url, {
+        method: "GET",
+        headers: {
+          ...getAuthHeaders(),
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (!res.ok) {
+        if (res.status === 401 || res.status === 403) {
+          // token invalid/expired
+          localStorage.setItem("pendingTarget", "/orders");
+          window.location.href = "/SignuLogin?mode=login";
+          return;
+        }
+        let msg = "Failed to load your bookings.";
+        try {
+          const t = await res.text();
+          if (t && t.trim()) msg = t;
+        } catch (e) {}
+        alert(msg);
+        return;
+      }
+
+      allBookings = await res.json();
+      renderBookings(allBookings);
+
+    } catch (e) {
+      console.error(e);
+      alert("Error contacting server.");
+    }
+  }
+
+  function renderBookings(list) {
+    const container = document.getElementById("bookingsContainer");
+    const emptyMsg = document.getElementById("emptyMessage");
+    const summaryCount = document.getElementById("summaryCount");
+    container.innerHTML = "";
+
+    const count = list ? list.length : 0;
+    summaryCount.textContent = "Total Bookings: " + count;
+
+    if (!list || list.length === 0) {
+      emptyMsg.style.display = "block";
+      return;
+    }
+    emptyMsg.style.display = "none";
+
+    list.forEach(b => {
+      const card = document.createElement("div");
+      card.className = "booking-card";
+
+      const inner = document.createElement("div");
+      inner.className = "booking-card-inner";
+
+      const titleRow = document.createElement("div");
+      titleRow.className = "booking-title-row";
+
+      const titleBlock = document.createElement("div");
+      titleBlock.className = "booking-title-block";
+
+      const title = document.createElement("div");
+      title.className = "booking-title";
+      title.textContent = b.serviceType ? `${b.serviceType} Wash` : "Car Wash Booking";
+
+      const idLabel = document.createElement("div");
+      idLabel.className = "booking-id-label";
+      idLabel.textContent = `Booking #${b.id}`;
+
+      titleBlock.appendChild(title);
+      titleBlock.appendChild(idLabel);
+
+      const chip = document.createElement("div");
+      chip.className = "chip-small";
+      chip.textContent = b.carNumber
+        ? `🚗 ${b.carNumber}${b.carType ? " · " + b.carType : ""}`
+        : (b.carType ? `🚗 ${b.carType}` : "🚗 Car details");
+
+      titleRow.appendChild(titleBlock);
+      titleRow.appendChild(chip);
+      inner.appendChild(titleRow);
+
+      const meta = document.createElement("div");
+      meta.className = "booking-meta-row";
+
+      const dateRow = document.createElement("div");
+      dateRow.innerHTML =
+        `<span class="label">Date & Slot:</span> ${formatDate(b.bookingDate)} · ${b.timeSlot || ""}`;
+      meta.appendChild(dateRow);
+
+      if (b.centreName) {
+        const centreRow = document.createElement("div");
+        centreRow.innerHTML = `<span class="label">Centre:</span> ${b.centreName}`;
+        meta.appendChild(centreRow);
+      }
+
+      if (b.address) {
+        const addrRow = document.createElement("div");
+        addrRow.innerHTML = `<span class="label">Address:</span> ${b.address}`;
+        meta.appendChild(addrRow);
+      }
+
+      if (b.mapsUrl) {
+        const mapRow = document.createElement("div");
+        mapRow.innerHTML =
+          `<a href="${b.mapsUrl}" target="_blank"
+              style="color:#2563eb;text-decoration:none;font-size:12px;">
+              📍 View on Maps
+           </a>`;
+        meta.appendChild(mapRow);
+      }
+
+      const createdRow = document.createElement("div");
+      createdRow.innerHTML =
+        `<span class="label">Created:</span> ${formatDate(b.createdAt)}`;
+      meta.appendChild(createdRow);
+
+      inner.appendChild(meta);
+
+      const pillRow = document.createElement("div");
+      pillRow.className = "pill-row";
+
+      const stSpan = document.createElement("span");
+      stSpan.className = "pill pill-status-" + (b.status || "").toUpperCase();
+      stSpan.textContent = b.status ? `Status: ${b.status}` : "Status: -";
+      pillRow.appendChild(stSpan);
+
+      const paySpan = document.createElement("span");
+      paySpan.className = "pill pill-pay-" + (b.paymentStatus || "").toUpperCase();
+      paySpan.textContent = b.paymentStatus ? `Payment: ${b.paymentStatus}` : "Payment: -";
+      pillRow.appendChild(paySpan);
+
+      if (b.refundStatus) {
+        const refSpan = document.createElement("span");
+        refSpan.className = "pill pill-refund-" + (b.refundStatus || "").toUpperCase();
+        refSpan.textContent = `Refund: ${b.refundStatus}`;
+        pillRow.appendChild(refSpan);
+      }
+
+      inner.appendChild(pillRow);
+
+      if (b.refundAmount != null) {
+        const refundInfo = document.createElement("div");
+        refundInfo.className = "booking-field muted";
+        refundInfo.textContent = `Refund Amount: ₹${b.refundAmount}`;
+        inner.appendChild(refundInfo);
+      }
+
+      const btnRow = document.createElement("div");
+      btnRow.className = "btn-row";
+
+      const leftText = document.createElement("div");
+      leftText.className = "muted";
+      leftText.textContent = "Tap cancel to view your refund eligibility.";
+      btnRow.appendChild(leftText);
+
+      const rightGroup = document.createElement("div");
+      rightGroup.className = "btn-row-right";
+
+      const cancelBtn = document.createElement("button");
+      cancelBtn.className = "btn btn-danger";
+      cancelBtn.textContent = "Cancel Booking";
+
+      const statusUpper = (b.status || "").toUpperCase();
+      const refUpper = (b.refundStatus || "").toUpperCase();
+
+      if (
+        statusUpper === "CANCELLED" ||
+        statusUpper === "IN_SERVICING" ||
+        statusUpper === "COMPLETED" ||
+        refUpper === "INITIATED" ||
+        refUpper === "COMPLETED"
+      ) {
+        cancelBtn.disabled = true;
+      } else {
+        cancelBtn.onclick = () => startCancelFlow(b);
+      }
+
+      rightGroup.appendChild(cancelBtn);
+      btnRow.appendChild(rightGroup);
+      inner.appendChild(btnRow);
+
+      card.appendChild(inner);
+      container.appendChild(card);
+    });
+  }
+
+  // ---------- Cancel + refund flow ----------
+  async function startCancelFlow(booking) {
+    const bookingId = booking.id;
+
+    try {
+      const res = await fetch(`${API_BOOKINGS}/${bookingId}/cancel-quote`, {
+        method: "GET",
+        headers: {
+          ...getAuthHeaders(),
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (!res.ok) {
+        if (res.status === 401 || res.status === 403) {
+          localStorage.setItem("pendingTarget", "/orders");
+          window.location.href = "/SignuLogin?mode=login";
+          return;
+        }
+        alert("Failed to calculate refund. Please try again.");
+        return;
+      }
+
+      const data = await res.json();
+
+      if (!data.eligible) {
+        alert(data.message || "No refund allowed (probably less than 6 hours).");
+        return;
+      }
+
+      currentRefundBookingId = bookingId;
+      currentRefundQuote = data;
+
+      document.getElementById("modalBookingId").innerHTML =
+        `<span class="label">Booking:</span> #${bookingId} (${booking.serviceType || "Car Wash"})`;
+
+      document.getElementById("modalDateSlot").innerHTML =
+        `<span class="label">Date & Slot:</span> ${formatDate(booking.bookingDate)} · ${booking.timeSlot || ""}`;
+
+      document.getElementById("modalHours").innerHTML =
+        `<span class="label">Hours remaining:</span> ${data.hoursRemaining.toFixed(2)} hours`;
+
+      document.getElementById("modalPercent").innerHTML =
+        `<span class="label">Refund percent:</span> ${data.refundPercent.toFixed(2)} %`;
+
+      document.getElementById("modalAmount").innerHTML =
+        `<span class="label">Amount:</span> Booking ₹${data.bookingAmount.toFixed(2)} · Refund ₹${data.refundAmount.toFixed(2)}`;
+
+      document.getElementById("refundModal").style.display = "flex";
+
+    } catch (e) {
+      console.error(e);
+      alert("Error while calculating refund.");
+    }
+  }
+
+  function closeRefundModal() {
+    document.getElementById("refundModal").style.display = "none";
+    currentRefundBookingId = null;
+    currentRefundQuote = null;
+  }
+
+  async function confirmRefund() {
+    if (!currentRefundBookingId) return;
+
+    if (!confirm("Do you want to cancel this booking and initiate refund?")) return;
+
+    try {
+      const res = await fetch(
+        `${API_BOOKINGS}/${currentRefundBookingId}/cancel-confirm`,
+        {
+          method: "POST",
+          headers: {
+            ...getAuthHeaders(),
+            "Content-Type": "application/json"
+          }
+        }
+      );
+
+      if (!res.ok) {
+        if (res.status === 401 || res.status === 403) {
+          localStorage.setItem("pendingTarget", "/orders");
+          window.location.href = "/SignuLogin?mode=login";
+          return;
+        }
+        let msg = "Failed to initiate refund.";
+        try {
+          const e = await res.json();
+          if (e && e.message) msg = e.message;
+        } catch (_) {}
+        alert(msg);
+        return;
+      }
+
+      const data = await res.json();
+      alert(data.message || "Refund initiated.");
+
+      closeRefundModal();
+      await loadBookings();
+
+    } catch (e) {
+      console.error(e);
+      alert("Error while initiating refund.");
+    }
+  }
+
+  // Initial load
+  loadBookings();
+</script>
+
+</body>
+</html>

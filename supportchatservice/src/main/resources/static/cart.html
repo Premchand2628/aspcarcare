@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><title>My Cart</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin:0; background:#f2f2f2; }
+    .navbar { display:flex; justify-content:space-between; align-items:center; background:#333; color:#fff; padding:10px 20px; }
+    .navbar h2 { margin:0; }
+    .navbar-right { display:flex; align-items:center; gap:15px; }
+    .navbar-right img { width:32px; height:32px; cursor:pointer; }
+
+    .container { max-width:900px; margin:30px auto; background:#fff; border-radius:10px; padding:20px; box-shadow:0 4px 8px rgba(0,0,0,.1); }
+    .toolbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+    .cart-item { display:flex; align-items:center; border-bottom:1px solid #ddd; padding:10px 0; }
+    .cart-item img { width:100px; height:100px; object-fit:cover; border-radius:8px; margin-right:20px; }
+    .cart-details { flex:1; }
+    .cart-details h3 { margin:0; }
+    .cart-details p { margin:5px 0; color:#555; }
+    .stock-note { font-size:12px; color:#999; }
+    .cart-actions { display:flex; align-items:center; gap:10px; }
+    .qty-btn { border:none; padding:6px 10px; cursor:pointer; background:#333; color:white; border-radius:4px; }
+    .icon-btn { background:none; border:none; cursor:pointer; font-size:18px; }
+    .icon-btn.delete { color:#e53935; }
+    .empty { text-align:center; color:#777; font-size:18px; margin-top:50px; }
+    .footer { display:flex; justify-content:flex-end; gap:10px; margin-top:20px; align-items:center; }
+    .proceed-btn { padding:10px 20px; background:#28a745; color:white; border:none; border-radius:6px; cursor:pointer; font-size:16px; }
+    .proceed-btn:disabled { background:#aaa; cursor:not-allowed; }
+    .total { font-size:18px; font-weight:bold; margin-right:8px; }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <h2>My Cart</h2>
+    <div class="navbar-right">
+      <span>Home</span>
+      <a href="index.html"><img src="Home.jpg" alt="Home"></a>
+    </div>
+  </div>
+
+  <div class="container" id="cartContainer"></div>
+
+  <script>
+    const ctn = document.getElementById("cartContainer");
+
+    function renderCart() {
+      const cart = JSON.parse(localStorage.getItem("cartItems") || "[]");
+      if (cart.length === 0) { ctn.innerHTML = `<div class="empty">🛒 No items in cart</div>`; return; }
+
+      const allChecked = cart.every(i => !!i.checked);
+      const anyChecked = cart.some(i => !!i.checked);
+
+      let html = `
+        <div class="toolbar">
+          <label><input type="checkbox" id="selectAll" ${allChecked ? "checked" : ""} onchange="toggleSelectAll(this)"> <span id="saText">${allChecked ? "Deselect All" : "Select All"}</span></label>
+          <button class="icon-btn delete" title="Delete selected" onclick="deleteSelected()" ${anyChecked ? "" : "disabled"}>🗑️</button>
+        </div>
+      `;
+
+      cart.forEach((item, i) => {
+        html += `
+          <div class="cart-item">
+            <input type="checkbox" ${item.checked ? "checked" : ""} onchange="toggleCheck(${i})">
+            <img src="${item.img}" alt="${item.title}">
+            <div class="cart-details">
+              <h3>${item.title}</h3>
+              <p>${item.description ?? ""}</p>
+              <p><b>Price:</b> $${item.price.toFixed(2)}</p>
+              <p class="stock-note">Stock: ${item.stock}</p>
+              <div class="cart-actions">
+                <button class="qty-btn" onclick="updateQty(${i}, -1)">-</button>
+                <span>${item.qty}</span>
+                <button class="qty-btn" onclick="updateQty(${i}, 1)">+</button>
+                <button class="icon-btn delete" title="Remove" onclick="removeItem(${i})">🗑️</button>
+              </div>
+            </div>
+          </div>`;
+      });
+
+      html += `
+        <div class="footer">
+          <span class="total">Total: $${calcTotal().toFixed(2)}</span>
+          <button class="proceed-btn" id="checkoutBtn" onclick="proceedToCheckout()" ${anyChecked ? "" : "disabled"}>Proceed to Buy</button>
+        </div>`;
+
+      ctn.innerHTML = html;
+    }
+
+    function toggleCheck(i) {
+      const cart = JSON.parse(localStorage.getItem("cartItems") || "[]");
+      cart[i].checked = !cart[i].checked;
+      localStorage.setItem("cartItems", JSON.stringify(cart));
+      renderCart();
+    }
+
+    function updateQty(i, delta) {
+      const cart = JSON.parse(localStorage.getItem("cartItems") || "[]");
+      const item = cart[i];
+      if (delta > 0 && item.qty >= item.stock) { alert(`⚠️ Max Qty: ${item.stock} for ${item.title}`); return; }
+      item.qty = Math.max(1, item.qty + delta);
+      localStorage.setItem("cartItems", JSON.stringify(cart));
+      renderCart();
+    }
+
+    function removeItem(i) {
+      const cart = JSON.parse(localStorage.getItem("cartItems") || "[]");
+      cart.splice(i, 1);
+      localStorage.setItem("cartItems", JSON.stringify(cart));
+      renderCart();
+    }
+
+    function calcTotal() {
+      const cart = JSON.parse(localStorage.getItem("cartItems") || "[]");
+      return cart.filter(x => x.checked).reduce((s, i) => s + i.price * i.qty, 0);
+    }
+
+    function toggleSelectAll(el) {
+      const cart = JSON.parse(localStorage.getItem("cartItems") || "[]");
+      const checked = el.checked;
+      cart.forEach(i => i.checked = checked);
+      localStorage.setItem("cartItems", JSON.stringify(cart));
+      document.getElementById("saText").textContent = checked ? "Deselect All" : "Select All";
+      renderCart();
+    }
+
+    function deleteSelected() {
+      const cart = JSON.parse(localStorage.getItem("cartItems") || "[]");
+      const remain = cart.filter(i => !i.checked);
+      localStorage.setItem("cartItems", JSON.stringify(remain));
+      renderCart();
+    }
+
+    function proceedToCheckout() {
+      const cart = JSON.parse(localStorage.getItem("cartItems") || "[]");
+      const selected = cart.filter(i => i.checked);
+      if (selected.length === 0) { alert("Please select at least one item."); return; }
+
+      // Validate none exceed stock
+      for (const it of selected) {
+        if (it.qty > it.stock) {
+          alert(`⚠️ ${it.title}: Max Qty ${it.stock}`);
+          return;
+        }
+      }
+
+      const totalAmount = selected.reduce((s, i) => s + i.price * i.qty, 0);
+      localStorage.setItem("checkoutItems", JSON.stringify(selected));
+      window.location.href = "review.html";
+    }
+
+    renderCart();
+  </script>
+</body>
+</html>

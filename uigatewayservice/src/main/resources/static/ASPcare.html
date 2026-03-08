@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ASP Care – Coming Soon</title>
+
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: #020617;
+      --bg-card: #0f172a;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --primary: #2563eb;
+      --primary-strong: #1d4ed8;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #1e3a8a 0%, #020617 60%, #000 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-main);
+    }
+
+    /* Main card */
+    .coming-card {
+      width: 360px;
+      max-width: 90vw;
+      background: var(--bg-card);
+      padding: 24px 22px 22px;
+      border-radius: 20px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.7);
+      border: 1px solid rgba(148,163,184,0.4);
+      text-align: center;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .icon-box {
+      width: 64px;
+      height: 64px;
+      border-radius: 18px;
+      background: radial-gradient(circle at 25% 25%, #f87171, #b91c1c);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 12px;
+      font-size: 32px;
+      color: #fff;
+      box-shadow: 0 0 0 1px rgba(248,113,113,0.4);
+    }
+
+    .title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      line-height: 1.45;
+    }
+
+    .soon-box {
+      background: rgba(30,58,138,0.35);
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px dashed rgba(148,163,184,0.35);
+      font-size: 13px;
+      color: #93c5fd;
+      margin-bottom: 16px;
+    }
+
+    .btn {
+      padding: 9px 16px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s, box-shadow 0.15s, transform 0.12s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-strong));
+      color: #fff;
+      box-shadow: 0 10px 30px rgba(37,99,235,0.6);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 36px rgba(37,99,235,0.8);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="coming-card">
+    <div class="icon-box">💥</div>
+
+    <div class="title">Aw, snap!</div>
+
+    <div class="subtitle">
+      The ASP Care service is not available right now.
+    </div>
+
+    <div class="soon-box">
+      🚧 We will enable this service <strong>Soooon</strong>.  
+      Stay tuned for premium partner servicing!
+    </div>
+
+    <button class="btn btn-primary" onclick="goDashboard()">
+      ← Back to dashboard
+    </button>
+  </div>
+
+  <script>
+    function goDashboard() {
+      window.location.href = "/aspcare";
+    }
+  </script>
+
+</body>
+</html>

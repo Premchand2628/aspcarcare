@@ -1,0 +1,282 @@
+2025-12-23 02:05:33 INFO  c.c.b.BookingServiceApplication - Starting BookingServiceApplication using Java 17.0.7 with PID 19684 (D:\Codes\bookingservice\target\classes started by chand in D:\Codes\bookingservice)
+2025-12-23 02:05:33 INFO  c.c.b.BookingServiceApplication - No active profile set, falling back to 1 default profile: "default"
+2025-12-23 02:05:35 INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8082"]
+2025-12-23 02:05:35 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-12-23 02:05:35 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.24]
+2025-12-23 02:05:35 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-12-23 02:05:35 INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-12-23 02:05:35 INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.2.Final
+2025-12-23 02:05:36 INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-12-23 02:05:36 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-12-23 02:05:36 INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@26d73519
+2025-12-23 02:05:36 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-12-23 02:05:37 INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-23 02:05:39 WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-23 02:05:39 INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8082"]
+2025-12-23 02:05:39 INFO  c.c.b.BookingServiceApplication - Started BookingServiceApplication in 6.549 seconds (process running for 7.795)
+2025-12-23 03:10:44 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-12-23 03:10:44 DEBUG org.hibernate.SQL - select distinct sc1_0.area from carwash_service_centre sc1_0 where sc1_0.active=true order by sc1_0.area
+2025-12-23 04:09:09 INFO  c.c.b.controller.BookingController - Confirm order request received. items=1
+2025-12-23 04:09:09 DEBUG org.hibernate.SQL - select b1_0.id from carwash_booking b1_0 where b1_0.transaction_id=? fetch first ? rows only
+2025-12-23 04:09:10 DEBUG org.hibernate.SQL - insert into carwash_booking (address,booking_date,car_index,car_number,car_type,centre_name,created_at,discount_percent_applied,free_applied,maps_url,membership_id_used,original_amount,payable_amount,payment_status,phone,refund_amount,refund_initiated_at,refund_status,service_centre_id,service_type,status,time_slot,transaction_id) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) returning id
+2025-12-23 04:09:13 DEBUG org.hibernate.SQL - select b1_0.id,b1_0.address,b1_0.booking_date,b1_0.car_index,b1_0.car_number,b1_0.car_type,b1_0.centre_name,b1_0.created_at,b1_0.discount_percent_applied,b1_0.free_applied,b1_0.maps_url,b1_0.membership_id_used,b1_0.original_amount,b1_0.payable_amount,b1_0.payment_status,b1_0.phone,b1_0.refund_amount,b1_0.refund_initiated_at,b1_0.refund_status,b1_0.service_centre_id,b1_0.service_type,b1_0.status,b1_0.time_slot,b1_0.transaction_id from carwash_booking b1_0 where b1_0.phone=? order by b1_0.created_at desc
+2025-12-23 04:16:51 INFO  c.c.b.controller.BookingController - Confirm order request received. items=1
+2025-12-23 04:16:51 DEBUG org.hibernate.SQL - select b1_0.id from carwash_booking b1_0 where b1_0.transaction_id=? fetch first ? rows only
+2025-12-23 04:16:51 DEBUG org.hibernate.SQL - insert into carwash_booking (address,booking_date,car_index,car_number,car_type,centre_name,created_at,discount_percent_applied,free_applied,maps_url,membership_id_used,original_amount,payable_amount,payment_status,phone,refund_amount,refund_initiated_at,refund_status,service_centre_id,service_type,status,time_slot,transaction_id) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) returning id
+2025-12-23 04:16:53 DEBUG org.hibernate.SQL - select b1_0.id,b1_0.address,b1_0.booking_date,b1_0.car_index,b1_0.car_number,b1_0.car_type,b1_0.centre_name,b1_0.created_at,b1_0.discount_percent_applied,b1_0.free_applied,b1_0.maps_url,b1_0.membership_id_used,b1_0.original_amount,b1_0.payable_amount,b1_0.payment_status,b1_0.phone,b1_0.refund_amount,b1_0.refund_initiated_at,b1_0.refund_status,b1_0.service_centre_id,b1_0.service_type,b1_0.status,b1_0.time_slot,b1_0.transaction_id from carwash_booking b1_0 where b1_0.phone=? order by b1_0.created_at desc
+2025-12-23 04:36:24 INFO  c.c.b.BookingServiceApplication - Starting BookingServiceApplication using Java 17.0.7 with PID 64144 (D:\Codes\bookingservice\target\classes started by chand in D:\Codes\bookingservice)
+2025-12-23 04:36:24 INFO  c.c.b.BookingServiceApplication - No active profile set, falling back to 1 default profile: "default"
+2025-12-23 04:36:25 INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8082"]
+2025-12-23 04:36:25 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-12-23 04:36:25 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.24]
+2025-12-23 04:36:25 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-12-23 04:36:26 INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-12-23 04:36:26 INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.2.Final
+2025-12-23 04:36:26 INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-12-23 04:36:26 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-12-23 04:36:26 INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@32b95de
+2025-12-23 04:36:26 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-12-23 04:36:28 INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-23 04:36:29 WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-23 04:36:29 INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8082"]
+2025-12-23 04:36:29 INFO  c.c.b.BookingServiceApplication - Started BookingServiceApplication in 6.05 seconds (process running for 7.013)
+2025-12-23 04:37:10 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-12-23 04:37:11 DEBUG org.hibernate.SQL - select b1_0.id,b1_0.address,b1_0.booking_date,b1_0.car_index,b1_0.car_number,b1_0.car_type,b1_0.centre_name,b1_0.created_at,b1_0.discount_percent_applied,b1_0.free_applied,b1_0.maps_url,b1_0.membership_id_used,b1_0.original_amount,b1_0.payable_amount,b1_0.payment_status,b1_0.phone,b1_0.refund_amount,b1_0.refund_initiated_at,b1_0.refund_status,b1_0.service_centre_id,b1_0.service_type,b1_0.status,b1_0.time_slot,b1_0.transaction_id from carwash_booking b1_0 where b1_0.phone=? order by b1_0.created_at desc
+2025-12-23 04:38:39 INFO  c.c.b.controller.BookingController - Confirm order request received. items=1
+2025-12-23 04:38:39 DEBUG org.hibernate.SQL - select b1_0.id from carwash_booking b1_0 where b1_0.transaction_id=? fetch first ? rows only
+2025-12-23 04:38:40 DEBUG org.hibernate.SQL - insert into carwash_booking (address,booking_date,car_index,car_number,car_type,centre_name,created_at,discount_percent_applied,free_applied,maps_url,membership_id_used,original_amount,payable_amount,payment_status,phone,refund_amount,refund_initiated_at,refund_status,service_centre_id,service_type,status,time_slot,transaction_id) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) returning id
+2025-12-23 04:38:41 DEBUG org.hibernate.SQL - select b1_0.id,b1_0.address,b1_0.booking_date,b1_0.car_index,b1_0.car_number,b1_0.car_type,b1_0.centre_name,b1_0.created_at,b1_0.discount_percent_applied,b1_0.free_applied,b1_0.maps_url,b1_0.membership_id_used,b1_0.original_amount,b1_0.payable_amount,b1_0.payment_status,b1_0.phone,b1_0.refund_amount,b1_0.refund_initiated_at,b1_0.refund_status,b1_0.service_centre_id,b1_0.service_type,b1_0.status,b1_0.time_slot,b1_0.transaction_id from carwash_booking b1_0 where b1_0.phone=? order by b1_0.created_at desc
+2025-12-23 04:41:03 INFO  c.c.b.BookingServiceApplication - Starting BookingServiceApplication using Java 17.0.7 with PID 81908 (D:\Codes\bookingservice\target\classes started by chand in D:\Codes\bookingservice)
+2025-12-23 04:41:03 INFO  c.c.b.BookingServiceApplication - No active profile set, falling back to 1 default profile: "default"
+2025-12-23 04:41:04 INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8082"]
+2025-12-23 04:41:04 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-12-23 04:41:04 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.24]
+2025-12-23 04:41:04 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-12-23 04:41:05 INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-12-23 04:41:05 INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.2.Final
+2025-12-23 04:41:05 INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-12-23 04:41:05 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-12-23 04:41:05 INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@629cbb1
+2025-12-23 04:41:05 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-12-23 04:41:06 INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-23 04:41:07 WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-23 04:41:08 INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8082"]
+2025-12-23 04:41:08 INFO  c.c.b.BookingServiceApplication - Started BookingServiceApplication in 4.891 seconds (process running for 5.649)
+2025-12-23 04:42:25 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-12-23 04:42:26 DEBUG org.hibernate.SQL - select b1_0.id,b1_0.address,b1_0.booking_date,b1_0.car_index,b1_0.car_number,b1_0.car_type,b1_0.centre_name,b1_0.created_at,b1_0.discount_percent_applied,b1_0.free_applied,b1_0.maps_url,b1_0.membership_id_used,b1_0.original_amount,b1_0.payable_amount,b1_0.payment_status,b1_0.phone,b1_0.refund_amount,b1_0.refund_initiated_at,b1_0.refund_status,b1_0.service_centre_id,b1_0.service_type,b1_0.status,b1_0.time_slot,b1_0.transaction_id from carwash_booking b1_0 where b1_0.phone=? order by b1_0.created_at desc
+2025-12-23 04:42:35 DEBUG org.hibernate.SQL - select b1_0.id,b1_0.address,b1_0.booking_date,b1_0.car_index,b1_0.car_number,b1_0.car_type,b1_0.centre_name,b1_0.created_at,b1_0.discount_percent_applied,b1_0.free_applied,b1_0.maps_url,b1_0.membership_id_used,b1_0.original_amount,b1_0.payable_amount,b1_0.payment_status,b1_0.phone,b1_0.refund_amount,b1_0.refund_initiated_at,b1_0.refund_status,b1_0.service_centre_id,b1_0.service_type,b1_0.status,b1_0.time_slot,b1_0.transaction_id from carwash_booking b1_0 where b1_0.phone=? order by b1_0.created_at desc
+2025-12-23 04:42:53 INFO  c.c.b.controller.BookingController - Confirm order request received. items=1
+2025-12-23 04:42:53 DEBUG org.hibernate.SQL - select b1_0.id from carwash_booking b1_0 where b1_0.transaction_id=? fetch first ? rows only
+2025-12-23 04:42:54 DEBUG org.hibernate.SQL - insert into carwash_booking (address,booking_date,car_index,car_number,car_type,centre_name,created_at,discount_percent_applied,free_applied,maps_url,membership_id_used,original_amount,payable_amount,payment_status,phone,refund_amount,refund_initiated_at,refund_status,service_centre_id,service_type,status,time_slot,transaction_id) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) returning id
+2025-12-23 04:43:00 DEBUG org.hibernate.SQL - select b1_0.id,b1_0.address,b1_0.booking_date,b1_0.car_index,b1_0.car_number,b1_0.car_type,b1_0.centre_name,b1_0.created_at,b1_0.discount_percent_applied,b1_0.free_applied,b1_0.maps_url,b1_0.membership_id_used,b1_0.original_amount,b1_0.payable_amount,b1_0.payment_status,b1_0.phone,b1_0.refund_amount,b1_0.refund_initiated_at,b1_0.refund_status,b1_0.service_centre_id,b1_0.service_type,b1_0.status,b1_0.time_slot,b1_0.transaction_id from carwash_booking b1_0 where b1_0.phone=? order by b1_0.created_at desc
+2025-12-23 04:51:59 INFO  c.c.b.BookingServiceApplication - Starting BookingServiceApplication using Java 17.0.7 with PID 75172 (D:\Codes\bookingservice\target\classes started by chand in D:\Codes\bookingservice)
+2025-12-23 04:51:59 INFO  c.c.b.BookingServiceApplication - No active profile set, falling back to 1 default profile: "default"
+2025-12-23 04:52:00 INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8082"]
+2025-12-23 04:52:00 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-12-23 04:52:00 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.24]
+2025-12-23 04:52:00 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-12-23 04:52:01 INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-12-23 04:52:01 INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.2.Final
+2025-12-23 04:52:01 INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-12-23 04:52:01 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-12-23 04:52:01 INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@7462ba4b
+2025-12-23 04:52:01 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-12-23 04:52:02 INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-23 04:52:03 WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-23 04:52:04 INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8082"]
+2025-12-23 04:52:04 WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+2025-12-23 04:52:04 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-12-23 04:52:04 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-12-23 04:52:04 ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8082 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8082 or configure this application to listen on another port.
+
+2025-12-23 04:52:27 INFO  c.c.b.BookingServiceApplication - Starting BookingServiceApplication using Java 17.0.7 with PID 79568 (D:\Codes\bookingservice\target\classes started by chand in D:\Codes\bookingservice)
+2025-12-23 04:52:27 INFO  c.c.b.BookingServiceApplication - No active profile set, falling back to 1 default profile: "default"
+2025-12-23 04:52:28 INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8082"]
+2025-12-23 04:52:28 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-12-23 04:52:28 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.24]
+2025-12-23 04:52:28 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-12-23 04:52:28 INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-12-23 04:52:28 INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.2.Final
+2025-12-23 04:52:28 INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-12-23 04:52:29 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-12-23 04:52:29 INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@37cf91d8
+2025-12-23 04:52:29 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-12-23 04:52:30 INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-23 04:52:31 WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-23 04:52:32 INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8082"]
+2025-12-23 04:52:32 INFO  c.c.b.BookingServiceApplication - Started BookingServiceApplication in 5.272 seconds (process running for 6.005)
+2025-12-23 04:53:00 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-12-23 04:53:20 INFO  c.c.b.controller.BookingController - Confirm order request received. items=1
+2025-12-23 04:53:20 DEBUG org.hibernate.SQL - select b1_0.id from carwash_booking b1_0 where b1_0.transaction_id=? fetch first ? rows only
+2025-12-23 05:09:31 INFO  c.c.b.controller.BookingController - Confirm order request received. items=1
+2025-12-23 05:09:31 DEBUG org.hibernate.SQL - select b1_0.id from carwash_booking b1_0 where b1_0.transaction_id=? fetch first ? rows only
+2025-12-23 05:09:32 DEBUG org.hibernate.SQL - insert into carwash_booking (address,booking_date,car_index,car_number,car_type,centre_name,created_at,discount_percent_applied,free_applied,maps_url,membership_id_used,original_amount,payable_amount,payment_status,phone,refund_amount,refund_initiated_at,refund_status,service_centre_id,service_type,status,time_slot,transaction_id,wash_type) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) returning id
+2025-12-23 05:11:58 INFO  c.c.b.controller.BookingController - Confirm order request received. items=1
+2025-12-23 05:11:58 DEBUG org.hibernate.SQL - select b1_0.id from carwash_booking b1_0 where b1_0.transaction_id=? fetch first ? rows only
+2025-12-23 05:11:58 DEBUG org.hibernate.SQL - insert into carwash_booking (address,booking_date,car_index,car_number,car_type,centre_name,created_at,discount_percent_applied,free_applied,maps_url,membership_id_used,original_amount,payable_amount,payment_status,phone,refund_amount,refund_initiated_at,refund_status,service_centre_id,service_type,status,time_slot,transaction_id,wash_type) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) returning id
+2025-12-23 05:55:42 INFO  c.c.b.BookingServiceApplication - Starting BookingServiceApplication using Java 17.0.7 with PID 84872 (D:\Codes\bookingservice\target\classes started by chand in D:\Codes\bookingservice)
+2025-12-23 05:55:42 INFO  c.c.b.BookingServiceApplication - No active profile set, falling back to 1 default profile: "default"
+2025-12-23 05:55:44 INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8082"]
+2025-12-23 05:55:44 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-12-23 05:55:44 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.24]
+2025-12-23 05:55:44 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-12-23 05:55:44 INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-12-23 05:55:44 INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.2.Final
+2025-12-23 05:55:44 INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-12-23 05:55:44 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-12-23 05:55:45 INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@571d0925
+2025-12-23 05:55:45 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-12-23 05:55:46 INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-23 05:55:47 WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-23 05:55:47 INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8082"]
+2025-12-23 05:55:47 INFO  c.c.b.BookingServiceApplication - Started BookingServiceApplication in 6.06 seconds (process running for 7.101)
+2025-12-23 06:00:29 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-12-23 06:00:29 INFO  c.c.b.controller.BookingController - Confirm order request received. items=1
+2025-12-23 06:00:30 DEBUG org.hibernate.SQL - select b1_0.id from carwash_booking b1_0 where b1_0.transaction_id=? fetch first ? rows only
+2025-12-23 06:00:30 DEBUG org.hibernate.SQL - insert into carwash_booking (address,booking_date,car_index,car_number,car_type,centre_name,created_at,discount_percent_applied,free_applied,maps_url,membership_id_used,original_amount,payable_amount,payment_status,phone,refund_amount,refund_initiated_at,refund_status,service_centre_id,service_type,status,time_slot,transaction_id,wash_type) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) returning id
+2025-12-23 06:29:40 INFO  c.c.b.BookingServiceApplication - Starting BookingServiceApplication using Java 17.0.7 with PID 66620 (D:\Codes\bookingservice\target\classes started by chand in D:\Codes\bookingservice)
+2025-12-23 06:29:40 INFO  c.c.b.BookingServiceApplication - No active profile set, falling back to 1 default profile: "default"
+2025-12-23 06:29:42 INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8082"]
+2025-12-23 06:29:42 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-12-23 06:29:42 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.24]
+2025-12-23 06:29:42 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-12-23 06:29:42 INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-12-23 06:29:42 INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.2.Final
+2025-12-23 06:29:42 INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-12-23 06:29:42 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-12-23 06:29:42 INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@25d0b918
+2025-12-23 06:29:42 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-12-23 06:29:43 INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-23 06:29:44 WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-23 06:29:45 INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8082"]
+2025-12-23 06:29:45 INFO  c.c.b.BookingServiceApplication - Started BookingServiceApplication in 5.129 seconds (process running for 6.323)
+2025-12-23 06:30:54 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-12-23 06:30:54 INFO  c.c.b.controller.BookingController - Confirm order request received. items=1
+2025-12-23 06:30:54 DEBUG org.hibernate.SQL - select b1_0.id from carwash_booking b1_0 where b1_0.transaction_id=? fetch first ? rows only
+2025-12-23 06:30:54 DEBUG org.hibernate.SQL - insert into carwash_booking (address,booking_date,car_index,car_number,car_type,centre_name,created_at,discount_percent_applied,free_applied,maps_url,membership_id_used,original_amount,payable_amount,payment_status,phone,refund_amount,refund_initiated_at,refund_status,service_centre_id,service_type,status,time_slot,transaction_id,wash_type) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) returning id
+2025-12-23 06:39:08 INFO  c.c.b.controller.BookingController - Confirm order request received. items=1
+2025-12-23 06:39:08 DEBUG org.hibernate.SQL - select b1_0.id from carwash_booking b1_0 where b1_0.transaction_id=? fetch first ? rows only
+2025-12-23 06:39:08 DEBUG org.hibernate.SQL - insert into carwash_booking (address,booking_date,car_index,car_number,car_type,centre_name,created_at,discount_percent_applied,free_applied,maps_url,membership_id_used,original_amount,payable_amount,payment_status,phone,refund_amount,refund_initiated_at,refund_status,service_centre_id,service_type,status,time_slot,transaction_id,wash_type) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) returning id
+2025-12-23 06:50:46 INFO  c.c.b.BookingServiceApplication - Starting BookingServiceApplication using Java 17.0.7 with PID 76232 (D:\Codes\bookingservice\target\classes started by chand in D:\Codes\bookingservice)
+2025-12-23 06:50:46 INFO  c.c.b.BookingServiceApplication - No active profile set, falling back to 1 default profile: "default"
+2025-12-23 06:50:48 INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8082"]
+2025-12-23 06:50:48 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-12-23 06:50:48 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.24]
+2025-12-23 06:50:48 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-12-23 06:50:48 INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-12-23 06:50:48 INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.2.Final
+2025-12-23 06:50:48 INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-12-23 06:50:49 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-12-23 06:50:49 INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@4a520f05
+2025-12-23 06:50:49 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-12-23 06:50:50 INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-23 06:50:51 WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-23 06:50:52 INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8082"]
+2025-12-23 06:50:52 INFO  c.c.b.BookingServiceApplication - Started BookingServiceApplication in 6.207 seconds (process running for 7.151)
+2025-12-23 06:52:18 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-12-23 06:52:18 INFO  c.c.b.controller.BookingController - Confirm order request received. items=1
+2025-12-23 06:52:19 DEBUG org.hibernate.SQL - select b1_0.id from carwash_booking b1_0 where b1_0.transaction_id=? fetch first ? rows only
+2025-12-23 06:52:19 DEBUG org.hibernate.SQL - insert into carwash_booking (address,booking_date,car_index,car_number,car_type,centre_name,created_at,discount_percent_applied,free_applied,maps_url,membership_id_used,original_amount,payable_amount,payment_status,phone,refund_amount,refund_initiated_at,refund_status,service_centre_id,service_type,status,time_slot,transaction_id,wash_type) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) returning id
+2025-12-23 06:57:54 INFO  c.c.b.BookingServiceApplication - Starting BookingServiceApplication using Java 17.0.7 with PID 57188 (D:\Codes\bookingservice\target\classes started by chand in D:\Codes\bookingservice)
+2025-12-23 06:57:54 INFO  c.c.b.BookingServiceApplication - No active profile set, falling back to 1 default profile: "default"
+2025-12-23 06:57:56 INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8082"]
+2025-12-23 06:57:56 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-12-23 06:57:56 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.24]
+2025-12-23 06:57:56 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-12-23 06:57:56 INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-12-23 06:57:56 INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.2.Final
+2025-12-23 06:57:56 INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-12-23 06:57:57 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-12-23 06:57:57 INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@25d0b918
+2025-12-23 06:57:57 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-12-23 06:57:59 INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-23 06:58:00 WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-23 06:58:00 INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8082"]
+2025-12-23 06:58:00 INFO  c.c.b.BookingServiceApplication - Started BookingServiceApplication in 6.379 seconds (process running for 7.389)
+2025-12-23 06:58:36 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-12-23 06:58:56 INFO  c.c.b.controller.BookingController - Confirm order request received. items=1
+2025-12-23 06:58:56 DEBUG org.hibernate.SQL - select b1_0.id from carwash_booking b1_0 where b1_0.transaction_id=? fetch first ? rows only
+2025-12-23 06:58:56 DEBUG org.hibernate.SQL - insert into carwash_booking (address,booking_date,car_index,car_number,car_type,centre_name,created_at,discount_percent_applied,free_applied,maps_url,membership_id_used,original_amount,payable_amount,payment_status,phone,refund_amount,refund_initiated_at,refund_status,service_centre_id,service_type,status,time_slot,transaction_id,wash_type) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) returning id
+2025-12-23 07:57:28 INFO  c.c.b.BookingServiceApplication - Starting BookingServiceApplication using Java 17.0.7 with PID 67748 (D:\Codes\bookingservice\target\classes started by chand in D:\Codes\bookingservice)
+2025-12-23 07:57:28 INFO  c.c.b.BookingServiceApplication - No active profile set, falling back to 1 default profile: "default"
+2025-12-23 07:57:30 INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8082"]
+2025-12-23 07:57:30 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-12-23 07:57:30 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.24]
+2025-12-23 07:57:30 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-12-23 07:57:30 INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-12-23 07:57:30 INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.2.Final
+2025-12-23 07:57:30 INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-12-23 07:57:31 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-12-23 07:57:31 INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@7462ba4b
+2025-12-23 07:57:31 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-12-23 07:57:32 INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-23 07:57:33 WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-23 07:57:34 INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8082"]
+2025-12-23 07:57:34 INFO  c.c.b.BookingServiceApplication - Started BookingServiceApplication in 6.099 seconds (process running for 6.961)
+2025-12-23 07:59:47 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-12-23 08:10:52 INFO  c.c.b.BookingServiceApplication - Starting BookingServiceApplication using Java 17.0.7 with PID 80932 (D:\Codes\bookingservice\target\classes started by chand in D:\Codes\bookingservice)
+2025-12-23 08:10:52 INFO  c.c.b.BookingServiceApplication - No active profile set, falling back to 1 default profile: "default"
+2025-12-23 08:10:53 INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8082"]
+2025-12-23 08:10:53 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-12-23 08:10:53 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.24]
+2025-12-23 08:10:53 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-12-23 08:10:53 INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-12-23 08:10:54 INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.2.Final
+2025-12-23 08:10:54 INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-12-23 08:10:54 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-12-23 08:10:54 INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@4b09d1c3
+2025-12-23 08:10:54 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-12-23 08:10:55 INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-23 08:10:57 WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-23 08:10:57 INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8082"]
+2025-12-23 08:10:57 INFO  c.c.b.BookingServiceApplication - Started BookingServiceApplication in 6.023 seconds (process running for 6.776)
+2025-12-23 08:11:34 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-12-23 08:11:34 INFO  c.c.b.controller.BookingController - Confirm order request received. items=1
+2025-12-23 08:11:34 DEBUG org.hibernate.SQL - insert into carwash_booking (address,booking_date,car_index,car_number,car_type,centre_name,created_at,discount_percent_applied,free_applied,maps_url,membership_id_used,original_amount,payable_amount,payment_status,phone,refund_amount,refund_initiated_at,refund_status,service_centre_id,service_type,status,time_slot,transaction_id,wash_type) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) returning id
+2025-12-23 08:12:26 INFO  c.c.b.controller.BookingController - Confirm order request received. items=1
+2025-12-23 08:12:26 DEBUG org.hibernate.SQL - insert into carwash_booking (address,booking_date,car_index,car_number,car_type,centre_name,created_at,discount_percent_applied,free_applied,maps_url,membership_id_used,original_amount,payable_amount,payment_status,phone,refund_amount,refund_initiated_at,refund_status,service_centre_id,service_type,status,time_slot,transaction_id,wash_type) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) returning id
+2025-12-23 08:18:22 DEBUG org.hibernate.SQL - select distinct sc1_0.area from carwash_service_centre sc1_0 where sc1_0.active=true order by sc1_0.area
+2025-12-23 08:20:30 INFO  c.c.b.controller.BookingController - Confirm order request received. items=2
+2025-12-23 08:20:30 DEBUG org.hibernate.SQL - insert into carwash_booking (address,booking_date,car_index,car_number,car_type,centre_name,created_at,discount_percent_applied,free_applied,maps_url,membership_id_used,original_amount,payable_amount,payment_status,phone,refund_amount,refund_initiated_at,refund_status,service_centre_id,service_type,status,time_slot,transaction_id,wash_type) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) returning id
+2025-12-23 08:20:30 DEBUG org.hibernate.SQL - insert into carwash_booking (address,booking_date,car_index,car_number,car_type,centre_name,created_at,discount_percent_applied,free_applied,maps_url,membership_id_used,original_amount,payable_amount,payment_status,phone,refund_amount,refund_initiated_at,refund_status,service_centre_id,service_type,status,time_slot,transaction_id,wash_type) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) returning id
+2025-12-23 08:32:19 INFO  c.c.b.BookingServiceApplication - Starting BookingServiceApplication using Java 17.0.7 with PID 82224 (D:\Codes\bookingservice\target\classes started by chand in D:\Codes\bookingservice)
+2025-12-23 08:32:19 INFO  c.c.b.BookingServiceApplication - No active profile set, falling back to 1 default profile: "default"
+2025-12-23 08:32:21 INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8082"]
+2025-12-23 08:32:21 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-12-23 08:32:21 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.24]
+2025-12-23 08:32:21 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-12-23 08:32:21 INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-12-23 08:32:21 INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.2.Final
+2025-12-23 08:32:21 INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-12-23 08:32:22 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-12-23 08:32:22 INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@35ab4260
+2025-12-23 08:32:22 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-12-23 08:32:23 INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-23 08:32:24 WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-23 08:32:25 INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8082"]
+2025-12-23 08:32:25 INFO  c.c.b.BookingServiceApplication - Started BookingServiceApplication in 6.025 seconds (process running for 7.02)
+2025-12-23 08:32:46 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-12-23 08:32:46 DEBUG org.hibernate.SQL - select b1_0.id,b1_0.address,b1_0.booking_date,b1_0.car_index,b1_0.car_number,b1_0.car_type,b1_0.centre_name,b1_0.created_at,b1_0.discount_percent_applied,b1_0.free_applied,b1_0.maps_url,b1_0.membership_id_used,b1_0.original_amount,b1_0.payable_amount,b1_0.payment_status,b1_0.phone,b1_0.refund_amount,b1_0.refund_initiated_at,b1_0.refund_status,b1_0.service_centre_id,b1_0.service_type,b1_0.status,b1_0.time_slot,b1_0.transaction_id,b1_0.wash_type from carwash_booking b1_0 where b1_0.phone=? order by b1_0.created_at desc
+2025-12-23 08:40:08 INFO  c.c.b.controller.BookingController - Confirm order request received. items=1
+2025-12-23 08:40:08 DEBUG org.hibernate.SQL - select b1_0.id from carwash_booking b1_0 where b1_0.transaction_id=? fetch first ? rows only
+2025-12-23 08:40:08 DEBUG org.hibernate.SQL - insert into carwash_booking (address,booking_date,car_index,car_number,car_type,centre_name,created_at,discount_percent_applied,free_applied,maps_url,membership_id_used,original_amount,payable_amount,payment_status,phone,refund_amount,refund_initiated_at,refund_status,service_centre_id,service_type,status,time_slot,transaction_id,wash_type) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) returning id
+2025-12-23 08:40:13 DEBUG org.hibernate.SQL - select b1_0.id,b1_0.address,b1_0.booking_date,b1_0.car_index,b1_0.car_number,b1_0.car_type,b1_0.centre_name,b1_0.created_at,b1_0.discount_percent_applied,b1_0.free_applied,b1_0.maps_url,b1_0.membership_id_used,b1_0.original_amount,b1_0.payable_amount,b1_0.payment_status,b1_0.phone,b1_0.refund_amount,b1_0.refund_initiated_at,b1_0.refund_status,b1_0.service_centre_id,b1_0.service_type,b1_0.status,b1_0.time_slot,b1_0.transaction_id,b1_0.wash_type from carwash_booking b1_0 where b1_0.phone=? order by b1_0.created_at desc
+2025-12-23 08:40:18 DEBUG org.hibernate.SQL - select b1_0.id,b1_0.address,b1_0.booking_date,b1_0.car_index,b1_0.car_number,b1_0.car_type,b1_0.centre_name,b1_0.created_at,b1_0.discount_percent_applied,b1_0.free_applied,b1_0.maps_url,b1_0.membership_id_used,b1_0.original_amount,b1_0.payable_amount,b1_0.payment_status,b1_0.phone,b1_0.refund_amount,b1_0.refund_initiated_at,b1_0.refund_status,b1_0.service_centre_id,b1_0.service_type,b1_0.status,b1_0.time_slot,b1_0.transaction_id,b1_0.wash_type from carwash_booking b1_0 where b1_0.phone=? order by b1_0.created_at desc
+2025-12-23 08:42:48 INFO  c.c.b.controller.BookingController - Confirm order request received. items=1
+2025-12-23 08:42:48 DEBUG org.hibernate.SQL - select b1_0.id from carwash_booking b1_0 where b1_0.transaction_id=? fetch first ? rows only
+2025-12-23 08:42:48 DEBUG org.hibernate.SQL - insert into carwash_booking (address,booking_date,car_index,car_number,car_type,centre_name,created_at,discount_percent_applied,free_applied,maps_url,membership_id_used,original_amount,payable_amount,payment_status,phone,refund_amount,refund_initiated_at,refund_status,service_centre_id,service_type,status,time_slot,transaction_id,wash_type) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) returning id
+2025-12-23 08:42:50 DEBUG org.hibernate.SQL - select b1_0.id,b1_0.address,b1_0.booking_date,b1_0.car_index,b1_0.car_number,b1_0.car_type,b1_0.centre_name,b1_0.created_at,b1_0.discount_percent_applied,b1_0.free_applied,b1_0.maps_url,b1_0.membership_id_used,b1_0.original_amount,b1_0.payable_amount,b1_0.payment_status,b1_0.phone,b1_0.refund_amount,b1_0.refund_initiated_at,b1_0.refund_status,b1_0.service_centre_id,b1_0.service_type,b1_0.status,b1_0.time_slot,b1_0.transaction_id,b1_0.wash_type from carwash_booking b1_0 where b1_0.phone=? order by b1_0.created_at desc
+2025-12-23 14:05:25 WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=4h14m31s572ms814µs999ns).
+2025-12-23 23:45:08 WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=9h39m12s543ms111µs901ns).

@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CarWash Support Chat</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #020617;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: #111827;
+    }
+
+    .chat-shell {
+      width: 420px;
+      max-width: 100%;
+      height: 620px;
+      max-height: 100vh;
+      background: #f9fafb;
+      border-radius: 22px;
+      box-shadow: 0 24px 60px rgba(15,23,42,0.9);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .chat-header {
+      background: #2563eb;
+      color: #f9fafb;
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .chat-header-title {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .chat-header-sub {
+      font-size: 11px;
+      opacity: 0.9;
+    }
+
+    .chat-header-right {
+      font-size: 20px;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .chat-body {
+      flex: 1;
+      padding: 10px 12px 12px;
+      background: #e5e7eb;
+      overflow-y: auto;
+      font-size: 13px;
+    }
+
+    .msg-row {
+      margin-bottom: 8px;
+      display: flex;
+    }
+
+    .msg-row.user  { justify-content: flex-end; }
+    .msg-row.bot   { justify-content: flex-start; }
+    .msg-row.note  { justify-content: center; }
+
+    .msg-bubble {
+      max-width: 78%;
+      padding: 8px 10px;
+      border-radius: 14px;
+      white-space: pre-line;
+      font-size: 13px;
+    }
+
+    .bubble-user {
+      background: #2563eb;
+      color: #f9fafb;
+      border-bottom-right-radius: 4px;
+    }
+
+    .bubble-bot {
+      background: #e5e7eb;
+      color: #111827;
+      border-bottom-left-radius: 4px;
+    }
+
+    .bubble-note {
+      background: #fef3c7;
+      color: #92400e;
+      border-radius: 10px;
+    }
+
+    .msg-time {
+      font-size: 10px;
+      color: #6b7280;
+      margin-top: 2px;
+      text-align: right;
+    }
+
+    .quick-row {
+      padding: 6px 10px 8px;
+      background: #f3f4f6;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .quick-chip {
+      padding: 4px 10px;
+      font-size: 11px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      background: #fff;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .quick-chip.active {
+      background: #111827;
+      color: #f9fafb;
+      border-color: #111827;
+    }
+
+    .chat-footer {
+      border-top: 1px solid #e5e7eb;
+      background: #ffffff;
+      padding: 6px 10px 10px;
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .status-line {
+      font-size: 11px;
+      color: #6b7280;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .send-btn {
+      padding: 8px 18px;
+      border-radius: 999px;
+      border: none;
+      background: #2563eb;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .send-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .footer-actions {
+      margin-top: 4px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 11px;
+      align-items: center;
+      color: #6b7280;
+      flex-wrap: wrap;
+    }
+
+    .footer-actions-left {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .small-btn {
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid #fecaca;
+      background: #fee2e2;
+      color: #b91c1c;
+      font-size: 11px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .small-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .link-pill {
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    /* ---------- Ticket / Orders Panel (Bottom Sheet) ---------- */
+
+    .sheet-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(2,6,23,0.55);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 50;
+    }
+
+    .sheet {
+      width: 100%;
+      max-width: 520px;
+      background: #ffffff;
+      border-radius: 18px 18px 0 0;
+      box-shadow: 0 -18px 50px rgba(0,0,0,0.35);
+      padding: 12px 12px 14px;
+      max-height: 78vh;
+      overflow: auto;
+    }
+
+    .sheet-handle {
+      width: 44px;
+      height: 5px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      margin: 2px auto 10px;
+    }
+
+    .sheet-title {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .sheet-title h3 {
+      margin: 0;
+      font-size: 14px;
+      color: #0f172a;
+    }
+
+    .sheet-title p {
+      margin: 2px 0 0;
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .sheet-close {
+      border: none;
+      background: #f3f4f6;
+      color: #111827;
+      padding: 6px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .order-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .order-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      background: #f9fafb;
+      padding: 10px 10px;
+      cursor: pointer;
+      transition: transform 0.08s ease, border-color 0.12s ease, background 0.12s ease;
+    }
+
+    .order-card:hover {
+      transform: translateY(-1px);
+      border-color: #93c5fd;
+      background: #ffffff;
+    }
+
+    .order-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .order-id {
+      font-weight: 700;
+      font-size: 12px;
+      color: #0f172a;
+    }
+
+    .pill {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      color: #111827;
+      white-space: nowrap;
+    }
+
+    .pill.pay-success { background: #bbf7d0; border-color: #86efac; color: #064e3b; }
+    .pill.pay-pending { background: #fee2e2; border-color: #fecaca; color: #7f1d1d; }
+    .pill.pay-refunded{ background: #bae6fd; border-color: #7dd3fc; color: #0c4a6e; }
+
+    .order-mid {
+      font-size: 12px;
+      color: #111827;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .order-mid span {
+      color: #6b7280;
+    }
+
+    .order-bottom {
+      margin-top: 6px;
+      font-size: 11px;
+      color: #6b7280;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .sheet-form {
+      margin-top: 12px;
+      border-top: 1px solid #e5e7eb;
+      padding-top: 10px;
+      display: none;
+    }
+
+    .form-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 10px;
+    }
+
+    .form-row label {
+      font-size: 12px;
+      color: #111827;
+      font-weight: 600;
+    }
+
+    .form-row .hint {
+      font-size: 11px;
+      color: #6b7280;
+      margin-top: -2px;
+    }
+
+    .form-row textarea {
+      width: 100%;
+      min-height: 90px;
+      border-radius: 12px;
+      border: 1px solid #d1d5db;
+      padding: 10px;
+      font-size: 13px;
+      outline: none;
+      resize: vertical;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .btn2 {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 14px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn2.primary {
+      background: #2563eb;
+      color: #ffffff;
+    }
+
+    .btn2.ghost {
+      background: #f3f4f6;
+      color: #111827;
+    }
+
+    .btn2:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* ---------- History (Modal) ---------- */
+
+    .history-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(2,6,23,0.60);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 60;
+      padding: 12px;
+    }
+
+    .history-card {
+      width: min(520px, 100%);
+      max-height: 85vh;
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 24px 70px rgba(0,0,0,0.45);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid rgba(148,163,184,0.35);
+    }
+
+    .history-header {
+      background: #111827;
+      color: #f9fafb;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .history-header-title {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .history-header-title strong {
+      font-size: 13px;
+    }
+
+    .history-header-title span {
+      font-size: 11px;
+      opacity: 0.85;
+    }
+
+    .history-close {
+      border: none;
+      background: rgba(255,255,255,0.12);
+      color: #f9fafb;
+      padding: 7px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .history-body {
+      padding: 10px 10px 12px;
+      background: #f3f4f6;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .h-row { display: flex; flex-direction: column; gap: 2px; }
+    .h-row.user { align-items: flex-end; }
+    .h-row.admin { align-items: flex-start; }
+    .h-row.note { align-items: center; }
+
+    .h-bubble {
+      max-width: 86%;
+      padding: 8px 10px;
+      border-radius: 14px;
+      font-size: 13px;
+      white-space: pre-line;
+    }
+
+    .h-user { background: #2563eb; color: #fff; border-bottom-right-radius: 4px; }
+    .h-admin{ background: #ffffff; color: #111827; border: 1px solid rgba(17,24,39,0.08); border-bottom-left-radius: 4px; }
+    .h-note { background: #fef3c7; color: #92400e; border: 1px solid rgba(146,64,14,0.2); }
+
+    .h-time {
+      font-size: 10px;
+      color: #6b7280;
+      max-width: 86%;
+      text-align: right;
+    }
+
+    @media (max-width: 640px) {
+      body { align-items: flex-start; padding: 8px; }
+
+      .chat-shell {
+        width: 100%;
+        height: 100vh;
+        max-height: 100vh;
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      .chat-body { padding: 8px 10px 10px; }
+      .chat-header { padding: 8px 12px; }
+      .chat-footer { padding: 6px 8px 8px; }
+      .chat-input { font-size: 12px; }
+      .send-btn { padding: 7px 14px; font-size: 12px; }
+      .quick-row { padding: 6px 8px 6px; }
+      .sheet { max-height: 82vh; }
+    }
+
+    @media (max-width: 400px) {
+      body { padding: 0; }
+      .chat-shell { border-radius: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="chat-shell">
+  <div class="chat-header">
+    <div>
+      <div class="chat-header-title">CarWash Support</div>
+      <div id="headerSub" class="chat-header-sub"></div>
+    </div>
+    <div class="chat-header-right" onclick="window.close()">&times;</div>
+  </div>
+
+  <div id="chatBody" class="chat-body"></div>
+
+  <div class="quick-row">
+    <button class="quick-chip" onclick="sendQuick('Payment')">Payment</button>
+    <button class="quick-chip" onclick="sendQuick('Booking')">Booking</button>
+    <button id="quickAgent" class="quick-chip active" onclick="requestLiveAgent()">
+      Chat with Agent
+    </button>
+  </div>
+
+  <div class="chat-footer">
+    <div id="statusLine" class="status-line">Type your question or tap a quick option.</div>
+    <div class="input-row">
+      <input id="userInput" class="chat-input" type="text" placeholder="Type your message..." />
+      <button id="sendBtn" class="send-btn" onclick="sendUserMessage()">Send</button>
+    </div>
+    <div class="footer-actions">
+      <div class="footer-actions-left">
+        <button id="endChatBtn" class="small-btn" onclick="endChat()">End Chat</button>
+        <button class="link-pill" onclick="openHistory()">Chat history</button>
+      </div>
+      <span id="endStatus"></span>
+    </div>
+  </div>
+
+  <!-- Orders / Ticket sheet -->
+  <div id="sheetBackdrop" class="sheet-backdrop" onclick="closeSheetIfBackdrop(event)">
+    <div class="sheet" onclick="event.stopPropagation()">
+      <div class="sheet-handle"></div>
+
+      <div class="sheet-title">
+        <div>
+          <h3 id="sheetHeading">Select an Order</h3>
+          <p id="sheetSub">Pick a booking to create a support ticket.</p>
+        </div>
+        <button class="sheet-close" onclick="closeSheet()">Close</button>
+      </div>
+
+      <div id="ordersLoading" style="font-size:12px;color:#6b7280;display:none;">Loading your orders…</div>
+      <div id="ordersEmpty" style="font-size:12px;color:#6b7280;display:none;">No orders found.</div>
+
+      <div id="ordersList" class="order-list"></div>
+
+      <div id="ticketForm" class="sheet-form">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;">
+          <div style="font-size:12px;color:#111827;font-weight:800;">
+            Ticket for Booking <span id="pickedBookingId"></span>
+          </div>
+          <span id="pickedIssuePill" class="pill" style="border-color:#93c5fd;background:#eff6ff;">Issue</span>
+        </div>
+
+        <div id="pickedSummary" style="font-size:12px;color:#6b7280;margin:-4px 0 10px;"></div>
+
+        <div class="form-row">
+          <label for="ticketDesc">Describe the issue</label>
+          <div class="hint">We’ll create a ticket and send confirmation to your email.</div>
+          <textarea id="ticketDesc" placeholder="Eg: Payment deducted but booking still shows pending / I want to reschedule / refund not received..."></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn2 ghost" onclick="backToOrders()">← Back</button>
+          <button id="createTicketBtn" class="btn2 primary" onclick="createTicket()">Create Ticket</button>
+        </div>
+
+        <div id="ticketResult" style="margin-top:10px;font-size:12px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat history modal -->
+  <div id="historyBackdrop" class="history-backdrop" onclick="closeHistoryIfBackdrop(event)">
+    <div class="history-card" onclick="event.stopPropagation()">
+      <div class="history-header">
+        <div class="history-header-title">
+          <strong>Chat history</strong>
+          <span id="historySub">Loading…</span>
+        </div>
+        <button class="history-close" onclick="closeHistory()">Close</button>
+      </div>
+      <div id="historyBody" class="history-body"></div>
+    </div>
+  </div>
+
+  <!-- Guest email modal -->
+  <div id="emailBackdrop" class="history-backdrop" onclick="closeEmailIfBackdrop(event)">
+    <div class="history-card" onclick="event.stopPropagation()">
+      <div class="history-header">
+        <div class="history-header-title">
+          <strong>Email required</strong>
+          <span>We’ll send ticket details here</span>
+        </div>
+        <button class="history-close" onclick="closeEmailPopup()">Close</button>
+      </div>
+      <div class="history-body">
+        <div class="form-row">
+          <label for="guestEmail">Enter your email</label>
+          <div class="hint">If you don’t want to share email, please chat with agent.</div>
+          <input id="guestEmail" type="email" placeholder="you@example.com"
+                 style="padding:10px;border-radius:12px;border:1px solid #d1d5db;font-size:13px;outline:none;">
+        </div>
+
+        <div class="form-actions" style="justify-content:flex-end;">
+          <button class="btn2 ghost" onclick="skipEmailAndAgent()">Chat with Agent</button>
+          <button class="btn2 primary" onclick="confirmGuestEmail()">Confirm & Send</button>
+        </div>
+
+        <div id="emailError" style="margin-top:8px;font-size:12px;color:#b91c1c;"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Support service base (chat + tickets)
+  const API_BASE = window.location.origin;
+  const API_CHAT       = API_BASE + "/chat";
+  const API_AGENT_CHAT = API_BASE + "/agent-chat";
+  const API_TICKETS    = API_BASE + "/tickets";
+
+  // ✅ BookingController endpoint
+  const API_BOOKINGS_BY_PHONE = (phone) =>
+    API_BASE + "/bookings/by-phone?phone=" + encodeURIComponent(phone);
+
+  // =========================
+  // AUTH (STANDARD)
+  // =========================
+  const JWT_KEY = "jwt";
+  const PHONE_KEY = "phone";
+
+  function getJwt() {
+    return (localStorage.getItem(JWT_KEY) || "").trim();
+  }
+
+  function getPhone() {
+    return (localStorage.getItem(PHONE_KEY) || "").trim();
+  }
+
+  function getAuthHeaders(extra = {}) {
+    const jwt = getJwt();
+    return {
+      ...(jwt ? { "Authorization": "Bearer " + jwt } : {}),
+      ...extra
+    };
+  }
+
+  function redirectToLogin() {
+    localStorage.setItem("pendingTarget", "/chatbox");
+    window.location.href = "/SignuLogin?mode=login";
+  }
+
+  const phone = getPhone();
+  const jwt = getJwt();
+
+  // ✅ Require login
+  if (!phone || !jwt) {
+    redirectToLogin();
+  }
+
+  let email = localStorage.getItem("email") || "";
+  const username =
+    new URLSearchParams(window.location.search).get("username") ||
+    localStorage.getItem("userName") ||
+    phone ||
+    "Guest";
+
+  const chatBody   = document.getElementById("chatBody");
+  const userInput  = document.getElementById("userInput");
+  const sendBtn    = document.getElementById("sendBtn");
+  const statusLine = document.getElementById("statusLine");
+  const endStatus  = document.getElementById("endStatus");
+  const endChatBtn = document.getElementById("endChatBtn");
+  const headerSub  = document.getElementById("headerSub");
+
+  const historyBackdrop = document.getElementById("historyBackdrop");
+  const historyBodyEl   = document.getElementById("historyBody");
+  const historySubEl    = document.getElementById("historySub");
+
+  const emailBackdrop = document.getElementById("emailBackdrop");
+  const guestEmailEl  = document.getElementById("guestEmail");
+  const emailErrorEl  = document.getElementById("emailError");
+
+  headerSub.textContent = `You are chatting as ${phone || "guest"}`;
+
+  let lastMessageId  = 0;
+  let pollTimer      = null;
+  let chatActive     = false;
+  let chatEnded      = false;
+  let isConnecting   = false;
+  let adminEndedOnce = false;
+
+  const sheetBackdrop = document.getElementById("sheetBackdrop");
+  const ordersListEl  = document.getElementById("ordersList");
+  const ordersLoading = document.getElementById("ordersLoading");
+  const ordersEmpty   = document.getElementById("ordersEmpty");
+  const ticketFormEl  = document.getElementById("ticketForm");
+  const sheetHeading  = document.getElementById("sheetHeading");
+  const sheetSub      = document.getElementById("sheetSub");
+  const pickedBookingIdEl = document.getElementById("pickedBookingId");
+  const pickedIssuePill   = document.getElementById("pickedIssuePill");
+  const pickedSummaryEl   = document.getElementById("pickedSummary");
+  const ticketDescEl      = document.getElementById("ticketDesc");
+  const createTicketBtn   = document.getElementById("createTicketBtn");
+  const ticketResultEl    = document.getElementById("ticketResult");
+
+  let pendingIssueType = null;
+  let selectedBooking  = null;
+  let pendingGuestEmail = null;
+
+  // ✅ init always (since login required)
+  initWelcome();
+  primeLastMessageIdSilently();
+
+  function initWelcome() {
+    appendBot(`Hi ${phone}! 👋\nHow can we help you today?`);
+  }
+
+  async function primeLastMessageIdSilently() {
+    try {
+      const res = await fetch(`${API_CHAT}/messages?phone=${encodeURIComponent(phone)}`, {
+        headers: getAuthHeaders()
+      });
+      if (res.status === 401 || res.status === 403) return redirectToLogin();
+      if (!res.ok) return;
+
+      const list = await res.json();
+      if (Array.isArray(list) && list.length > 0) {
+        lastMessageId = list[list.length - 1].id || lastMessageId;
+      }
+    } catch (_) {}
+  }
+
+  function scrollToBottom() {
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
+
+  function appendRow(className, contentEl, createdAt) {
+    const row = document.createElement("div");
+    row.className = "msg-row " + className;
+    row.appendChild(contentEl);
+
+    if (createdAt) {
+      const t = document.createElement("div");
+      t.className = "msg-time";
+      t.textContent = new Date(createdAt).toLocaleTimeString();
+      row.appendChild(t);
+    }
+
+    chatBody.appendChild(row);
+    scrollToBottom();
+  }
+
+  function appendBot(text, createdAt) {
+    const bubble = document.createElement("div");
+    bubble.className = "msg-bubble bubble-bot";
+    bubble.innerText = text;
+    appendRow("bot", bubble, createdAt);
+  }
+
+  function appendUser(text, createdAt) {
+    const bubble = document.createElement("div");
+    bubble.className = "msg-bubble bubble-user";
+    bubble.innerText = text;
+    appendRow("user", bubble, createdAt);
+  }
+
+  function appendNotice(text) {
+    const bubble = document.createElement("div");
+    bubble.className = "msg-bubble bubble-note";
+    bubble.innerText = text;
+    const row = document.createElement("div");
+    row.className = "msg-row note";
+    row.appendChild(bubble);
+    chatBody.appendChild(row);
+    scrollToBottom();
+  }
+
+  function disableInput(reason) {
+    chatActive   = false;
+    chatEnded    = true;
+    isConnecting = false;
+    sendBtn.disabled   = true;
+    userInput.disabled = true;
+    endChatBtn.disabled= true;
+    statusLine.textContent = reason;
+  }
+
+  function enableInput() {
+    chatEnded = false;
+    sendBtn.disabled   = false;
+    userInput.disabled = false;
+    endChatBtn.disabled= false;
+  }
+
+  function sendQuick(type) {
+    if (!phone) return;
+
+    if (type === "Payment") {
+      pendingIssueType = "Payment";
+      appendBot("Sure — please select the booking related to your **Payment** issue.");
+      openOrdersSheet("Payment");
+      return;
+    }
+
+    if (type === "Booking") {
+      pendingIssueType = "Booking";
+      appendBot("Okay — please select the booking related to your **Booking** issue.");
+      openOrdersSheet("Booking");
+      return;
+    }
+
+    if (type === "Chat with Agent") {
+      requestLiveAgent();
+      return;
+    }
+  }
+
+  function openOrdersSheet(issueType) {
+    pendingIssueType = issueType;
+    selectedBooking = null;
+
+    sheetHeading.textContent = `Select an Order (${issueType})`;
+    sheetSub.textContent = "Pick a booking to create a support ticket.";
+    ordersListEl.innerHTML = "";
+    ordersEmpty.style.display = "none";
+    ticketFormEl.style.display = "none";
+    ordersLoading.style.display = "block";
+
+    sheetBackdrop.style.display = "flex";
+    loadUserBookings();
+  }
+
+  function closeSheetIfBackdrop(e) {
+    if (e.target === sheetBackdrop) closeSheet();
+  }
+
+  function closeSheet() {
+    sheetBackdrop.style.display = "none";
+  }
+
+  function backToOrders() {
+    selectedBooking = null;
+    ticketFormEl.style.display = "none";
+    ordersListEl.style.display = "flex";
+    sheetSub.textContent = "Pick a booking to create a support ticket.";
+    ticketResultEl.textContent = "";
+    ticketResultEl.style.color = "#111827";
+    ticketDescEl.value = "";
+  }
+
+  function formatDateSafe(d) {
+    if (!d) return "";
+    try {
+      if (typeof d === "string" && d.length === 10 && d.indexOf("T") === -1) return d;
+      const x = new Date(d);
+      if (isNaN(x.getTime())) return String(d);
+      return x.toLocaleDateString();
+    } catch (_) {
+      return String(d);
+    }
+  }
+
+  function paymentPillClass(status) {
+    const s = (status || "").toUpperCase();
+    if (s === "SUCCESS" || s === "PAID") return "pill pay-success";
+    if (s === "REFUNDED") return "pill pay-refunded";
+    return "pill pay-pending";
+  }
+
+  function bookingLabel(b) {
+    const id = b.id != null ? `#${b.id}` : "#–";
+    const date = formatDateSafe(b.bookingDate);
+    const slot = b.timeSlot || "";
+    const svc  = b.serviceType || "";
+    const car  = b.carNumber || "";
+    return `${id} · ${svc} · ${date} · ${slot} · ${car}`;
+  }
+
+  // ✅ load bookings using /bookings/by-phone?phone=xxxx WITH Authorization
+  async function loadUserBookings() {
+    try {
+      const url = API_BOOKINGS_BY_PHONE(phone);
+      const res = await fetch(url, { headers: getAuthHeaders() });
+
+      if (res.status === 401 || res.status === 403) return redirectToLogin();
+
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(`Failed to load bookings (${res.status}) ${text}`);
+      }
+
+      let list = await res.json();
+
+      ordersLoading.style.display = "none";
+
+      if (!Array.isArray(list) || list.length === 0) {
+        ordersEmpty.style.display = "block";
+        ordersEmpty.textContent = "No orders found.";
+        return;
+      }
+
+      list = list.slice(0, 10);
+      ordersEmpty.style.display = "none";
+      renderOrders(list);
+
+    } catch (e) {
+      console.error(e);
+      ordersLoading.style.display = "none";
+      ordersEmpty.style.display = "block";
+      ordersEmpty.textContent = "Unable to load orders. Please try again.";
+    }
+  }
+
+  function renderOrders(list) {
+    ordersListEl.innerHTML = "";
+    ordersListEl.style.display = "flex";
+
+    list.forEach(b => {
+      const card = document.createElement("div");
+      card.className = "order-card";
+      card.title = "Tap to select this booking";
+
+      const pay = (b.paymentStatus || "PENDING").toUpperCase();
+      const status = (b.status || "PENDING").toUpperCase();
+
+      card.innerHTML = `
+        <div class="order-top">
+          <div class="order-id">Booking #${b.id ?? "-"}</div>
+          <div class="${paymentPillClass(pay)}">${pay}</div>
+        </div>
+        <div class="order-mid">
+          <strong>${(b.serviceType || "").toString()}</strong>
+          <span>•</span>
+          <span>${formatDateSafe(b.bookingDate)}</span>
+          <span>•</span>
+          <span>${(b.timeSlot || "").toString()}</span>
+        </div>
+        <div class="order-bottom">
+          <span>Car: ${(b.carNumber || "-").toString()} · ${(b.carType || "").toString()}</span>
+          <span>Status: ${status}</span>
+        </div>
+      `;
+
+      card.addEventListener("click", () => pickBookingForTicket(b));
+      ordersListEl.appendChild(card);
+    });
+  }
+
+  function pickBookingForTicket(b) {
+    selectedBooking = b;
+
+    ordersListEl.style.display = "none";
+    ticketFormEl.style.display = "block";
+
+    pickedBookingIdEl.textContent = `#${b.id ?? "-"}`;
+    pickedIssuePill.textContent = pendingIssueType || "Issue";
+    pickedIssuePill.style.borderColor = "#93c5fd";
+    pickedIssuePill.style.background = "#eff6ff";
+
+    pickedSummaryEl.textContent = bookingLabel(b);
+
+    sheetSub.textContent = "Add details and create ticket.";
+    ticketResultEl.textContent = "";
+    ticketResultEl.style.color = "#111827";
+    ticketDescEl.value = "";
+    ticketDescEl.focus();
+  }
+
+  function isValidEmail(s) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s || "").trim());
+  }
+
+  function openEmailPopup() {
+    emailErrorEl.textContent = "";
+    guestEmailEl.value = "";
+    emailBackdrop.style.display = "flex";
+    setTimeout(() => guestEmailEl.focus(), 50);
+  }
+
+  function closeEmailPopup() { emailBackdrop.style.display = "none"; }
+
+  function closeEmailIfBackdrop(e) {
+    if (e.target === emailBackdrop) closeEmailPopup();
+  }
+
+  function skipEmailAndAgent() {
+    closeEmailPopup();
+    appendBot("No worries 🙂 If you don’t want to share email, please chat with our support agent.");
+    requestLiveAgent();
+  }
+
+  async function confirmGuestEmail() {
+    const val = (guestEmailEl.value || "").trim();
+    if (!isValidEmail(val)) {
+      emailErrorEl.textContent = "Please enter a valid email address.";
+      return;
+    }
+
+    pendingGuestEmail = val;
+    closeEmailPopup();
+    await submitTicketWithEmail(val);
+  }
+
+  async function createTicket() {
+    if (!phone || !pendingIssueType || !selectedBooking || !selectedBooking.id) {
+      ticketResultEl.style.color = "#b91c1c";
+      ticketResultEl.textContent = "Missing booking selection. Please go back and select an order.";
+      return;
+    }
+
+    const desc = (ticketDescEl.value || "").trim();
+    if (!desc) {
+      ticketResultEl.style.color = "#b91c1c";
+      ticketResultEl.textContent = "Please enter a short description of the issue.";
+      return;
+    }
+
+    if (!email) {
+      openEmailPopup();
+      return;
+    }
+
+    await submitTicketWithEmail(email);
+  }
+
+  async function submitTicketWithEmail(resolvedEmail) {
+    const desc = (ticketDescEl.value || "").trim();
+
+    createTicketBtn.disabled = true;
+    ticketResultEl.style.color = "#6b7280";
+    ticketResultEl.textContent = "Creating ticket…";
+
+    const payload = {
+      username: username,
+      phone: phone,
+      email: resolvedEmail,
+      issueType: pendingIssueType,
+      bookingId: Number(selectedBooking.id),
+      description:
+        `Issue Type: ${pendingIssueType}\n` +
+        `Booking: ${bookingLabel(selectedBooking)}\n\n` +
+        desc
+    };
+
+    try {
+      const res = await fetch(API_TICKETS, {
+        method: "POST",
+        headers: getAuthHeaders({ "Content-Type": "application/json" }),
+        body: JSON.stringify(payload)
+      });
+
+      if (res.status === 401 || res.status === 403) return redirectToLogin();
+
+      let data = null;
+      try { data = await res.json(); } catch (_) {}
+
+      if (!res.ok || !data || data.success === false) {
+        const msg = (data && data.message) ? data.message : "Ticket creation failed.";
+        ticketResultEl.style.color = "#b91c1c";
+        ticketResultEl.textContent = msg;
+        createTicketBtn.disabled = false;
+        return;
+      }
+
+      const ticketNo = data.ticketNumber || "(generated)";
+      ticketResultEl.style.color = "#166534";
+      ticketResultEl.textContent = `✅ Ticket created: ${ticketNo}. We sent confirmation to ${resolvedEmail}.`;
+
+      appendNotice(`Ticket created: ${ticketNo} ✅`);
+      appendBot(`Thanks! Your ticket **${ticketNo}** is created.\nWe will contact you soon.`);
+
+      try {
+        await fetch(`${API_CHAT}/user-message`, {
+          method: "POST",
+          headers: getAuthHeaders({ "Content-Type": "application/json" }),
+          body: JSON.stringify({
+            phone,
+            username,
+            message: `Ticket created: ${ticketNo} (${pendingIssueType}) for booking #${selectedBooking.id}`
+          })
+        });
+      } catch (_) {}
+
+      setTimeout(() => closeSheet(), 900);
+
+    } catch (e) {
+      console.error(e);
+      ticketResultEl.style.color = "#b91c1c";
+      ticketResultEl.textContent = "Error contacting server while creating ticket.";
+    } finally {
+      createTicketBtn.disabled = false;
+    }
+  }
+
+  async function requestLiveAgent() {
+    if (!phone) return;
+    if (isConnecting || chatActive) return;
+
+    isConnecting   = true;
+    adminEndedOnce = false;
+    chatEnded      = false;
+    enableInput();
+
+    appendNotice("Connecting you to a live agent. Please wait…");
+    statusLine.textContent = "Connecting you to a live agent…";
+
+    try {
+      const r1 = await fetch(`${API_AGENT_CHAT}/notify`, {
+        method: "POST",
+        headers: getAuthHeaders({ "Content-Type": "application/json" }),
+        body: JSON.stringify({ phone, username })
+      });
+      if (r1.status === 401 || r1.status === 403) return redirectToLogin();
+
+      const r2 = await fetch(`${API_CHAT}/user-message`, {
+        method: "POST",
+        headers: getAuthHeaders({ "Content-Type": "application/json" }),
+        body: JSON.stringify({
+          phone,
+          username,
+          message: "User is requesting to chat with an agent"
+        })
+      });
+      if (r2.status === 401 || r2.status === 403) return redirectToLogin();
+
+      await primeLastMessageIdSilently();
+
+      chatActive = true;
+      chatEnded  = false;
+      statusLine.textContent = "Connected. Agent will reply shortly.";
+    } catch (e) {
+      console.error(e);
+      appendNotice("Unable to contact support right now. Please try again in a moment.");
+      disableInput("Connection failed.");
+    } finally {
+      isConnecting = false;
+    }
+
+    if (!pollTimer) {
+      pollTimer = setInterval(pollMessages, 2000);
+      pollMessages();
+    }
+  }
+
+  async function sendUserMessage() {
+    if (!phone || !chatActive || chatEnded) return;
+
+    const text = userInput.value.trim();
+    if (!text) return;
+    userInput.value = "";
+
+    appendUser(text, new Date().toISOString());
+    statusLine.textContent = "Message sent. Waiting for reply…";
+
+    try {
+      const res = await fetch(`${API_CHAT}/user-message`, {
+        method: "POST",
+        headers: getAuthHeaders({ "Content-Type": "application/json" }),
+        body: JSON.stringify({ phone, username, message: text })
+      });
+
+      if (res.status === 401 || res.status === 403) return redirectToLogin();
+    } catch (e) {
+      console.error(e);
+      appendNotice("We couldn't send that message. Please try again.");
+    }
+  }
+
+  userInput.addEventListener("keydown", e => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sendUserMessage();
+    }
+  });
+
+  async function endChat() {
+    if (!phone || chatEnded) return;
+
+    chatEnded    = true;
+    chatActive   = false;
+    isConnecting = false;
+    disableInput("Chat ended. You can start a new chat anytime.");
+    appendNotice("Chat ended. You can start a new chat anytime.");
+    endStatus.textContent = "Ended by you.";
+
+    try {
+      const r1 = await fetch(`${API_CHAT}/user-message`, {
+        method: "POST",
+        headers: getAuthHeaders({ "Content-Type": "application/json" }),
+        body: JSON.stringify({
+          phone,
+          username,
+          message: "User has ended the chat"
+        })
+      });
+      if (r1.status === 401 || r1.status === 403) return redirectToLogin();
+
+      const r2 = await fetch(`${API_CHAT}/end`, {
+        method: "POST",
+        headers: getAuthHeaders({ "Content-Type": "application/json" }),
+        body: JSON.stringify({
+          phone: phone,
+          endedBy: "USER"
+        })
+      });
+      if (r2.status === 401 || r2.status === 403) return redirectToLogin();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  function closeHistoryIfBackdrop(e) {
+    if (e.target === historyBackdrop) closeHistory();
+  }
+
+  function closeHistory() {
+    historyBackdrop.style.display = "none";
+  }
+
+  function historyBubble(sender, text, createdAt) {
+    const row = document.createElement("div");
+    const s = (sender || "").toUpperCase();
+
+    if (s === "USER") row.className = "h-row user";
+    else if (s === "ADMIN") row.className = "h-row admin";
+    else row.className = "h-row note";
+
+    const bubble = document.createElement("div");
+    bubble.className = "h-bubble " + (s === "USER" ? "h-user" : (s === "ADMIN" ? "h-admin" : "h-note"));
+    bubble.innerText = text || "";
+    row.appendChild(bubble);
+
+    if (createdAt) {
+      const t = document.createElement("div");
+      t.className = "h-time";
+      try { t.textContent = new Date(createdAt).toLocaleString(); } catch (_) { t.textContent = ""; }
+      row.appendChild(t);
+    }
+
+    return row;
+  }
+
+  async function openHistory() {
+    if (!phone) return;
+
+    historyBackdrop.style.display = "flex";
+    historyBodyEl.innerHTML = "";
+    historySubEl.textContent = "Loading…";
+
+    historyBodyEl.appendChild(historyBubble("NOTE", "Fetching your previous messages…", new Date().toISOString()));
+
+    try {
+      const res = await fetch(`${API_CHAT}/messages?phone=${encodeURIComponent(phone)}`, {
+        headers: getAuthHeaders()
+      });
+
+      if (res.status === 401 || res.status === 403) return redirectToLogin();
+
+      if (!res.ok) {
+        historyBodyEl.innerHTML = "";
+        historyBodyEl.appendChild(historyBubble("NOTE", "Unable to load history right now.", new Date().toISOString()));
+        historySubEl.textContent = "Failed";
+        return;
+      }
+
+      const list = await res.json();
+      historyBodyEl.innerHTML = "";
+
+      if (!Array.isArray(list) || list.length === 0) {
+        historyBodyEl.appendChild(historyBubble("NOTE", "No previous chats found.", new Date().toISOString()));
+        historySubEl.textContent = "No messages";
+        return;
+      }
+
+      const filtered = list.filter(m => (m.message || "") !== "User is requesting to chat with an agent");
+
+      filtered.forEach(m => {
+        historyBodyEl.appendChild(historyBubble(m.sender, m.message, m.createdAt));
+        if (m.id && m.id > lastMessageId) lastMessageId = m.id;
+      });
+
+      historySubEl.textContent = `${filtered.length} messages`;
+
+    } catch (e) {
+      console.error(e);
+      historyBodyEl.innerHTML = "";
+      historyBodyEl.appendChild(historyBubble("NOTE", "Error loading history.", new Date().toISOString()));
+      historySubEl.textContent = "Error";
+    }
+  }
+
+  async function pollMessages() {
+    if (!phone) return;
+    if (!chatActive) return;
+
+    try {
+      const res = await fetch(
+        `${API_CHAT}/messages?phone=${encodeURIComponent(phone)}&afterId=${lastMessageId}`,
+        { headers: getAuthHeaders() }
+      );
+
+      if (res.status === 401 || res.status === 403) return redirectToLogin();
+      if (!res.ok) return;
+
+      const list = await res.json();
+      if (!Array.isArray(list)) return;
+
+      list.forEach(m => {
+        const id   = m.id || 0;
+        const text = m.message || "";
+        const raw  = (m.sender || "").toUpperCase();
+        const createdAt = m.createdAt;
+
+        if (id > lastMessageId) lastMessageId = id;
+
+        if (raw === "ADMIN" && text === "Admin has ended the chat") {
+          if (!adminEndedOnce) {
+            adminEndedOnce = true;
+            chatEnded    = true;
+            chatActive   = false;
+            isConnecting = false;
+            disableInput("Chat ended by support. You can start a new chat anytime.");
+            appendNotice("Chat ended. You can start a new chat anytime.");
+            endStatus.textContent = "Ended by support agent.";
+          }
+          return;
+        }
+
+        if (raw === "USER" && text === "User has ended the chat") {
+          if (!chatEnded) {
+            chatEnded    = true;
+            chatActive   = false;
+            isConnecting = false;
+            disableInput("Chat ended. You can start a new chat anytime.");
+            appendNotice("Chat ended. You can start a new chat anytime.");
+          }
+          return;
+        }
+
+        if (raw === "ADMIN") {
+          appendBot(text, createdAt);
+        }
+      });
+
+      if (!chatEnded && chatActive) {
+        statusLine.textContent = "Connected. Agent will reply shortly.";
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  window.sendQuick = sendQuick;
+  window.requestLiveAgent = requestLiveAgent;
+  window.sendUserMessage = sendUserMessage;
+  window.endChat = endChat;
+
+  window.openHistory = openHistory;
+  window.closeHistory = closeHistory;
+  window.closeHistoryIfBackdrop = closeHistoryIfBackdrop;
+
+  window.closeSheet = closeSheet;
+  window.backToOrders = backToOrders;
+  window.createTicket = createTicket;
+  window.closeSheetIfBackdrop = closeSheetIfBackdrop;
+
+  window.openEmailPopup = openEmailPopup;
+  window.closeEmailPopup = closeEmailPopup;
+  window.closeEmailIfBackdrop = closeEmailIfBackdrop;
+  window.skipEmailAndAgent = skipEmailAndAgent;
+  window.confirmGuestEmail = confirmGuestEmail;
+</script>
+
+
+</body>
+</html>

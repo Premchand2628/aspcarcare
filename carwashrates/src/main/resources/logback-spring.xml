@@ -1,0 +1,47 @@
+<configuration>
+
+  <property name="LOG_PATH" value="C:/Users/chand/grafana-loki/logs"/>
+
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${LOG_PATH}/carwashrates.log</file>
+
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>${LOG_PATH}/carwashrates.%d{yyyy-MM-dd}.log</fileNamePattern>
+      <maxHistory>30</maxHistory>
+    </rollingPolicy>
+
+    <!-- ✅ JSON logs -->
+    <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+      <providers>
+
+        <!-- timestamp -->
+        <timestamp>
+          <timeZone>UTC</timeZone>
+        </timestamp>
+
+        <!-- level, logger, thread -->
+        <logLevel/>
+        <loggerName/>
+        <threadName/>
+
+        <!-- message -->
+        <message/>
+
+        <!-- MDC fields (correlationId etc.) -->
+        <mdc/>
+
+        <!-- stacktrace if error -->
+        <stackTrace/>
+
+        <!-- ✅ custom static fields -->
+        <globalCustomFields>{"service":"carwashrates-service","env":"local"}</globalCustomFields>
+
+      </providers>
+    </encoder>
+  </appender>
+
+  <root level="INFO">
+    <appender-ref ref="FILE"/>
+  </root>
+
+</configuration>

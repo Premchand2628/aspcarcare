@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login / Signup Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      width: 320px;
+      text-align: center;
+    }
+    .container h2 { margin-bottom: 20px; }
+    .btn {
+      background: #333;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      margin: 5px 0;
+      cursor: pointer;
+      border-radius: 4px;
+      width: 100%;
+    }
+    .btn:hover { background: #555; }
+    .form-box { margin-top: 15px; display: none; flex-direction: column; }
+    input {
+      padding: 8px;
+      margin: 5px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      width: 100%;
+    }
+    .link-text {
+      color: blue;
+      text-decoration: underline;
+      cursor: pointer;
+      margin: 5px 0;
+      font-size: 14px;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Welcome</h2>
+
+    <!-- Top buttons -->
+    <button class="btn" onclick="showLogin()">Login</button>
+    <button class="btn" onclick="showSignup()">Signup</button>
+
+    <!-- Login form -->
+    <div id="loginForm" class="form-box">
+      <input type="email" id="loginEmail" placeholder="Email ID" required>
+      <input type="password" id="loginPassword" placeholder="Password" required>
+      <button class="btn" onclick="doLogin()">Login</button>
+      <span class="link-text" onclick="alert('Password reset flow here!')">Forgot user or password?</span>
+      <span class="link-text" onclick="alert('Redirect to Help page!')">Need help</span>
+    </div>
+
+    <!-- Signup form -->
+    <div id="signupForm" class="form-box">
+      <input type="text" id="firstName" placeholder="First Name" required>
+      <input type="text" id="lastName" placeholder="Last Name" required>
+      <input type="email" id="signupEmail" placeholder="Email ID" required>
+      <input type="password" id="signupPassword" placeholder="Password" required>
+      <input type="tel" id="phone" placeholder="Phone Number" required>
+      <button class="btn" onclick="doSignup()">Signup</button>
+    </div>
+  </div>
+
+  <script>
+    function showLogin() {
+      document.getElementById("loginForm").style.display = "flex";
+      document.getElementById("signupForm").style.display = "none";
+    }
+
+    function showSignup() {
+      document.getElementById("signupForm").style.display = "flex";
+      document.getElementById("loginForm").style.display = "none";
+    }
+
+    // ---------------- LOGIN ----------------
+    function doLogin() {
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPassword").value;
+
+      if (email && password) {
+        const loginData = { email: email, password: password };
+
+        fetch("http://localhost:8082/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(loginData),
+          credentials: "include" // ✅ important: keep session cookie
+        })
+        .then(res => res.text())
+        .then(data => {
+          if (data.startsWith("SUCCESS:")) {
+            // ✅ redirect to home page after login
+            window.location.href = "index.html";
+          } else {
+            alert("Login failed: " + data);
+          }
+        })
+        .catch(err => {
+          console.error("Error:", err);
+          alert("Login failed. Please try again.");
+        });
+      } else {
+        alert("Please enter both email and password.");
+      }
+    }
+
+    // ---------------- SIGNUP ----------------
+    function doSignup() {
+      const firstName = document.getElementById("firstName").value;
+      const lastName = document.getElementById("lastName").value;
+      const email = document.getElementById("signupEmail").value;
+      const password = document.getElementById("signupPassword").value;
+      const phone = document.getElementById("phone").value;
+
+      if (!firstName || !lastName || !email || !password || !phone) {
+        alert("Please fill all signup fields.");
+        return;
+      }
+
+      const user = {
+        name: firstName + " " + lastName,
+        email: email,
+        password: password,
+        phone: phone
+      };
+
+      fetch("http://localhost:8082/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(user),
+        credentials: "include"
+      })
+      .then(res => res.text())
+      .then(data => {
+        alert(data);
+        if (data.includes("successful")) {
+          showLogin();
+        }
+      })
+      .catch(err => {
+        console.error("Error:", err);
+        alert("Signup failed. Please try again.");
+      });
+    }
+  </script>
+</body>
+</html>

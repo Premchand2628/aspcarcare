@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ASP Car Care – Membership Plans</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #e0f2fe 0, #eef2ff 45%, #f9fafb 100%);
+      color: #0f172a;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      background: #020617;
+      color: #e5e7eb;
+      box-shadow: 0 1px 4px rgba(15,23,42,0.4);
+    }
+    .top-left { display: flex; align-items: center; gap: 10px; }
+    .logo-pill {
+      width: 44px; height: 44px; border-radius: 999px; background: #020617;
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
+      box-shadow: 0 0 0 2px rgba(148,163,184,0.7);
+      cursor: pointer; flex-shrink: 0;
+    }
+    .logo-pill img { width: 100%; height: 100%; object-fit: contain; }
+    .brand-text { display: flex; flex-direction: column; gap: 2px; }
+    .brand-name { font-size: 18px; font-weight: 700; }
+    .brand-sub { font-size: 11px; color: #9ca3af; }
+    .top-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .top-btn {
+      border-radius: 999px; padding: 6px 18px; font-size: 13px;
+      border: 1px solid rgba(148,163,184,0.7);
+      background: transparent; color: #e5e7eb; cursor: pointer;
+      transition: transform 0.08s ease; white-space: nowrap;
+    }
+    .top-btn.primary {
+      background: #f97316; border-color: #fed7aa; color: #0b1120;
+      box-shadow: 0 6px 18px rgba(248,150,68,0.5);
+    }
+    .top-btn:hover { transform: translateY(-1px); }
+
+    .page { flex: 1; display: flex; justify-content: center; padding: 24px 16px 40px; }
+    .page-inner {
+      width: 100%; max-width: 1180px; background: #ffffff; border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(15,23,42,0.18);
+      border: 1px solid rgba(209,213,219,0.9); padding: 24px 26px 30px;
+    }
+    .header { text-align: center; margin-bottom: 22px; }
+    .header-eyebrow {
+      font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: #ea580c; font-weight: 600; margin-bottom: 6px;
+    }
+    .header-title { font-size: 26px; font-weight: 800; margin: 0; color: #0f172a; }
+    .header-sub { font-size: 13px; color: #6b7280; margin-top: 6px; }
+
+    /* Tabs */
+    .tabs-wrap { display:flex; justify-content:center; }
+    .tabs {
+      display: inline-flex;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      overflow: hidden;
+      margin: 18px auto 0;
+      background: #f9fafb;
+    }
+    .tab-btn {
+      padding: 9px 18px;
+      font-size: 13px;
+      cursor: pointer;
+      background: transparent;
+      color: #6b7280;
+      border: none;
+      border-right: 1px solid #e5e7eb;
+      white-space: nowrap;
+      display:flex; align-items:center; gap:8px;
+    }
+    .tab-btn:last-child { border-right: none; }
+    .tab-btn.active {
+      background: #0f172a;
+      color: #f9fafb;
+      font-weight: 700;
+    }
+    .tab-dot {
+      width: 8px; height: 8px; border-radius: 999px; background: #cbd5e1;
+    }
+    .tab-btn.active .tab-dot { background: #f97316; }
+
+    .loading-line { margin-top: 10px; font-size: 12px; color: #6b7280; text-align: center; display:none; }
+
+    /* Membership cards */
+    .plans { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-top: 26px; }
+    .plan-card {
+      background: #ffffff; border-radius: 22px; box-shadow: 0 10px 30px rgba(15,23,42,0.08);
+      border: 2px solid transparent; display: flex; flex-direction: column; padding: 18px 18px 20px;
+    }
+    .plan-card.basic { border-color: #0ea5e9; }
+    .plan-card.premium {
+      border-color: #f97316; transform: translateY(-4px);
+      box-shadow: 0 18px 40px rgba(248,150,68,0.35);
+    }
+    .plan-card.ultra { border-color: #6366f1; }
+    .plan-header-pill {
+      border-radius: 999px; padding: 6px 12px; font-size: 11px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.12em; align-self: flex-start; margin-bottom: 10px;
+    }
+    .plan-card.basic .plan-header-pill { background: #e0f2fe; color: #0369a1; }
+    .plan-card.premium .plan-header-pill { background: #ffedd5; color: #c2410c; }
+    .plan-card.ultra .plan-header-pill { background: #e0e7ff; color: #4338ca; }
+    .plan-name { font-size: 22px; font-weight: 700; margin: 2px 0 4px; }
+    .plan-tagline { font-size: 12px; color: #6b7280; margin-bottom: 12px; }
+    .features { list-style: none; padding: 0; margin: 0 0 16px; font-size: 13px; color: #374151; }
+    .features li { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
+    .features-icon { width: 18px; margin-top: 2px; text-align: center; flex-shrink: 0; }
+    .plan-footer {
+      margin-top: auto; border-top: 1px solid #e5e7eb; padding-top: 10px;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .price-row { display: flex; align-items: baseline; gap: 4px; }
+    .price { font-size: 20px; font-weight: 800; }
+    .price-note { font-size: 11px; color: #6b7280; }
+    .buy-btn {
+      margin-top: 6px; width: 100%; padding: 9px 0; border-radius: 999px; border: none;
+      font-size: 14px; font-weight: 800; cursor: pointer; background: #0ea5e9; color: white;
+      box-shadow: 0 10px 24px rgba(14,165,233,0.38);
+      transition: transform 0.08s ease, box-shadow 0.08s ease;
+    }
+    .plan-card.premium .buy-btn { background: #f97316; box-shadow: 0 10px 28px rgba(248,150,68,0.55); }
+    .plan-card.ultra .buy-btn { background: #6366f1; box-shadow: 0 10px 28px rgba(99,102,241,0.55); }
+    .buy-btn:hover { transform: translateY(-1px); box-shadow: 0 14px 32px rgba(15,23,42,0.25); }
+
+    /* Monthly plans section */
+    .section { display:none; }
+    .section.active { display:block; }
+
+    .monthly-wrap { margin-top: 22px; }
+    .monthly-head {
+      display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;
+      padding: 14px 14px;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #ffffff, #f8fafc);
+      box-shadow: 0 10px 24px rgba(15,23,42,0.06);
+    }
+    .monthly-head h2 { margin:0; font-size:16px; font-weight:900; }
+    .monthly-head p { margin:4px 0 0; font-size:12px; color:#6b7280; line-height:1.4; }
+    .monthly-chips { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; margin-left:auto; }
+    .chip {
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      color:#0f172a;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      display:flex; gap:8px; align-items:center;
+      box-shadow: 0 6px 16px rgba(15,23,42,0.06);
+    }
+    .chip small { font-weight:700; color:#6b7280; }
+    .chip.active {
+      border-color:#0f172a;
+      background:#0f172a;
+      color:#fff;
+      box-shadow: 0 10px 22px rgba(15,23,42,0.18);
+    }
+    .chip.active small { color:#cbd5e1; }
+
+    .monthly-grid {
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+    .mcard {
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      background:#fff;
+      padding: 14px;
+      box-shadow: 0 10px 24px rgba(15,23,42,0.06);
+      display:flex; flex-direction:column;
+      overflow:hidden;
+      position:relative;
+    }
+    .mcard::before{
+      content:"";
+      position:absolute; left:-40px; top:-40px; width:120px; height:120px; border-radius:999px;
+      background: radial-gradient(circle at 30% 30%, rgba(249,115,22,0.18), rgba(14,165,233,0.12), transparent 70%);
+    }
+    .m-top { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .badge {
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color:#0f172a;
+      background:#f1f5f9;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid #e5e7eb;
+      position:relative;
+    }
+    .m-name { margin: 12px 0 6px; font-size: 16px; font-weight: 900; }
+    .m-sub { margin: 0 0 12px; font-size: 12px; color:#6b7280; line-height:1.4; }
+    .m-list { list-style:none; padding:0; margin:0 0 10px; font-size: 12.5px; color:#374151; }
+    .m-list li { display:flex; gap:8px; align-items:flex-start; margin-bottom:6px; }
+    .m-ico { width:18px; text-align:center; margin-top:1px; flex-shrink:0; }
+    .m-foot { margin-top:auto; border-top:1px solid #eef2f7; padding-top:10px; display:flex; flex-direction:column; gap:8px; }
+    .m-price { display:flex; align-items:baseline; gap:6px; }
+    .m-price strong { font-size: 18px; }
+    .m-price span { font-size: 11px; color:#6b7280; }
+    .m-btn {
+      width:100%;
+      border:none;
+      border-radius:999px;
+      padding: 9px 0;
+      font-size: 13px;
+      font-weight: 900;
+      cursor:pointer;
+      background:#0f172a;
+      color:#fff;
+      box-shadow: 0 12px 26px rgba(15,23,42,0.22);
+      transition: transform 0.08s ease, box-shadow 0.08s ease;
+    }
+    .m-btn:hover { transform: translateY(-1px); box-shadow: 0 16px 34px rgba(15,23,42,0.25); }
+
+    .hint-row {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #6b7280;
+      text-align:center;
+    }
+
+    /* modal */
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(2,6,23,0.55);
+      display: none; align-items: center; justify-content: center; padding: 14px; z-index: 999;
+    }
+    .modal {
+      width: min(560px, 100%); background: #ffffff; border-radius: 18px;
+      box-shadow: 0 24px 70px rgba(0,0,0,0.35);
+      border: 1px solid rgba(148,163,184,0.35); overflow: hidden;
+    }
+    .modal-header {
+      background: #111827; color: #f9fafb; padding: 12px 14px;
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
+    }
+    .modal-header strong { font-size: 13px; }
+    .modal-header span { font-size: 11px; opacity: 0.85; display:block; margin-top:2px; }
+    .modal-close {
+      border: none; background: rgba(255,255,255,0.14); color: #fff;
+      padding: 7px 10px; border-radius: 999px; cursor: pointer; font-size: 12px;
+    }
+    .modal-body { padding: 12px 14px 14px; background:#f9fafb; }
+    .modal-body p { margin: 0 0 10px; color:#0f172a; font-size: 13px; line-height:1.4; }
+    .modal-note { font-size: 12px; color: #6b7280; margin-top: -2px; }
+    .modal-actions {
+      margin-top: 12px; display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap;
+    }
+    .btn2 {
+      border: none; border-radius: 999px; padding: 9px 14px; cursor: pointer;
+      font-weight: 900; font-size: 12px; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn2.ghost { background:#eef2ff; color:#111827; }
+    .btn2.primary { background:#f97316; color:#0b1120; }
+
+    @media (max-width: 1100px) { .monthly-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 960px) { .plans { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 720px) {
+      .top-bar { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .plans { grid-template-columns: 1fr; }
+      .monthly-grid { grid-template-columns: 1fr; }
+      .plan-card.premium { transform: none; box-shadow: 0 10px 30px rgba(15,23,42,0.12); }
+      .page-inner { padding: 20px 16px 26px; }
+      .header-title { font-size: 22px; }
+      .monthly-chips { justify-content:flex-start; }
+    }
+  </style>
+</head>
+
+<body>
+<header class="top-bar">
+  <div class="top-left">
+    <div class="logo-pill" onclick="goDashboard()">
+      <img src="images/logo.png" alt="ASP Car Care">
+    </div>
+    <div class="brand-text">
+      <div class="brand-name">Plans</div>
+      <div class="brand-sub">Membership + Monthly wash plans</div>
+    </div>
+  </div>
+  <div class="top-actions">
+    <button class="top-btn" onclick="goDashboard()">Back to Dashboard</button>
+    <button class="top-btn primary" onclick="goMembershipDetails()">View My Memberships</button>
+  </div>
+</header>
+
+<main class="page">
+  <div class="page-inner">
+    <div class="header">
+      <div class="header-eyebrow">Choose your plan</div>
+      <h1 class="header-title">Interior &amp; Exterior Plans</h1>
+      <p class="header-sub">
+        Pick a membership (benefits + discounts) or choose monthly wash packs (prepaid). Payments generate dynamic QR in the payment page as earlier.
+      </p>
+
+      <div class="tabs-wrap">
+        <div class="tabs" role="tablist" aria-label="Plan Tabs">
+          <button id="tabMembership" class="tab-btn active" type="button" onclick="switchTab('membership')" role="tab" aria-selected="true">
+            <span class="tab-dot"></span> Membership Plans
+          </button>
+          <button id="tabMonthly" class="tab-btn" type="button" onclick="switchTab('monthly')" role="tab" aria-selected="false">
+            <span class="tab-dot"></span> Monthly Wash Plans
+          </button>
+        </div>
+      </div>
+
+      <div id="topLoading" class="loading-line">Checking your membership…</div>
+    </div>
+
+    <!-- =========================
+         MEMBERSHIP SECTION
+    ========================== -->
+    <section id="sectionMembership" class="section active">
+      <section class="plans">
+        <article class="plan-card basic">
+          <div class="plan-header-pill">Basic</div>
+          <h2 class="plan-name">Basic</h2>
+          <div class="plan-tagline">Perfect if you wash twice a month.</div>
+          <ul class="features">
+            <li><span class="features-icon">🚗</span><span>1 booking free – Foam (Exterior)</span></li>
+            <li><span class="features-icon">💧</span><span>10% discount on every wash for next 2 months</span></li>
+            <li><span class="features-icon">💨</span><span>Air check</span></li>
+          </ul>
+          <div class="plan-footer">
+            <div class="price-row"><span class="price">₹499</span><span class="price-note">+ GST</span></div>
+            <button class="buy-btn" onclick="selectPlan('BASIC')">Buy now</button>
+          </div>
+        </article>
+
+        <article class="plan-card premium">
+          <div class="plan-header-pill">Most Popular</div>
+          <h2 class="plan-name">Premium</h2>
+          <div class="plan-tagline">For regular care and extra savings.</div>
+          <ul class="features">
+            <li><span class="features-icon">🚗</span><span>First 2 bookings free – Foam (Exterior)</span></li>
+            <li><span class="features-icon">💧</span><span>10% discount on every wash for next 3 months</span></li>
+            <li><span class="features-icon">✨</span><span>Wheel polish</span></li>
+            <li><span class="features-icon">💨</span><span>Air check</span></li>
+          </ul>
+          <div class="plan-footer">
+            <div class="price-row"><span class="price">₹799</span><span class="price-note">+ GST</span></div>
+            <button class="buy-btn" onclick="selectPlan('PREMIUM')">Buy now</button>
+          </div>
+        </article>
+
+        <article class="plan-card ultra">
+          <div class="plan-header-pill">Ultra</div>
+          <h2 class="plan-name">Ultra</h2>
+          <div class="plan-tagline">Max benefits for frequent washers.</div>
+          <ul class="features">
+            <li><span class="features-icon">🚗</span><span>1 Premium wash free</span></li>
+            <li><span class="features-icon">🚗</span><span>Next 2 bookings free – Foam (Exterior)</span></li>
+            <li><span class="features-icon">💧</span><span>15% discount on every wash for next 6 months</span></li>
+            <li><span class="features-icon">✨</span><span>Wheel polish</span></li>
+            <li><span class="features-icon">💨</span><span>Air check</span></li>
+            <li><span class="features-icon">🛠️</span><span>Premium service checks</span></li>
+          </ul>
+          <div class="plan-footer">
+            <div class="price-row"><span class="price">₹1599</span><span class="price-note">+ GST</span></div>
+            <button class="buy-btn" onclick="selectPlan('ULTRA')">Buy now</button>
+          </div>
+        </article>
+      </section>
+    </section>
+
+    <!-- =========================
+         MONTHLY SECTION (MATRIX)
+    ========================== -->
+    <section id="sectionMonthly" class="section">
+      <div class="monthly-wrap">
+        <div class="monthly-head">
+          <div>
+            <h2>Monthly Wash Plans (from your matrix)</h2>
+            <p>
+              Choose months and then pick the plan type. This will also go to <b>membershippayment.html</b> with <b>paidAmount</b>
+              so QR amount is dynamic like earlier.
+            </p>
+          </div>
+          <div class="monthly-chips" aria-label="Months filter">
+            <button class="chip active" type="button" onclick="setMonthlyMonths(3)" id="chipM3">3 <small>months</small></button>
+            <button class="chip" type="button" onclick="setMonthlyMonths(6)" id="chipM6">6 <small>months</small></button>
+            <button class="chip" type="button" onclick="setMonthlyMonths(9)" id="chipM9">9 <small>months</small></button>
+            <button class="chip" type="button" onclick="setMonthlyMonths(12)" id="chipM12">12 <small>months</small></button>
+          </div>
+        </div>
+
+        <div id="monthlyGrid" class="monthly-grid"></div>
+        <div class="hint-row">Tip: After payment, you can mark status in DB (HOLD → ACTIVE) as per your flow.</div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- Upgrade warning modal (membership only) -->
+<div id="upgradeBackdrop" class="modal-backdrop" onclick="closeUpgradeIfBackdrop(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div>
+        <strong id="upgradeTitle">Membership already exists</strong>
+        <span id="upgradeSub">Please review before proceeding</span>
+      </div>
+      <button class="modal-close" onclick="closeUpgrade()">Close</button>
+    </div>
+    <div class="modal-body">
+      <p id="upgradeMessage"></p>
+      <div id="upgradeExtra" class="modal-note"></div>
+      <div class="modal-actions">
+        <button class="btn2 ghost" onclick="closeUpgrade()">Cancel</button>
+        <button id="upgradeProceedBtn" class="btn2 primary" type="button" onclick="proceedUpgrade()">Proceed</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function goDashboard() { window.location.href = "/aspcare"; }
+  function goMembershipDetails() { window.location.href = "membershipdetails.html"; }
+
+  /* =========================
+     TAB SWITCH
+  ========================== */
+  function switchTab(which) {
+    const tabMembership = document.getElementById("tabMembership");
+    const tabMonthly = document.getElementById("tabMonthly");
+    const sectionMembership = document.getElementById("sectionMembership");
+    const sectionMonthly = document.getElementById("sectionMonthly");
+
+    if (which === "monthly") {
+      tabMembership.classList.remove("active");
+      tabMonthly.classList.add("active");
+      tabMembership.setAttribute("aria-selected", "false");
+      tabMonthly.setAttribute("aria-selected", "true");
+
+      sectionMembership.classList.remove("active");
+      sectionMonthly.classList.add("active");
+    } else {
+      tabMonthly.classList.remove("active");
+      tabMembership.classList.add("active");
+      tabMonthly.setAttribute("aria-selected", "false");
+      tabMembership.setAttribute("aria-selected", "true");
+
+      sectionMonthly.classList.remove("active");
+      sectionMembership.classList.add("active");
+    }
+  }
+
+  /* =========================
+     MEMBERSHIP CONFIG (same as your code)
+  ========================== */
+  const PLAN_PRICE = { BASIC: 499, PREMIUM: 799, ULTRA: 1599 };
+
+  const PLAN_RULES = {
+    BASIC:   { planCode:"BASIC",   planName:"Basic",   price:499,  discountPercent:10, discountMonths:2, freeFoamBookings:1, premiumWashFreeCount:0 },
+    PREMIUM: { planCode:"PREMIUM", planName:"Premium", price:799,  discountPercent:10, discountMonths:3, freeFoamBookings:2, premiumWashFreeCount:0 },
+    ULTRA:   { planCode:"ULTRA",   planName:"Ultra",   price:1599, discountPercent:15, discountMonths:6, freeFoamBookings:2, premiumWashFreeCount:1 }
+  };
+
+  const API_BASE = window.location.origin;
+  const API_MEMBERSHIP_BY_PHONE = (phone) =>
+    API_BASE + "/memberships/by-phone?phone=" + encodeURIComponent(phone);
+
+  const upgradeBackdrop = document.getElementById("upgradeBackdrop");
+  const upgradeTitle = document.getElementById("upgradeTitle");
+  const upgradeSub = document.getElementById("upgradeSub");
+  const upgradeMessage = document.getElementById("upgradeMessage");
+  const upgradeExtra = document.getElementById("upgradeExtra");
+  const upgradeProceedBtn = document.getElementById("upgradeProceedBtn");
+  const topLoading = document.getElementById("topLoading");
+
+  let pendingTargetPlan = null;
+  let pendingPaidAmount = null;          // what user pays now
+  let pendingMode = "NEW";               // NEW | UPGRADE_GAP | UPGRADE_FULL
+  let pendingSourceDbId = null;          // old membership table id
+  let pendingPrevPlanCode = "";          // old plan code
+
+  function showTopLoading(show, text) {
+    topLoading.style.display = show ? "block" : "none";
+    if (text) topLoading.textContent = text;
+  }
+
+  function openUpgradeModal({ title, sub, message, extra, proceedText }) {
+    upgradeTitle.textContent = title || "Membership notice";
+    upgradeSub.textContent = sub || "Please review before proceeding";
+    upgradeMessage.textContent = message || "";
+    upgradeExtra.textContent = extra || "";
+    upgradeProceedBtn.textContent = proceedText || "Proceed";
+    upgradeBackdrop.style.display = "flex";
+  }
+
+  function closeUpgrade() { upgradeBackdrop.style.display = "none"; }
+  function closeUpgradeIfBackdrop(e) { if (e.target === upgradeBackdrop) closeUpgrade(); }
+
+  function normalizePlanCode(s) {
+    const v = String(s || "").toUpperCase().trim();
+    if (v.includes("BASIC")) return "BASIC";
+    if (v.includes("PREMIUM")) return "PREMIUM";
+    if (v.includes("ULTRA")) return "ULTRA";
+    return v;
+  }
+
+  function getNum(obj, key) {
+    const v = obj && obj[key];
+    if (v == null) return null;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : null;
+  }
+
+  function totalFreeEntitlement(planCode) {
+    const p = PLAN_RULES[planCode];
+    if (!p) return 0;
+    return Number(p.freeFoamBookings || 0) + Number(p.premiumWashFreeCount || 0);
+  }
+
+  function remainingFreeFromMembership(m) {
+    const foam = getNum(m, "freeFoamRemaining");
+    const prem = getNum(m, "freePremiumRemaining");
+    if (foam != null || prem != null) return Math.max(0, (foam || 0) + (prem || 0));
+    return null;
+  }
+
+  function usedAnyFree(m) {
+    const currentPlan = normalizePlanCode(m.planCode || "");
+    const total = totalFreeEntitlement(currentPlan);
+    const remaining = remainingFreeFromMembership(m);
+    if (remaining == null) return false;
+    return remaining < total;
+  }
+
+  function isSameOrDowngrade(currentPlan, targetPlan) {
+    const order = { BASIC: 1, PREMIUM: 2, ULTRA: 3 };
+    const a = order[normalizePlanCode(currentPlan)] || 0;
+    const b = order[normalizePlanCode(targetPlan)] || 0;
+    return b <= a;
+  }
+
+  function priceGap(fromPlan, toPlan) {
+    const a = PLAN_PRICE[normalizePlanCode(fromPlan)] || 0;
+    const b = PLAN_PRICE[normalizePlanCode(toPlan)] || 0;
+    return Math.max(0, b - a);
+  }
+
+  async function fetchCurrentMembership(phone) {
+    const res = await fetch(API_MEMBERSHIP_BY_PHONE(phone));
+    if (res.status === 404) return null;
+    if (!res.ok) return null;
+    const data = await res.json();
+    return (data && typeof data === "object") ? data : null;
+  }
+
+  function redirectToPayment(paramsObj) {
+    const params = new URLSearchParams(paramsObj);
+    window.location.href = "membershippayment.html?" + params.toString();
+  }
+
+  async function selectPlan(planCode) {
+    const phone = (localStorage.getItem("phone") || "").trim();
+    if (!phone) {
+      localStorage.setItem("pendingTarget", "membership");
+      window.location.href = "SignupLogin.html?mode=login";
+      return;
+    }
+
+    const targetPlan = normalizePlanCode(planCode);
+    const rules = PLAN_RULES[targetPlan];
+    if (!rules) { alert("Unknown plan selected"); return; }
+
+    pendingTargetPlan = targetPlan;
+    pendingPaidAmount = rules.price;
+    pendingMode = "NEW";
+    pendingSourceDbId = null;
+    pendingPrevPlanCode = "";
+
+    showTopLoading(true, "Checking your membership…");
+    let current = null;
+    try { current = await fetchCurrentMembership(phone); }
+    catch (e) { console.error(e); }
+    showTopLoading(false);
+
+    // ✅ No membership => normal full payment
+    if (!current) {
+      redirectToPayment({
+        planCode: rules.planCode,
+        planName: rules.planName,
+        originalPlanPrice: String(rules.price),     // store into DB as full plan price
+        paidAmount: String(rules.price),            // QR amount
+        purchaseMode: "NEW",
+        sourceMembershipDbId: "",
+        previousPlanCode: "",
+        upgradeDifferenceAmount: String(rules.price),
+        discountPercent: String(rules.discountPercent),
+        discountMonths: String(rules.discountMonths),
+        freeFoamBookings: String(rules.freeFoamBookings),
+        premiumWashFreeCount: String(rules.premiumWashFreeCount)
+      });
+      return;
+    }
+
+    const currentPlan = normalizePlanCode(current.planCode || current.planName || "");
+    const remaining = remainingFreeFromMembership(current);
+    const currentDbId = current.id;
+
+    pendingSourceDbId = (currentDbId != null) ? Number(currentDbId) : null;
+    pendingPrevPlanCode = currentPlan;
+
+    // ✅ If free finished => allow new membership (full price)
+    if (remaining != null && remaining <= 0) {
+      redirectToPayment({
+        planCode: rules.planCode,
+        planName: rules.planName,
+        originalPlanPrice: String(rules.price),
+        paidAmount: String(rules.price),
+        purchaseMode: "NEW",
+        sourceMembershipDbId: pendingSourceDbId != null ? String(pendingSourceDbId) : "",
+        previousPlanCode: pendingPrevPlanCode,
+        upgradeDifferenceAmount: String(rules.price),
+        discountPercent: String(rules.discountPercent),
+        discountMonths: String(rules.discountMonths),
+        freeFoamBookings: String(rules.freeFoamBookings),
+        premiumWashFreeCount: String(rules.premiumWashFreeCount)
+      });
+      return;
+    }
+
+    const downgradeOrSame = isSameOrDowngrade(currentPlan, targetPlan);
+    const neverUsedAnyFree = (remaining != null) ? (!usedAnyFree(current) && remaining > 0) : false;
+
+    let paid = rules.price;
+    let mode = "UPGRADE_FULL";
+
+    if (!downgradeOrSame && neverUsedAnyFree) {
+      paid = priceGap(currentPlan, targetPlan);
+      mode = "UPGRADE_GAP";
+    } else {
+      paid = rules.price;
+      mode = "UPGRADE_FULL";
+    }
+
+    pendingPaidAmount = paid;
+    pendingMode = mode;
+
+    const remText = (remaining == null) ? "Free washes may still be available in your current plan." : `Free washes left: ${remaining}`;
+
+    openUpgradeModal({
+      title: "Membership already exists",
+      sub: `Current: ${currentPlan} • ${remText}`,
+      message:
+        "You already have a membership and free washes are still available. " +
+        "If you proceed, you will LOSE remaining free washes. Do you want to continue?",
+      extra: `✅ Amount to pay now: ₹${paid}`,
+      proceedText: `Proceed ₹${paid}`
+    });
+  }
+
+  function proceedUpgrade() {
+    if (!pendingTargetPlan) return;
+    const rules = PLAN_RULES[pendingTargetPlan];
+    if (!rules) return;
+
+    const mode = pendingMode || "UPGRADE_FULL";
+    const paid = (pendingPaidAmount != null) ? pendingPaidAmount : rules.price;
+
+    redirectToPayment({
+      planCode: rules.planCode,
+      planName: rules.planName,
+      originalPlanPrice: String(rules.price),
+      paidAmount: String(paid),
+      purchaseMode: String(mode),
+      sourceMembershipDbId: pendingSourceDbId != null ? String(pendingSourceDbId) : "",
+      previousPlanCode: pendingPrevPlanCode ? String(pendingPrevPlanCode) : "",
+      upgradeDifferenceAmount: String(paid),
+      discountPercent: String(rules.discountPercent),
+      discountMonths: String(rules.discountMonths),
+      freeFoamBookings: String(rules.freeFoamBookings),
+      premiumWashFreeCount: String(rules.premiumWashFreeCount)
+    });
+  }
+
+  /* =========================
+     MONTHLY MATRIX CONFIG
+     (based on your Excel screenshot)
+  ========================== */
+  const MONTHLY_MATRIX = {
+    3:  { FOAM_ONLY: 850,  BASIC_X2: 1200, FOAM_X2: 1600, BASIC_PLUS_FOAM: 1400 },
+    6:  { FOAM_ONLY: 1600, BASIC_X2: 2400, FOAM_X2: 3200, BASIC_PLUS_FOAM: 2800 },
+    9:  { FOAM_ONLY: 2450, BASIC_X2: 3600, FOAM_X2: 4800, BASIC_PLUS_FOAM: 4200 },
+    12: { FOAM_ONLY: 3300, BASIC_X2: 4800, FOAM_X2: 6400, BASIC_PLUS_FOAM: 5600 }
+  };
+
+  const MONTHLY_TILES = [
+    {
+      key: "FOAM_ONLY",
+      badge: "Foam Only",
+      title: "Foam wash (Exterior)",
+      sub: "1 wash per month",
+      list: [
+        ["🚗", "Exterior foam wash"],
+        ["📅", "1 wash / month"],
+        ["🧾", "Prepaid pack price (as matrix)"]
+      ]
+    },
+    {
+      key: "BASIC_X2",
+      badge: "Basic ×2",
+      title: "Basic wash",
+      sub: "2 washes per month",
+      list: [
+        ["🚿", "Basic wash service"],
+        ["📅", "2 washes / month"],
+        ["🧾", "Prepaid pack price (as matrix)"]
+      ]
+    },
+    {
+      key: "FOAM_X2",
+      badge: "Foam ×2",
+      title: "Foam wash (Exterior)",
+      sub: "2 washes per month",
+      list: [
+        ["🚗", "Exterior foam wash"],
+        ["📅", "2 washes / month"],
+        ["🧾", "Prepaid pack price (as matrix)"]
+      ]
+    },
+    {
+      key: "BASIC_PLUS_FOAM",
+      badge: "Combo",
+      title: "Basic + Foam",
+      sub: "2 washes per month (mixed)",
+      list: [
+        ["🧼", "Basic + Foam combo"],
+        ["📅", "2 washes / month"],
+        ["🧾", "Prepaid pack price (as matrix)"]
+      ]
+    }
+  ];
+
+  let monthlySelectedMonths = 3;
+
+  function setMonthlyMonths(m) {
+    monthlySelectedMonths = Number(m) || 3;
+
+    // chips UI
+    ["chipM3","chipM6","chipM9","chipM12"].forEach(id => document.getElementById(id).classList.remove("active"));
+    const chipId = "chipM" + String(monthlySelectedMonths);
+    const chip = document.getElementById(chipId);
+    if (chip) chip.classList.add("active");
+
+    renderMonthlyGrid();
+  }
+
+  function monthlyPlanCode(months, key) {
+    return `MONTHLY_${key}_${months}M`;
+  }
+
+  function monthlyPlanName(months, key) {
+    const labelMap = {
+      FOAM_ONLY: "Foam Only (1 wash/month)",
+      BASIC_X2: "Basic ×2 (2 washes/month)",
+      FOAM_X2: "Foam ×2 (2 washes/month)",
+      BASIC_PLUS_FOAM: "Basic + Foam (2 washes/month)"
+    };
+    return `${labelMap[key] || key} • ${months} months`;
+  }
+
+  function monthlyMeta(months, key) {
+    // Helpful for backend if you want to store later
+    const meta = {
+      months: String(months),
+      washType: key,
+      washesPerMonth: (key === "FOAM_ONLY") ? "1" : "2"
+    };
+    return meta;
+  }
+
+  function renderMonthlyGrid() {
+    const grid = document.getElementById("monthlyGrid");
+    const pricing = MONTHLY_MATRIX[monthlySelectedMonths];
+    if (!grid || !pricing) return;
+
+    grid.innerHTML = "";
+
+    MONTHLY_TILES.forEach(tile => {
+      const amount = pricing[tile.key];
+      const code = monthlyPlanCode(monthlySelectedMonths, tile.key);
+      const name = monthlyPlanName(monthlySelectedMonths, tile.key);
+
+      const el = document.createElement("div");
+      el.className = "mcard";
+      el.innerHTML = `
+        <div class="m-top">
+          <span class="badge">${tile.badge}</span>
+          <span style="font-size:11px;color:#64748b;font-weight:900;">${monthlySelectedMonths}M</span>
+        </div>
+        <div class="m-name">${tile.title}</div>
+        <div class="m-sub">${tile.sub}</div>
+        <ul class="m-list">
+          ${tile.list.map(x => `<li><span class="m-ico">${x[0]}</span><span>${x[1]}</span></li>`).join("")}
+        </ul>
+        <div class="m-foot">
+          <div class="m-price"><strong>₹${amount}</strong><span>+ GST</span></div>
+          <button class="m-btn" type="button">Buy now</button>
+        </div>
+      `;
+
+      el.querySelector(".m-btn").addEventListener("click", () => buyMonthlyPlan(code, name, amount, monthlySelectedMonths, tile.key));
+      grid.appendChild(el);
+    });
+  }
+
+  async function buyMonthlyPlan(planCode, planName, amount, months, washKey) {
+    const phone = (localStorage.getItem("phone") || "").trim();
+    if (!phone) {
+      localStorage.setItem("pendingTarget", "monthly");
+      window.location.href = "SignupLogin.html?mode=login";
+      return;
+    }
+
+    // For monthly packs: direct payment (no upgrade modal logic)
+    const meta = monthlyMeta(months, washKey);
+
+    redirectToPayment({
+      planCode: String(planCode),
+      planName: String(planName),
+
+      // For payment page to generate QR amount
+      originalPlanPrice: String(amount),
+      paidAmount: String(amount),
+
+      // Distinguish on backend if needed
+      purchaseMode: "MONTHLY",
+      sourceMembershipDbId: "",
+      previousPlanCode: "",
+      upgradeDifferenceAmount: String(amount),
+
+      // set discounts/free as 0 for monthly packs (safe defaults)
+      discountPercent: "0",
+      discountMonths: "0",
+      freeFoamBookings: "0",
+      premiumWashFreeCount: "0",
+
+      // extra meta (optional)
+      monthlyMonths: meta.months,
+      monthlyWashType: meta.washType,
+      monthlyWashesPerMonth: meta.washesPerMonth
+    });
+  }
+
+  // init monthly grid
+  renderMonthlyGrid();
+
+  // expose for inline html
+  window.selectPlan = selectPlan;
+  window.closeUpgrade = closeUpgrade;
+  window.closeUpgradeIfBackdrop = closeUpgradeIfBackdrop;
+  window.proceedUpgrade = proceedUpgrade;
+  window.switchTab = switchTab;
+  window.setMonthlyMonths = setMonthlyMonths;
+</script>
+</body>
+</html>

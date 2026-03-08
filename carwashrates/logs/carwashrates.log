@@ -1,0 +1,45 @@
+2025-12-28 06:25:28 INFO  [] org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
+2025-12-28 06:25:28 INFO  [] com.carwash.rates.CarwashratesApplicationTests - Starting CarwashratesApplicationTests using Java 17.0.7 with PID 24748 (started by chand in D:\Codes\carwashrates)
+2025-12-28 06:25:28 INFO  [] com.carwash.rates.CarwashratesApplicationTests - No active profile set, falling back to 1 default profile: "default"
+2025-12-28 06:25:30 INFO  [] org.springframework.data.repository.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-28 06:25:30 INFO  [] org.springframework.data.repository.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 66 ms. Found 1 JPA repository interface.
+2025-12-28 06:25:30 INFO  [] org.hibernate.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-12-28 06:25:30 INFO  [] org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.2.Final
+2025-12-28 06:25:31 INFO  [] org.hibernate.cache.internal.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-12-28 06:25:31 INFO  [] org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-12-28 06:25:31 INFO  [] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-12-28 06:25:32 INFO  [] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@252c6cdb
+2025-12-28 06:25:32 INFO  [] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-12-28 06:25:32 WARN  [] org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-12-28 06:25:33 INFO  [] org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-28 06:25:33 INFO  [] org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-12-28 06:25:33 WARN  [] org.springframework.boot.autoconfigure.orm.jpa.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-28 06:25:34 INFO  [] com.carwash.rates.CarwashratesApplicationTests - Started CarwashratesApplicationTests in 6.056 seconds (process running for 7.893)
+2025-12-28 06:25:35 INFO  [] org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-12-28 06:25:35 INFO  [] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-12-28 06:25:35 INFO  [] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-12-28 06:38:46 INFO  [] org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
+2025-12-28 06:38:46 INFO  [] com.carwash.rates.CarwashratesApplication - Starting CarwashratesApplication using Java 17.0.7 with PID 3876 (D:\Codes\carwashrates\target\classes started by chand in D:\Codes\carwashrates)
+2025-12-28 06:38:46 INFO  [] com.carwash.rates.CarwashratesApplication - No active profile set, falling back to 1 default profile: "default"
+2025-12-28 06:38:47 INFO  [] org.springframework.data.repository.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-28 06:38:47 INFO  [] org.springframework.data.repository.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 49 ms. Found 1 JPA repository interface.
+2025-12-28 06:38:47 INFO  [] org.springframework.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8086 (http)
+2025-12-28 06:38:47 INFO  [] org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+2025-12-28 06:38:47 INFO  [] org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2025-12-28 06:38:47 INFO  [] org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.24]
+2025-12-28 06:38:47 INFO  [] org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-12-28 06:38:47 INFO  [] org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1196 ms
+2025-12-28 06:38:48 INFO  [] org.hibernate.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-12-28 06:38:48 INFO  [] org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.2.Final
+2025-12-28 06:38:48 INFO  [] org.hibernate.cache.internal.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-12-28 06:38:48 INFO  [] org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-12-28 06:38:48 INFO  [] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-12-28 06:38:48 INFO  [] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@7a0f06ad
+2025-12-28 06:38:48 INFO  [] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-12-28 06:38:48 WARN  [] org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-12-28 06:38:49 INFO  [] org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-28 06:38:49 INFO  [] org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-12-28 06:38:49 WARN  [] org.springframework.boot.autoconfigure.orm.jpa.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-28 06:38:50 INFO  [] org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+2025-12-28 06:38:50 INFO  [] org.springframework.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8086 (http) with context path '/'
+2025-12-28 06:38:50 INFO  [] com.carwash.rates.CarwashratesApplication - Started CarwashratesApplication in 4.191 seconds (process running for 4.963)
