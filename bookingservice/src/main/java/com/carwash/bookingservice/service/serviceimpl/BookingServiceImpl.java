@@ -488,13 +488,18 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findById(id).orElseThrow(() ->
                 new NoSuchElementException("Booking not found"));
 
-        Booking updated = booking.toBuilder()
+        Booking.BookingBuilder builder = booking.toBuilder()
                 .status(newStatus)
                 .serviceCentreId(fixCentreIdForHome(booking.getServiceType(), booking.getServiceCentreId()))
-                .centreName(fixCentreNameForHome(booking.getServiceType(), booking.getCentreName()))
-                .build();
+                .centreName(fixCentreNameForHome(booking.getServiceType(), booking.getCentreName()));
 
-        return bookingRepository.save(updated);
+        // Store completion photo when marking as COMPLETED
+        if ("COMPLETED".equals(newStatus) && request.getCompletionPhoto() != null
+                && !request.getCompletionPhoto().isBlank()) {
+            builder.completionPhotoBase64(request.getCompletionPhoto());
+        }
+
+        return bookingRepository.save(builder.build());
     }
  // BookingServiceImpl.java
     @Override

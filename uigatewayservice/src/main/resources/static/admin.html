@@ -894,6 +894,7 @@
                 Initiate Refund
               </button>
               <button class="btn btn-primary" onclick="reloadData()">Refresh</button>
+              <button class="btn btn-secondary" onclick="exportResults()">Export Results</button>
               <button class="btn btn-secondary" onclick="goDashboard()">Dashboard</button>
             </div>
 
@@ -1008,6 +1009,7 @@
                 <th>Status</th>
                 <th>Payment</th>
                 <th>Created At</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody id="bookingsBody"></tbody>
@@ -1084,6 +1086,53 @@
     </div>
   </div>
 
+  <!-- Complete Booking modal -->
+  <div class="modal-overlay" id="completeModal" style="display:none;">
+    <div class="modal-box" style="max-width:480px;">
+      <div class="modal-title">Complete Booking</div>
+      <div class="modal-row" id="completeBookingInfo" style="margin-bottom:10px; font-size:13px;"></div>
+
+      <div style="margin-bottom:10px;">
+        <label style="font-size:13px; font-weight:600; display:block; margin-bottom:6px;">
+          Upload Completion Photo (optional)
+        </label>
+        <input type="file" id="completionPhotoInput" accept="image/*" onchange="onCompletionPhotoSelected(event)"
+               style="font-size:13px;" />
+      </div>
+
+      <!-- Image preview area (shows placeholder or captured image) -->
+      <div id="completionPhotoPreviewWrap" style="
+           margin-bottom:12px; width:100%; height:200px;
+           background:#0f172a; border-radius:10px; border:1px solid rgba(148,163,184,0.3);
+           display:flex; align-items:center; justify-content:center; overflow:hidden;">
+        <span id="completionPhotoPlaceholder" style="color:#6b7280; font-size:13px;">No photo selected</span>
+        <img id="completionPhotoPreview" src="" alt="Completion photo preview"
+             style="display:none; max-width:100%; max-height:200px; object-fit:contain;" />
+      </div>
+
+      <div id="completeErrorMsg" style="color:#ef4444; font-size:12px; margin-bottom:8px; display:none;"></div>
+
+      <div class="modal-btn-row">
+        <button class="btn btn-secondary" onclick="closeCompleteModal()">Cancel</button>
+        <button class="btn btn-success" onclick="submitCompleteBooking()">Mark as Completed</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Photo view modal -->
+  <div class="modal-overlay" id="photoViewModal" style="display:none;">
+    <div class="modal-box" style="max-width:520px;">
+      <div class="modal-title">Completion Photo</div>
+      <div style="width:100%; border-radius:10px; overflow:hidden; margin-bottom:12px; background:#0f172a;">
+        <img id="photoViewImg" src="" alt="Completion photo"
+             style="display:block; max-width:100%; max-height:420px; object-fit:contain; margin:0 auto;" />
+      </div>
+      <div class="modal-btn-row">
+        <button class="btn btn-secondary" onclick="closePhotoViewModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
   <script>
   // ---- CHAT STATE ----
   // liveChats: phone -> { phone, username, status: 'new'|'active' }
@@ -1093,11 +1142,11 @@
 
   let chatPollStarted = false;
 const API_BASE = window.location.origin;
-  const API_BOOKINGS   = "${API_BASE}/bookings";
-  const API_TICKETS    = "${API_BASE}/tickets";
-  const API_AGENT_CHAT = "${API_BASE}/agent-chat";
-  const API_QUOTATIONS = "${API_BASE}/quotations";
-  const API_CHAT       = "${API_BASE}/chat";
+  const API_BOOKINGS   = `${API_BASE}/bookings`;
+  const API_TICKETS    = `${API_BASE}/tickets`;
+  const API_AGENT_CHAT = `${API_BASE}/agent-chat`;
+  const API_QUOTATIONS = `${API_BASE}/quotations`;
+  const API_CHAT       = `${API_BASE}/chat`;
 
   let allBookings = [];
   const selectedIds = new Set();
@@ -1289,7 +1338,7 @@ const API_BASE = window.location.origin;
     if (!list || list.length === 0) {
       const tr = document.createElement("tr");
       const td = document.createElement("td");
-      td.colSpan = 13;
+      td.colSpan = 14;
       td.textContent = "No bookings found.";
       tr.appendChild(td);
       tbody.appendChild(tr);
@@ -1336,6 +1385,27 @@ const API_BASE = window.location.origin;
       tr.appendChild(payTd);
 
       addCell(tr, formatDate(b.createdAt));
+
+      // Actions column: "Complete" button for active bookings
+      const actionTd = document.createElement("td");
+      if (statusVal !== "COMPLETED" && statusVal !== "CANCELLED" && statusVal !== "CLOSED") {
+        const completeBtn = document.createElement("button");
+        completeBtn.className = "btn btn-success";
+        completeBtn.style.fontSize = "11px";
+        completeBtn.style.padding = "4px 8px";
+        completeBtn.textContent = "Complete";
+        completeBtn.onclick = () => openCompleteModal(b.id);
+        actionTd.appendChild(completeBtn);
+      } else if (statusVal === "COMPLETED" && b.completionPhotoBase64) {
+        const viewBtn = document.createElement("button");
+        viewBtn.className = "btn btn-secondary";
+        viewBtn.style.fontSize = "11px";
+        viewBtn.style.padding = "4px 8px";
+        viewBtn.textContent = "View Photo";
+        viewBtn.onclick = () => openPhotoViewModal(b.completionPhotoBase64);
+        actionTd.appendChild(viewBtn);
+      }
+      tr.appendChild(actionTd);
 
       tbody.appendChild(tr);
     });
@@ -1460,6 +1530,118 @@ const API_BASE = window.location.origin;
     document.getElementById("refundModal").style.display = "none";
     currentRefundBookingId = null;
     currentRefundQuote     = null;
+  }
+
+  /* ----------------- COMPLETE BOOKING MODAL ----------------- */
+  let currentCompleteBookingId = null;
+  let completionPhotoBase64    = null;
+
+  function openCompleteModal(bookingId) {
+    currentCompleteBookingId = bookingId;
+    completionPhotoBase64    = null;
+
+    document.getElementById("completeBookingInfo").textContent = `Booking ID: ${bookingId}`;
+    document.getElementById("completionPhotoInput").value      = "";
+    document.getElementById("completionPhotoPreview").style.display   = "none";
+    document.getElementById("completionPhotoPreview").src              = "";
+    document.getElementById("completionPhotoPlaceholder").style.display = "inline";
+    document.getElementById("completeErrorMsg").style.display          = "none";
+    document.getElementById("completeModal").style.display             = "flex";
+  }
+
+  function closeCompleteModal() {
+    document.getElementById("completeModal").style.display = "none";
+    currentCompleteBookingId = null;
+    completionPhotoBase64    = null;
+  }
+
+  function onCompletionPhotoSelected(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) {
+      completionPhotoBase64 = null;
+      document.getElementById("completionPhotoPreview").style.display    = "none";
+      document.getElementById("completionPhotoPreview").src               = "";
+      document.getElementById("completionPhotoPlaceholder").style.display = "inline";
+      return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      document.getElementById("completeErrorMsg").textContent = "Please select a valid image file (JPEG, PNG, etc.).";
+      document.getElementById("completeErrorMsg").style.display = "block";
+      event.target.value = "";
+      return;
+    }
+
+    // Validate file size (max 5 MB)
+    if (file.size > 5 * 1024 * 1024) {
+      document.getElementById("completeErrorMsg").textContent = "Image must be smaller than 5 MB.";
+      document.getElementById("completeErrorMsg").style.display = "block";
+      event.target.value = "";
+      return;
+    }
+
+    document.getElementById("completeErrorMsg").style.display = "none";
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const dataUrl = e.target.result;
+      // Show preview — src is a proper data: URL so the image will render correctly
+      const previewImg = document.getElementById("completionPhotoPreview");
+      previewImg.src = dataUrl;
+      previewImg.style.display = "block";
+      document.getElementById("completionPhotoPlaceholder").style.display = "none";
+
+      // Store the full data URL (includes MIME type prefix) so it can be used directly as img.src
+      completionPhotoBase64 = dataUrl;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function submitCompleteBooking() {
+    if (!currentCompleteBookingId) return;
+
+    try {
+      const body = { status: "COMPLETED" };
+      if (completionPhotoBase64) {
+        body.completionPhoto = completionPhotoBase64;
+      }
+
+      const res = await fetch(`${API_BOOKINGS}/${currentCompleteBookingId}/status`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+
+      if (!res.ok) {
+        let msg = "Failed to complete booking.";
+        try {
+          const err = await res.json();
+          if (err && err.message) msg = err.message;
+        } catch (e) {}
+        document.getElementById("completeErrorMsg").textContent = msg;
+        document.getElementById("completeErrorMsg").style.display = "block";
+        return;
+      }
+
+      closeCompleteModal();
+      await reloadBookings();
+    } catch (e) {
+      console.error(e);
+      document.getElementById("completeErrorMsg").textContent = "Error completing booking. Please try again.";
+      document.getElementById("completeErrorMsg").style.display = "block";
+    }
+  }
+
+  /* ----------------- PHOTO VIEW MODAL ----------------- */
+  function openPhotoViewModal(dataUrl) {
+    document.getElementById("photoViewImg").src = dataUrl;
+    document.getElementById("photoViewModal").style.display = "flex";
+  }
+
+  function closePhotoViewModal() {
+    document.getElementById("photoViewModal").style.display = "none";
+    document.getElementById("photoViewImg").src = "";
   }
 
   async function confirmRefund() {
@@ -1864,6 +2046,26 @@ if (!res.ok) {
     window.location.href = "/aspcare";
   }
 
+  function exportResults() {
+    if (!allBookings || allBookings.length === 0) {
+      alert("No bookings to export. Please load bookings first.");
+      return;
+    }
+    // Use hyphens instead of colons so the filename is valid on all platforms
+    const ts = new Date().toISOString().replace(/:/g, "-").replace(/\.\d{3}Z$/, "");
+    const filename = `results-${ts}.json`;
+    const json = JSON.stringify(allBookings, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement("a");
+    a.href     = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
   async function reloadData() {
     await reloadBookings();
     await loadTickets();
@@ -1900,6 +2102,15 @@ if (!res.ok) {
 
   window.searchClosedChats = searchClosedChats;
   window.clearClosedChats  = clearClosedChats;
+
+  window.openCompleteModal        = openCompleteModal;
+  window.closeCompleteModal       = closeCompleteModal;
+  window.onCompletionPhotoSelected = onCompletionPhotoSelected;
+  window.submitCompleteBooking    = submitCompleteBooking;
+  window.openPhotoViewModal       = openPhotoViewModal;
+  window.closePhotoViewModal      = closePhotoViewModal;
+
+  window.exportResults = exportResults;
 </script>
 </body>
 </html>

@@ -1052,6 +1052,27 @@
         inner.appendChild(refundInfo);
       }
 
+      // Show completion photo when booking is COMPLETED and photo is available
+      if (statusUpper === "COMPLETED" && b.completionPhotoBase64) {
+        const photoSection = document.createElement("div");
+        photoSection.style.cssText = "margin: 10px 0; padding: 10px 0;";
+
+        const photoLabel = document.createElement("div");
+        photoLabel.style.cssText = "font-size:12px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px;";
+        photoLabel.textContent = "Completion Photo";
+        photoSection.appendChild(photoLabel);
+
+        const photoImg = document.createElement("img");
+        // completionPhotoBase64 stores the full data URL (e.g. data:image/png;base64,...) so it
+        // can be used directly as the src attribute without needing a hardcoded MIME type.
+        photoImg.src = b.completionPhotoBase64;
+        photoImg.alt = "Car wash completion photo";
+        photoImg.style.cssText = "max-width:100%; max-height:240px; border-radius:10px; object-fit:contain; display:block; border:1px solid rgba(148,163,184,0.3);";
+        photoSection.appendChild(photoImg);
+
+        inner.appendChild(photoSection);
+      }
+
       const btnRow = document.createElement("div");
       btnRow.className = "btn-row";
 

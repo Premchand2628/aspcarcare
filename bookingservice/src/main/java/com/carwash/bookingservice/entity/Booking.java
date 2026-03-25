@@ -135,7 +135,11 @@ public class Booking {
      */
     @Column(name = "rescheduled_reason", length = 500)
     private String rescheduledReason;
-    
+
+    // Completion photo (base64-encoded image uploaded when wash is marked COMPLETED)
+    @Column(name = "completion_photo_base64", columnDefinition = "TEXT")
+    private String completionPhotoBase64;
+
     // Safety net for non-builder creation
     @PrePersist
     public void prePersist() {
