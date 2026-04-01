@@ -28,6 +28,7 @@ public class ReactiveHttpLoggingFilter implements WebFilter {
 
   private static final Logger log = LoggerFactory.getLogger(ReactiveHttpLoggingFilter.class);
   private static final int MAX_BODY_CHARS = 8000;
+  private static final String TRANSACTION_ID_HEADER = "X-Transaction-Id";
 
   @Override
   public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
@@ -37,7 +38,7 @@ public class ReactiveHttpLoggingFilter implements WebFilter {
     }
 
     long start = System.currentTimeMillis();
-    String requestId = UUID.randomUUID().toString();
+    String transactionId = resolveTransactionId(exchange.getRequest().getHeaders());
 
     AtomicReference<String> requestBodyRef = new AtomicReference<>("");
     AtomicReference<String> responseBodyRef = new AtomicReference<>("");
@@ -45,6 +46,14 @@ public class ReactiveHttpLoggingFilter implements WebFilter {
     DataBufferFactory bufferFactory = exchange.getResponse().bufferFactory();
 
     ServerHttpRequestDecorator requestDecorator = new ServerHttpRequestDecorator(exchange.getRequest()) {
+      @Override
+      public HttpHeaders getHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.putAll(super.getHeaders());
+        headers.set(TRANSACTION_ID_HEADER, transactionId);
+        return headers;
+      }
+
       @Override
       public Flux<DataBuffer> getBody() {
         MediaType mediaType = getHeaders().getContentType();
@@ -86,6 +95,16 @@ public class ReactiveHttpLoggingFilter implements WebFilter {
         .response(responseDecorator)
         .build();
 
+    mutatedExchange.getResponse().beforeCommit(() -> {
+      String existing = mutatedExchange.getResponse().getHeaders().getFirst(TRANSACTION_ID_HEADER);
+      if (!StringUtils.hasText(existing)) {
+        mutatedExchange.getResponse().getHeaders().set(TRANSACTION_ID_HEADER, transactionId);
+      } else {
+        mutatedExchange.getResponse().getHeaders().set(TRANSACTION_ID_HEADER, existing);
+      }
+      return Mono.empty();
+    });
+
     return chain.filter(mutatedExchange)
         .doFinally(signalType -> {
           long durationMs = System.currentTimeMillis() - start;
@@ -103,13 +122,13 @@ public class ReactiveHttpLoggingFilter implements WebFilter {
           Map<String, String> responseHeaders = collectResponseHeaders(responseDecorator.getHeaders());
 
           log.info(
-              "HTTP_REQUEST requestId={} method={} path={} query={} headers={} body={}",
-              requestId, method, path, safe(query), requestHeaders, safe(requestBodyRef.get())
+              "HTTP_REQUEST transactionId={} method={} path={} query={} headers={} body={}",
+              transactionId, method, path, safe(query), requestHeaders, safe(requestBodyRef.get())
           );
 
           log.info(
-              "HTTP_RESPONSE requestId={} method={} path={} status={} durationMs={} headers={} body={}",
-              requestId, method, path, status, durationMs, responseHeaders, safe(responseBodyRef.get())
+              "HTTP_RESPONSE transactionId={} method={} path={} status={} durationMs={} headers={} body={}",
+              transactionId, method, path, status, durationMs, responseHeaders, safe(responseBodyRef.get())
           );
         });
   }
@@ -131,6 +150,7 @@ public class ReactiveHttpLoggingFilter implements WebFilter {
     putIfPresent(map, "content-type", headers.getFirst(HttpHeaders.CONTENT_TYPE));
     putIfPresent(map, "user-agent", headers.getFirst(HttpHeaders.USER_AGENT));
     putIfPresent(map, "x-forwarded-for", headers.getFirst("X-Forwarded-For"));
+    putIfPresent(map, "x-transaction-id", headers.getFirst(TRANSACTION_ID_HEADER));
     putIfPresent(map, "authorization", maskAuthorization(headers.getFirst(HttpHeaders.AUTHORIZATION)));
     return map;
   }
@@ -139,7 +159,16 @@ public class ReactiveHttpLoggingFilter implements WebFilter {
     Map<String, String> map = new LinkedHashMap<>();
     putIfPresent(map, "content-type", headers.getFirst(HttpHeaders.CONTENT_TYPE));
     putIfPresent(map, "cache-control", headers.getFirst(HttpHeaders.CACHE_CONTROL));
+    putIfPresent(map, "x-transaction-id", headers.getFirst(TRANSACTION_ID_HEADER));
     return map;
+  }
+
+  private String resolveTransactionId(HttpHeaders headers) {
+    String incoming = headers.getFirst(TRANSACTION_ID_HEADER);
+    if (StringUtils.hasText(incoming)) {
+      return incoming.trim();
+    }
+    return UUID.randomUUID().toString();
   }
 
   private void putIfPresent(Map<String, String> target, String key, String value) {

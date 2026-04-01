@@ -37,8 +37,14 @@ public class AuthAbuseProtectionFilter extends OncePerRequestFilter {
     @Value("${app.security.rate-limit.send-otp.max-requests:5}")
     private int sendOtpMaxRequests;
 
+    @Value("${app.security.rate-limit.enabled:true}")
+    private boolean rateLimitEnabled;
+
     @Value("${app.security.rate-limit.send-otp.window-seconds:600}")
     private int sendOtpWindowSeconds;
+
+    @Value("${app.security.rate-limit.send-otp.dev-bypass-enabled:false}")
+    private boolean sendOtpDevBypassEnabled;
 
     @Value("${app.security.rate-limit.verify-otp.max-requests:12}")
     private int verifyOtpMaxRequests;
@@ -82,7 +88,7 @@ public class AuthAbuseProtectionFilter extends OncePerRequestFilter {
         }
 
         RatePolicy policy = ratePolicy(requestToUse);
-        if (policy != null) {
+        if (rateLimitEnabled && policy != null && !(sendOtpDevBypassEnabled && "send-otp".equals(policy.keyPrefix))) {
             String key = policy.keyPrefix + "|" + clientIp(requestToUse);
             if (!allowRequest(key, policy.maxRequests, policy.windowSeconds)) {
                 response.setHeader("Retry-After", String.valueOf(policy.windowSeconds));

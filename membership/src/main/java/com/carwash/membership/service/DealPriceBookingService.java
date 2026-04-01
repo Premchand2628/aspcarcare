@@ -2,6 +2,7 @@ package com.carwash.membership.service;
 
 import com.carwash.membership.dto.DealPriceBookingCreateRequest;
 import com.carwash.membership.dto.DealPriceBookingRedeemRequest;
+import com.carwash.membership.dto.DealPriceBookingRevertRequest;
 import com.carwash.membership.entity.DealPriceBooking;
 import com.carwash.membership.repository.DealPriceBookingRepository;
 import org.springframework.stereotype.Service;
@@ -107,6 +108,51 @@ public class DealPriceBookingService {
 
     return dealPriceBookingRepository.findById(matched.getId())
         .orElseThrow(() -> new IllegalStateException("Subscription not found after redemption"));
+  }
+
+  @Transactional
+  public DealPriceBooking revertRedemption(DealPriceBookingRevertRequest request) {
+    if (request == null) {
+      throw new IllegalArgumentException("Request is required");
+    }
+
+    DealPriceBooking matched = null;
+    Long targetId = request.getDealPriceBookingId();
+    String phone = blankToNull(request.getPhone());
+    String planTypeCode = blankToNull(request.getPlanTypeCode());
+
+    // Try lookup by ID first
+    if (targetId != null) {
+      matched = dealPriceBookingRepository.findById(targetId).orElse(null);
+    }
+
+    // Fall back to phone + planTypeCode if ID lookup missed
+    if (matched == null && phone != null && planTypeCode != null) {
+      matched = dealPriceBookingRepository
+          .findByPhoneAndPlanTypeCodeOrderByCreatedAtDesc(phone, planTypeCode)
+          .stream()
+          .filter(item -> item.getUsedWashes() != null && item.getUsedWashes() > 0)
+          .findFirst()
+          .orElse(null);
+    }
+
+    // Nothing to revert — allow cancellation to proceed
+    if (matched == null) {
+      return null;
+    }
+
+    // If usedWashes is already 0 or null, treat as already reverted (idempotent)
+    if (matched.getUsedWashes() == null || matched.getUsedWashes() <= 0) {
+      return matched;
+    }
+
+    int updatedRows = dealPriceBookingRepository.releaseConsumedWash(matched.getId());
+    if (updatedRows == 0) {
+      return matched; // concurrent revert already handled it
+    }
+
+    return dealPriceBookingRepository.findById(matched.getId())
+        .orElse(matched);
   }
 
   private String normalizePhone(String resolvedPhone, String requestedPhone) {

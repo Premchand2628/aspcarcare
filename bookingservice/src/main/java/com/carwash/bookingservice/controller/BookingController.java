@@ -6,19 +6,23 @@ import java.util.NoSuchElementException;
 
 import org.slf4j.MDC;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import com.carwash.bookingservice.dto.ApiResponse;
 import com.carwash.bookingservice.dto.BookingRequest;
+import com.carwash.bookingservice.dto.BookingResponseDto;
 import com.carwash.bookingservice.dto.RefundQuoteResponse;
 import com.carwash.bookingservice.dto.StatusUpdateRequest;
 import com.carwash.bookingservice.dto.UpdateBookingRequest;
 import com.carwash.bookingservice.dto.UpgradeBookingRequest;
 import com.carwash.bookingservice.entity.Booking;
 import com.carwash.bookingservice.service.BookingService;
+import com.carwash.bookingservice.service.InvoicePdfService;
 import com.carwash.otplogin.entity.User;
 import com.carwash.otplogin.repository.UserRepository;
 import com.carwashcommon.security.JwtUserPrincipal;
@@ -32,10 +36,13 @@ public class BookingController {
 
     private final BookingService bookingService;
     private final UserRepository userRepository;
+    private final InvoicePdfService invoicePdfService;
 
-    public BookingController(BookingService bookingService, UserRepository userRepository) {
+    public BookingController(BookingService bookingService, UserRepository userRepository,
+                             InvoicePdfService invoicePdfService) {
         this.bookingService = bookingService;
         this.userRepository = userRepository;
+        this.invoicePdfService = invoicePdfService;
     }
 
     // ==========================================================
@@ -43,12 +50,32 @@ public class BookingController {
     // ==========================================================
     @GetMapping("/availability")
     public ResponseEntity<?> getAvailability(@RequestParam String date,
-                                            @RequestParam(required = false, defaultValue = "HOME") String serviceType) {
+                                            @RequestParam(required = false, defaultValue = "HOME") String serviceType,
+                                            @RequestParam(required = false) Long serviceCentreId,
+                                            @RequestParam(required = false) String centreName,
+                                            @RequestParam(required = false) String centreAddress,
+                                            @RequestParam(required = false) String address) {
         try {
             MDC.put("date", date);
             MDC.put("serviceType", serviceType);
+            if (serviceCentreId != null) {
+                MDC.put("serviceCentreId", String.valueOf(serviceCentreId));
+            }
+            if (centreName != null && !centreName.isBlank()) {
+                MDC.put("centreName", centreName);
+            }
+            String resolvedCentreAddress = (centreAddress != null && !centreAddress.isBlank()) ? centreAddress : address;
+            if (resolvedCentreAddress != null && !resolvedCentreAddress.isBlank()) {
+                MDC.put("centreAddress", resolvedCentreAddress);
+            }
 
-            Map<String, Boolean> resp = bookingService.getAvailability(date, serviceType);
+            Map<String, Boolean> resp = bookingService.getAvailability(
+                    date,
+                    serviceType,
+                    serviceCentreId,
+                    centreName,
+                    resolvedCentreAddress
+            );
             return ResponseEntity.ok(resp);
 
         } catch (Exception e) {
@@ -178,7 +205,7 @@ public class BookingController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Booking>> getAllBookings() {
+    public ResponseEntity<List<BookingResponseDto>> getAllBookings() {
         return ResponseEntity.ok(bookingService.getAllBookings());
     }
 
@@ -303,7 +330,7 @@ public class BookingController {
     @PutMapping("/{id:\\d+}/status")
     public ResponseEntity<?> updateStatus(@PathVariable Long id, @RequestBody StatusUpdateRequest req) {
         try {
-            Booking updated = bookingService.updateBookingStatus(id, req);
+            BookingResponseDto updated = bookingService.updateBookingStatus(id, req);
             return ResponseEntity.ok(updated);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage()));
@@ -311,6 +338,59 @@ public class BookingController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, "Booking not found"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse(false, "Status update failed"));
+        }
+    }
+
+    // ==========================================================
+    // INVOICE DOWNLOAD (PDF)
+    // ==========================================================
+    @GetMapping("/{id:\\d+}/invoice")
+    public ResponseEntity<?> downloadInvoice(@PathVariable Long id, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ApiResponse(false, "Unauthorized: JWT token required"));
+        }
+
+        String resolvedPhone = resolvePhone(authentication);
+        if (resolvedPhone == null || resolvedPhone.isBlank()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ApiResponse(false, "Unauthorized: phone not found"));
+        }
+
+        Booking booking = bookingService.getBookingEntity(id);
+        if (booking == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse(false, "Booking not found"));
+        }
+
+        // Only allow download for user's own booking
+        if (!resolvedPhone.equals(booking.getPhone())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new ApiResponse(false, "Forbidden"));
+        }
+
+        // Only completed bookings can have invoices
+        if (!"COMPLETED".equalsIgnoreCase(booking.getStatus())) {
+            return ResponseEntity.badRequest()
+                    .body(new ApiResponse(false, "Invoice is only available for completed bookings"));
+        }
+
+        try {
+            User user = userRepository.findByPhone(resolvedPhone).orElse(null);
+            byte[] pdfBytes = invoicePdfService.generateInvoice(booking, user);
+            String invoiceNumber = invoicePdfService.getInvoiceNumber(booking.getId());
+            String filename = "Invoice_" + (invoiceNumber != null ? invoiceNumber : booking.getId()) + ".pdf";
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                    .header("X-Invoice-Number", invoiceNumber != null ? invoiceNumber : "")
+                    .header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "X-Invoice-Number")
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .contentLength(pdfBytes.length)
+                    .body(pdfBytes);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse(false, "Failed to generate invoice"));
         }
     }
 

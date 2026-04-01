@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: carwashcommon
+  thymeleaf:
+    cache: false
+  main:
+    show-banner: false
+
+logging:
+  level:
+    jdbc: OFF
+    jdbc.sqltiming: DEBUG
+    jdbc.resultsettable: DEBUG

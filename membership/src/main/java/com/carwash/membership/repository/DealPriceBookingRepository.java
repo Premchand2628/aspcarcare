@@ -42,4 +42,14 @@ public interface DealPriceBookingRepository extends JpaRepository<DealPriceBooki
         AND COALESCE(left_washes, 0) > 0
       """, nativeQuery = true)
   int consumeWashIfAvailable(@Param("id") Long id);
+
+  @Modifying(clearAutomatically = true, flushAutomatically = true)
+  @Query(value = """
+      UPDATE carwash_deal_price_booking
+      SET used_washes = GREATEST(COALESCE(used_washes, 0) - 1, 0),
+          left_washes = COALESCE(left_washes, 0) + 1
+      WHERE id = :id
+        AND COALESCE(used_washes, 0) > 0
+      """, nativeQuery = true)
+  int releaseConsumedWash(@Param("id") Long id);
 }

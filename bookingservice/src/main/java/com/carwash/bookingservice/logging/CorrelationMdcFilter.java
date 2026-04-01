@@ -16,7 +16,8 @@ import java.util.UUID;
 public class CorrelationMdcFilter extends OncePerRequestFilter {
 
   public static final String HDR_CORRELATION_ID = "X-Correlation-Id";
-  public static final String HDR_TXN_ID = "X-Txn-Id";
+  public static final String HDR_TRANSACTION_ID = "X-Transaction-Id";
+  public static final String HDR_TXN_ID_LEGACY = "X-Txn-Id";
 
   private static String newId() {
     return UUID.randomUUID().toString().replace("-", "");
@@ -34,8 +35,11 @@ public class CorrelationMdcFilter extends OncePerRequestFilter {
     // reqId: always new per request (never equal to correlationId)
     String reqId = newId();
 
-    // txnId: optional header propagation
-    String txnId = request.getHeader(HDR_TXN_ID);
+    // transactionId: prefer new standard header; fallback to legacy header
+    String txnId = request.getHeader(HDR_TRANSACTION_ID);
+    if (txnId == null || txnId.isBlank()) {
+      txnId = request.getHeader(HDR_TXN_ID_LEGACY);
+    }
 
     try {
       MDC.put("correlationId", correlationId);
@@ -49,7 +53,9 @@ public class CorrelationMdcFilter extends OncePerRequestFilter {
 
       // also return correlationId back to client so UI / other services can reuse
       response.setHeader(HDR_CORRELATION_ID, correlationId);
-      if (txnId != null && !txnId.isBlank()) response.setHeader(HDR_TXN_ID, txnId.trim());
+      if (txnId != null && !txnId.isBlank()) {
+        response.setHeader(HDR_TRANSACTION_ID, txnId.trim());
+      }
 
       filterChain.doFilter(request, response);
     } finally {

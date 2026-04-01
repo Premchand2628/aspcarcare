@@ -6,6 +6,9 @@ public class SignupRequest {
     private String email;
     private Integer age;
     private String phone;
+	private String address;
+	private String carNumber;
+	private String carAddressDefaultFlag;
     private String password;
 	public String getFirstName() {
 		return firstName;
@@ -43,10 +46,29 @@ public class SignupRequest {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	public String getCarNumber() {
+		return carNumber;
+	}
+	public void setCarNumber(String carNumber) {
+		this.carNumber = carNumber;
+	}
+	public String getCarAddressDefaultFlag() {
+		return carAddressDefaultFlag;
+	}
+	public void setCarAddressDefaultFlag(String carAddressDefaultFlag) {
+		this.carAddressDefaultFlag = carAddressDefaultFlag;
+	}
 	@Override
 	public String toString() {
 		return "SignupRequest [firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + ", age=" + age
-				+ ", phone=" + phone + ", password=" + password + "]";
+				+ ", phone=" + phone + ", address=" + address + ", carNumber=" + carNumber
+				+ ", carAddressDefaultFlag=" + carAddressDefaultFlag + ", password=" + password + "]";
 	}
 
    

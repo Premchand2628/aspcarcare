@@ -2,6 +2,7 @@ package com.carwash.membership.controller;
 
 import com.carwash.membership.dto.DealPriceBookingCreateRequest;
 import com.carwash.membership.dto.DealPriceBookingRedeemRequest;
+import com.carwash.membership.dto.DealPriceBookingRevertRequest;
 import com.carwash.membership.entity.DealPriceBooking;
 import com.carwash.membership.service.DealPriceBookingService;
 import com.carwashcommon.security.JwtUserPrincipal;
@@ -99,6 +100,31 @@ public class DealPriceBookingController {
           "message", e.getMessage()
       ));
     }
+  }	
+
+  @PostMapping("/redeem/revert")
+  public ResponseEntity<?> revertRedeemedSubscription(@RequestBody DealPriceBookingRevertRequest request) {
+    try {
+      DealPriceBooking updated = dealPriceBookingService.revertRedemption(request);
+      if (updated == null) {
+        return ResponseEntity.ok(Map.of(
+            "success", true,
+            "message", "No subscription record found; cancellation allowed"
+        ));
+      }
+      return ResponseEntity.ok(Map.of(
+          "success", true,
+          "dealPriceBookingId", updated.getId(),
+          "leftWashes", updated.getLeftWashes(),
+          "usedWashes", updated.getUsedWashes(),
+          "planTypeCode", updated.getPlanTypeCode()
+      ));
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.badRequest().body(Map.of(
+          "success", false,
+          "message", e.getMessage()
+      ));
+    }
   }
 
   private String resolvePhone(Authentication authentication) {
@@ -116,7 +142,7 @@ public class DealPriceBookingController {
       }
 
       String subject = jwtUserPrincipal.getPhone();
-      if (subject != null && !subject.contains("@")) {
+      if (subject != null && !subject.contains("@")) { 
         return subject;
       }
 

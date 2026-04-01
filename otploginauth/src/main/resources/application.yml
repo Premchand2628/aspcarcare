@@ -1,0 +1,98 @@
+# =============================================
+# Default profile (localhost / dev) — itemlist DB
+# =============================================
+spring:
+  config:
+    import: optional:file:../env.properties
+  application:
+    name: auth-user-service
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    from: ${MAIL_FROM}
+
+server:
+  address: 0.0.0.0
+  port: 8081
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-token-minutes: 120
+
+carwash:
+  security:
+    enabled: true
+
+google:
+  client:
+    id: ${GOOGLE_CLIENT_ID:}
+
+facebook:
+  app:
+    id: ${FACEBOOK_APP_ID:}
+    secret: ${FACEBOOK_APP_SECRET:}
+
+app:
+  security:
+    request:
+      max-body-bytes: 16384
+    rate-limit:
+      send-otp:
+        max-requests: 5
+        window-seconds: 600
+        dev-bypass-enabled: false
+      verify-otp:
+        max-requests: 12
+        window-seconds: 600
+      google-login:
+        max-requests: 30
+        window-seconds: 300
+
+---
+# =============================================
+# QA profile — ASPCare_QA DB on port 9081
+# =============================================
+spring:
+  config:
+    activate:
+      on-profile: qa
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ASPCare_QA
+
+server:
+  port: 9081
+
+---
+# =============================================
+# Prod profile — ASPCare_prod DB on port 10081
+# =============================================
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ASPCare_prod
+
+server:
+  port: 10081

@@ -1,0 +1,76 @@
+spring:
+  config:
+    import: optional:file:../env.properties
+  application:
+    name: payment-service
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+server:
+  port: 8083
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-token-minutes: 120
+
+phonepe:
+  environment: UAT
+  base:
+    url: https://api-preprod.phonepe.com/apis/pg-sandbox
+  merchant:
+    id: ${PHONEPE_MERCHANT_ID}
+  salt:
+    key: ${PHONEPE_SALT_KEY}
+    index: ${PHONEPE_SALT_INDEX}
+  callback:
+    url: http://localhost:8083/payments/phonepe/callback
+  client:
+    id: ${PHONEPE_CLIENT_ID}
+    secret: ${PHONEPE_CLIENT_SECRET}
+
+---
+# =============================================
+# QA profile — ASPCare_QA DB on port 9083
+# =============================================
+spring:
+  config:
+    activate:
+      on-profile: qa
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ASPCare_QA
+
+server:
+  port: 9083
+
+phonepe:
+  callback:
+    url: http://localhost:9083/payments/phonepe/callback
+
+---
+# =============================================
+# Prod profile — ASPCare_prod DB on port 10083
+# =============================================
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ASPCare_prod
+
+server:
+  port: 10083
+
+phonepe:
+  callback:
+    url: http://localhost:10083/payments/phonepe/callback

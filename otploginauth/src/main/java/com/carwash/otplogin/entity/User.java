@@ -23,6 +23,16 @@ public class User {
 
     @Column(unique = true)
     private String phone;
+
+	@Column(name = "address")
+	private String address;
+
+	@Column(name = "car_number")
+	private String carNumber;
+
+	@Column(name = "car_address_default_flag", nullable = false)
+	private String carAddressDefaultFlag = "N";
+
     @JsonIgnore
     private String password; // optional, for future use
 
@@ -84,6 +94,30 @@ public class User {
 		this.password = password;
 	}
 
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getCarNumber() {
+		return carNumber;
+	}
+
+	public void setCarNumber(String carNumber) {
+		this.carNumber = carNumber;
+	}
+
+	public String getCarAddressDefaultFlag() {
+		return carAddressDefaultFlag;
+	}
+
+	public void setCarAddressDefaultFlag(String carAddressDefaultFlag) {
+		this.carAddressDefaultFlag = carAddressDefaultFlag;
+	}
+
 	public Instant getCreatedAt() {
 		return createdAt;
 	}
@@ -95,7 +129,9 @@ public class User {
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + ", age="
-				+ age + ", phone=" + phone + ", password=" + password + ", createdAt=" + createdAt + "]";
+				+ age + ", phone=" + phone + ", address=" + address + ", carNumber=" + carNumber
+				+ ", carAddressDefaultFlag=" + carAddressDefaultFlag + ", password=" + password + ", createdAt="
+				+ createdAt + "]";
 	}
 
    

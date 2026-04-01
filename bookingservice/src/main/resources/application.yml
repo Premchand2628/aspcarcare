@@ -1,0 +1,70 @@
+spring:
+  config:
+    import: optional:file:../env.properties
+  application:
+    name: booking-service
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    from: ${MAIL_FROM}
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+server:
+  address: 0.0.0.0
+  port: 8082
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-token-minutes: 120
+
+carwash:
+  security:
+    enabled: true
+
+---
+# =============================================
+# QA profile — ASPCare_QA DB on port 9082
+# =============================================
+spring:
+  config:
+    activate:
+      on-profile: qa
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ASPCare_QA
+
+server:
+  port: 9082
+
+---
+# =============================================
+# Prod profile — ASPCare_prod DB on port 10082
+# =============================================
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ASPCare_prod
+
+server:
+  port: 10082

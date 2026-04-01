@@ -44,4 +44,7 @@ public class DealPrice {
     
     @Column(name = "updated_at", insertable = false, updatable = false)
     private LocalDateTime updatedAt;
+
+    @Column(name = "total_months", nullable = false)
+    private Integer totalMonths = 3;
 }

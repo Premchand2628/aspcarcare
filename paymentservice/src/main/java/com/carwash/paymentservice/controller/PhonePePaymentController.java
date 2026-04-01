@@ -293,7 +293,7 @@ public class PhonePePaymentController {
                 headersOut.set("X-Correlation-Id", correlationId);
             }
             if (merchantTransactionId != null && !merchantTransactionId.isBlank()) {
-                headersOut.set("X-Txn-Id", merchantTransactionId.trim());
+                headersOut.set("X-Transaction-Id", merchantTransactionId.trim());
             }
 
             HttpEntity<String> entity = new HttpEntity<>(bookingsJson, headersOut);

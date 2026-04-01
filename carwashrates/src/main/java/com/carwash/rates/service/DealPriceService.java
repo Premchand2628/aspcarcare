@@ -24,7 +24,8 @@ public class DealPriceService {
             dealPrice.getDealWaterProviding(),
             dealPrice.getDealActualPrice(),
             dealPrice.getDealDiscount(),
-            dealPrice.getDealFinalPrice()
+            dealPrice.getDealFinalPrice(),
+            dealPrice.getTotalMonths()
         );
     }
     
@@ -108,6 +109,7 @@ public class DealPriceService {
                 existing.setDealActualPrice(dealPrice.getDealActualPrice());
                 existing.setDealDiscount(dealPrice.getDealDiscount());
                 existing.setDealFinalPrice(dealPrice.getDealFinalPrice());
+                existing.setTotalMonths(dealPrice.getTotalMonths());
                 DealPrice updated = dealPriceRepository.save(existing);
                 return convertToDTO(updated);
             })

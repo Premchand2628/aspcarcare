@@ -12,7 +12,6 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -20,12 +19,16 @@ public class OtpService {
 
     private static final int OTP_LENGTH = 6;
     private static final Duration OTP_EXPIRY = Duration.ofMinutes(5);
+    private static final Duration PASSWORD_RESET_VERIFIED_EXPIRY = Duration.ofMinutes(5);
+    private static final Duration EMAIL_UPDATE_VERIFIED_EXPIRY = Duration.ofMinutes(5);
     private static final Duration RESEND_COOLDOWN = Duration.ofSeconds(30);
     private static final int MAX_ATTEMPTS = 5;
     private final JavaMailSender mailSender;
 
     // mobileNumber -> OtpData
     private final ConcurrentMap<String, OtpData> otpStore = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, Instant> passwordResetVerifiedStore = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, Instant> emailUpdateVerifiedStore = new ConcurrentHashMap<>();
     private final Random random = new Random();
 
     public String generateAndSendOtp(String mobileNumber) {
@@ -112,6 +115,56 @@ public class OtpService {
 
         sendEmailOtp(email, otp);
         return otp;
+    }
+
+    public void markPasswordResetOtpVerified(String email) {
+        if (email == null || email.isBlank()) {
+            return;
+        }
+        passwordResetVerifiedStore.put(email.trim().toLowerCase(), Instant.now().plus(PASSWORD_RESET_VERIFIED_EXPIRY));
+    }
+
+    public boolean consumePasswordResetOtpVerified(String email) {
+        if (email == null || email.isBlank()) {
+            return false;
+        }
+
+        String key = email.trim().toLowerCase();
+        Instant verifiedUntil = passwordResetVerifiedStore.remove(key);
+        if (verifiedUntil == null) {
+            return false;
+        }
+
+        return Instant.now().isBefore(verifiedUntil);
+    }
+
+    public void markEmailUpdateOtpVerified(String phone, String email) {
+        String key = buildEmailUpdateKey(phone, email);
+        if (key == null) {
+            return;
+        }
+        emailUpdateVerifiedStore.put(key, Instant.now().plus(EMAIL_UPDATE_VERIFIED_EXPIRY));
+    }
+
+    public boolean consumeEmailUpdateOtpVerified(String phone, String email) {
+        String key = buildEmailUpdateKey(phone, email);
+        if (key == null) {
+            return false;
+        }
+
+        Instant verifiedUntil = emailUpdateVerifiedStore.remove(key);
+        if (verifiedUntil == null) {
+            return false;
+        }
+
+        return Instant.now().isBefore(verifiedUntil);
+    }
+
+    private String buildEmailUpdateKey(String phone, String email) {
+        if (phone == null || phone.isBlank() || email == null || email.isBlank()) {
+            return null;
+        }
+        return phone.trim() + "|" + email.trim().toLowerCase();
     }
 
     private void sendEmailOtp(String email, String otp) {

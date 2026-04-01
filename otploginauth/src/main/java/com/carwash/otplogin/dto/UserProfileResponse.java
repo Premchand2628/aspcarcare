@@ -7,6 +7,9 @@ public class UserProfileResponse {
     private String email;
     private Integer age;
     private String phone;
+    private String address;
+    private String carNumber;
+    private String carAddressDefaultFlag;
     //private String password; // plain for now (for edit page)
 
     public String getFirstName() {
@@ -38,6 +41,30 @@ public class UserProfileResponse {
     }
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getCarNumber() {
+        return carNumber;
+    }
+
+    public void setCarNumber(String carNumber) {
+        this.carNumber = carNumber;
+    }
+
+    public String getCarAddressDefaultFlag() {
+        return carAddressDefaultFlag;
+    }
+
+    public void setCarAddressDefaultFlag(String carAddressDefaultFlag) {
+        this.carAddressDefaultFlag = carAddressDefaultFlag;
     }
 //    public String getPassword() {
 //        return password;

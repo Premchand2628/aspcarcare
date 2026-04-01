@@ -45,6 +45,22 @@ public class RateController {
     }
 
     // ==========================================================
+    // GET DISTINCT VEHICLE TYPES
+    // ==========================================================
+    @GetMapping("/vehicle-types")
+    public ResponseEntity<List<String>> getVehicleTypes() {
+        return ResponseEntity.ok(rateRepository.findDistinctActiveVehicleTypes());
+    }
+
+    // ==========================================================
+    // GET DISTINCT WASH LEVELS
+    // ==========================================================
+    @GetMapping("/wash-levels")
+    public ResponseEntity<List<String>> getWashLevels() {
+        return ResponseEntity.ok(rateRepository.findDistinctActiveWashLevels());
+    }
+
+    // ==========================================================
     // GET ALL
     // ==========================================================
     @GetMapping("/all")

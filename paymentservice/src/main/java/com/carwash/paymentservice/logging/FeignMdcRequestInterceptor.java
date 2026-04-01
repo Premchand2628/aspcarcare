@@ -21,7 +21,7 @@ public class FeignMdcRequestInterceptor implements RequestInterceptor {
       template.header(CorrelationMdcFilter.HDR_CORRELATION_ID, correlationId);
     }
     if (txnId != null && !txnId.isBlank()) {
-      template.header(CorrelationMdcFilter.HDR_TXN_ID, txnId);
+      template.header(CorrelationMdcFilter.HDR_TRANSACTION_ID, txnId);
     }
 
     // ❌ DO NOT forward reqId (each service creates its own reqId)

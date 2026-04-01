@@ -1,9 +1,11 @@
 spring:
+  config:
+    import: optional:file:../env.properties
   mail:
-    host: smtp.gmail.com
-    port: 587
-    username: chandupremgunda@gmail.com
-    password: ukgfgozznxgkgrpn
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
     properties:
       mail:
         smtp:
@@ -14,7 +16,7 @@ spring:
           connectiontimeout: 5000
           timeout: 5000
           writetimeout: 5000
-    from: chandupremgunda@gmail.com
+    from: ${MAIL_FROM}
 
 # Optional: Add these if running as standalone
 server:
@@ -23,3 +25,27 @@ server:
 logging:
   level:
     com.carwash.mailnotification: DEBUG
+
+---
+# =============================================
+# QA profile — port 9089
+# =============================================
+spring:
+  config:
+    activate:
+      on-profile: qa
+
+server:
+  port: 9089
+
+---
+# =============================================
+# Prod profile — port 10089
+# =============================================
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+server:
+  port: 10089

@@ -17,4 +17,5 @@ public class DealPriceDTO {
     private BigDecimal dealActualPrice;
     private BigDecimal dealDiscount;
     private BigDecimal dealFinalPrice;
+    private Integer totalMonths;
 }

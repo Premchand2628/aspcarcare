@@ -52,7 +52,7 @@ public class RateClient {
 
     String txnId = MDC.get("txnId");
     if (txnId != null && !txnId.isBlank()) {
-      headers.set("X-Txn-Id", txnId);
+      headers.set("X-Transaction-Id", txnId);
     }
 
     HttpEntity<Void> entity = new HttpEntity<>(headers);

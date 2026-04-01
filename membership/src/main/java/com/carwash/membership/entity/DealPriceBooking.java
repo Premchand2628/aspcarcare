@@ -9,6 +9,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.UUID;
@@ -75,6 +76,9 @@ public class DealPriceBooking {
   @Column(name = "left_washes", nullable = false)
   private Integer leftWashes;
 
+  @Column(name = "expiry_date")
+  private LocalDate expiryDate;
+
   @PrePersist
   public void onCreate() {
     if (createdAt == null) {
@@ -108,6 +112,10 @@ public class DealPriceBooking {
 
     int computedLeft = totalWashes - usedWashes;
     leftWashes = Math.max(computedLeft, 0);
+
+    if (expiryDate == null) {
+      expiryDate = LocalDate.now().plusMonths(3);
+    }
   }
 
   public Long getId() {
@@ -260,5 +268,13 @@ public class DealPriceBooking {
 
   public void setLeftWashes(Integer leftWashes) {
     this.leftWashes = leftWashes;
+  }
+
+  public LocalDate getExpiryDate() {
+    return expiryDate;
+  }
+
+  public void setExpiryDate(LocalDate expiryDate) {
+    this.expiryDate = expiryDate;
   }
 }

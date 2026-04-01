@@ -1,1 +1,6 @@
 /.metadata/
+
+# Environment variables (secrets)
+.env
+env.properties
+!.env.example

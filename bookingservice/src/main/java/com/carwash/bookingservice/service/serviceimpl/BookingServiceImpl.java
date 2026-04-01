@@ -27,6 +27,7 @@ import com.carwash.bookingservice.client.MembershipClient.MembershipClient;
 import com.carwash.bookingservice.client.MembershipClient.RateClient;
 import com.carwash.bookingservice.dto.ApiResponse;
 import com.carwash.bookingservice.dto.BookingRequest;
+import com.carwash.bookingservice.dto.BookingResponseDto;
 import com.carwash.bookingservice.dto.DealPriceBookingRedeemRequest;
 import com.carwash.bookingservice.dto.RefundQuoteResponse;
 import com.carwash.bookingservice.dto.StatusUpdateRequest;
@@ -66,6 +67,12 @@ public class BookingServiceImpl implements BookingService {
             "16:00-17:00","17:00-18:00","18:00-19:00"
     );
 
+    private static final List<String> HOME_TIME_SLOTS = List.of(
+            "07:00-08:00","08:00-09:00","09:00-10:00","10:00-11:00",
+            "11:00-12:00","12:00-13:00","13:00-14:00","14:00-15:00",
+            "15:00-16:00","16:00-17:00","17:00-18:00","18:00-19:00"
+    );
+
     public BookingServiceImpl(BookingRepository bookingRepository,
                           RefundRepository refundRepository,
                           MembershipClient membershipClient,
@@ -84,32 +91,64 @@ public class BookingServiceImpl implements BookingService {
     // READ APIs
     // ==========================================================
     @Override
-    public Map<String, Boolean> getAvailability(String date, String serviceType) {
+    public Map<String, Boolean> getAvailability(String date,
+                                                String serviceType,
+                                                Long serviceCentreId,
+                                                String centreName,
+                                                String centreAddress) {
         LocalDate d = LocalDate.parse(date);
         String st = normServiceType(serviceType);
+        boolean homeService = isHomeService(st);
+        String normalizedCentreName = isBlank(centreName) ? null : centreName.trim().toUpperCase();
+        String normalizedAddress = normalizeAddressForMatch(centreAddress);
 
         Map<String, Boolean> slotMap = new LinkedHashMap<>();
-        for (String s : TIME_SLOTS) slotMap.put(s, true);
-
-        List<Booking> list = bookingRepository.findByBookingDateAndServiceType(d, st);
-        for (Booking b : (list == null ? Collections.<Booking>emptyList() : list)) {
-            String slot = b.getTimeSlot();
-            if (slot == null) continue;
-
-            String status = upper(b.getStatus());
-            if (!status.equals("CANCELLED") && !status.equals("CLOSED")) {
-                if (slotMap.containsKey(slot)) slotMap.put(slot, false);
+        List<String> slotsToCheck = homeService ? HOME_TIME_SLOTS : TIME_SLOTS;
+        for (String slot : slotsToCheck) {
+            long bookedCount;
+            if (homeService) {
+                // HOME: match bookings by service type only (no centre)
+                bookedCount = bookingRepository.countForAvailability(d, slot, st);
+            } else if (serviceCentreId != null) {
+                // SELF_DRIVE: serviceCentreId uniquely identifies the centre — use it alone.
+                // Do NOT compound with address because the booking's 'address' field
+                // stores the customer's home address, not the service centre address.
+                bookedCount = bookingRepository.countForAvailabilityByCentreId(d, slot, st, serviceCentreId);
+            } else if (normalizedCentreName != null && normalizedAddress != null) {
+                // No centreId: differentiate centres with same name using address
+                bookedCount = bookingRepository.countForAvailabilityByCentreNameAndAddress(
+                        d,
+                        slot,
+                        st,
+                        normalizedCentreName,
+                        normalizedAddress
+                );
+            } else if (normalizedCentreName != null) {
+                bookedCount = bookingRepository.countForAvailabilityByCentreName(d, slot, st, normalizedCentreName);
+            } else {
+                bookedCount = bookingRepository.countForAvailability(d, slot, st);
             }
+            slotMap.put(slot, bookedCount == 0L);
         }
         return slotMap;
     }
+
+    private String normalizeAddressForMatch(String value) {
+        if (isBlank(value)) {
+            return null;
+        }
+        return value.trim().toUpperCase().replace(" ", "");
+    }
     @Override
-    public List<Booking> getBookingsByPhone(String phone) {
-        return bookingRepository.findByPhoneOrderByCreatedAtDesc(phone.trim());
+    public List<BookingResponseDto> getBookingsByPhone(String phone) {
+        return bookingRepository.findByPhoneOrderByCreatedAtDesc(phone.trim())
+                .stream()
+                .map(BookingResponseDto::fromEntity)
+                .collect(Collectors.toList());
     }
     
     @Override
-    public List<Booking> getBookingsByEmail(String email) {
+    public List<BookingResponseDto> getBookingsByEmail(String email) {
         // Find user by email to get their phone number
         Optional<User> user = userRepository.findByEmail(email.trim());
         if (user.isEmpty()) {
@@ -117,16 +156,28 @@ public class BookingServiceImpl implements BookingService {
         }
         // Get bookings by the user's phone number
         String phone = user.get().getPhone();
-        return bookingRepository.findByPhoneOrderByCreatedAtDesc(phone);
+        return bookingRepository.findByPhoneOrderByCreatedAtDesc(phone)
+                .stream()
+                .map(BookingResponseDto::fromEntity)
+                .collect(Collectors.toList());
     }
     
     @Override
-    public List<Booking> getAllBookings() {
-        return bookingRepository.findAllByOrderByCreatedAtDesc();
+    public List<BookingResponseDto> getAllBookings() {
+        return bookingRepository.findAllByOrderByCreatedAtDesc()
+                .stream()
+                .map(BookingResponseDto::fromEntity)
+                .collect(Collectors.toList());
     }
     @Override
-    public Optional<Booking> getBookingById(Long id) {
-        return bookingRepository.findById(id);
+    public Optional<BookingResponseDto> getBookingById(Long id) {
+        return bookingRepository.findById(id)
+                .map(BookingResponseDto::fromEntity);
+    }
+
+    @Override
+    public Booking getBookingEntity(Long id) {
+        return bookingRepository.findById(id).orElse(null);
     }
 
     // ==========================================================
@@ -194,6 +245,26 @@ public class BookingServiceImpl implements BookingService {
         BigDecimal paid = paidAmountForRefund(b);
         BigDecimal refundAmt = paid.multiply(BigDecimal.valueOf(pct))
                 .divide(BigDecimal.valueOf(100), MONEY_SCALE, RoundingMode.HALF_UP);
+
+        if (Boolean.TRUE.equals(b.getSubscriptionRedeemed())) {
+            try {
+                Map<String, Object> revertResult = membershipClient.revertDealSubscription(
+                        b.getMembershipIdUsed(),
+                        b.getPhone(),
+                        b.getPlanTypeCode());
+
+                if (revertResult == null || !Boolean.TRUE.equals(revertResult.get("success"))) {
+                    String message = revertResult == null
+                            ? "Unable to revert redeemed subscription wash"
+                            : String.valueOf(revertResult.getOrDefault("message", "Unable to revert redeemed subscription wash"));
+                    throw new IllegalStateException(message);
+                }
+            } catch (IllegalStateException ex) {
+                throw ex;
+            } catch (Exception ex) {
+                throw new IllegalStateException("Cancellation blocked: failed to restore subscription wash. " + ex.getMessage());
+            }
+        }
 
         Booking updated = b.toBuilder()
                 .status("CANCELLED")
@@ -300,6 +371,9 @@ public class BookingServiceImpl implements BookingService {
                     String message = redeemResult == null ? "Unable to redeem subscription" : String.valueOf(redeemResult.getOrDefault("message", "Unable to redeem subscription"));
                     throw new IllegalArgumentException(message);
                 }
+
+                Long dealPriceBookingId = parseNullableLong(redeemResult.get("dealPriceBookingId"));
+                booking = booking.toBuilder().membershipIdUsed(dealPriceBookingId).build();
             } catch (IllegalArgumentException ex) {
                 throw ex;
             } catch (Exception ex) {
@@ -475,7 +549,7 @@ public class BookingServiceImpl implements BookingService {
         return new ApiResponse(true, "Payment confirmed, booking updated");
     }
     @Override
-    public Booking updateBookingStatus(Long id, StatusUpdateRequest request) {
+    public BookingResponseDto updateBookingStatus(Long id, StatusUpdateRequest request) {
         if (request == null || isBlank(request.getStatus())) {
             throw new IllegalArgumentException("Status is required");
         }
@@ -494,7 +568,7 @@ public class BookingServiceImpl implements BookingService {
                 .centreName(fixCentreNameForHome(booking.getServiceType(), booking.getCentreName()))
                 .build();
 
-        return bookingRepository.save(updated);
+        return BookingResponseDto.fromEntity(bookingRepository.save(updated));
     }
  // BookingServiceImpl.java
     @Override
@@ -1022,6 +1096,17 @@ public class BookingServiceImpl implements BookingService {
 
     private String upper(String s) {
         return s == null ? "" : s.trim().toUpperCase();
+    }
+
+    private Long parseNullableLong(Object value) {
+        if (value == null) return null;
+        String raw = String.valueOf(value).trim();
+        if (raw.isEmpty() || "null".equalsIgnoreCase(raw)) return null;
+        try {
+            return Long.parseLong(raw);
+        } catch (Exception ex) {
+            return null;
+        }
     }
 
     private boolean isBlank(String s) {

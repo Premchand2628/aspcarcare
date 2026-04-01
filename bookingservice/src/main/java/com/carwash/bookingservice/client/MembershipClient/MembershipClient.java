@@ -93,6 +93,32 @@ public class MembershipClient {
     return res.getBody();
   }
 
+  @SuppressWarnings("unchecked")
+  public Map<String, Object> revertDealSubscription(Long dealPriceBookingId, String phone, String planTypeCode) {
+    String url = BASE + "/deal-price-bookings/redeem/revert";
+
+    HttpHeaders headers = new HttpHeaders();
+    String authHeader = resolveAuthorizationHeader();
+    if (authHeader != null && !authHeader.isBlank()) {
+      headers.set(HttpHeaders.AUTHORIZATION, authHeader);
+    }
+
+    Map<String, Object> payload = new java.util.HashMap<>();
+    if (dealPriceBookingId != null) {
+      payload.put("dealPriceBookingId", dealPriceBookingId);
+    }
+    if (phone != null && !phone.isBlank()) {
+      payload.put("phone", phone);
+    }
+    if (planTypeCode != null && !planTypeCode.isBlank()) {
+      payload.put("planTypeCode", planTypeCode);
+    }
+
+    HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);
+    ResponseEntity<Map> res = restTemplate.exchange(url, HttpMethod.POST, entity, Map.class);
+    return res.getBody();
+  }
+
   private String resolveAuthorizationHeader() {
     RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
     if (!(attrs instanceof ServletRequestAttributes servletAttrs)) {

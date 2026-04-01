@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import com.carwash.bookingservice.dto.ApiResponse;
 import com.carwash.bookingservice.dto.BookingRequest;
+import com.carwash.bookingservice.dto.BookingResponseDto;
 import com.carwash.bookingservice.dto.RefundQuoteResponse;
 import com.carwash.bookingservice.dto.StatusUpdateRequest;
 import com.carwash.bookingservice.dto.UpdateBookingRequest;
@@ -30,19 +31,26 @@ public interface BookingService {
     // ==========================================================
     
     /**
-     * Get available time slots for a specific date and service type
+     * Get available time slots for a specific date, service type and optional service centre.
      * @param date Date in YYYY-MM-DD format
      * @param serviceType Type of service (HOME, ASP_CARE, SELF_DRIVE, etc.)
+     * @param serviceCentreId Optional service centre id for centre-specific slot checks
+     * @param centreName Optional centre name fallback when id is unavailable
+    * @param centreAddress Optional centre address fallback used with centreName
      * @return Map of time slots with availability status
      */
-    Map<String, Boolean> getAvailability(String date, String serviceType);
+    Map<String, Boolean> getAvailability(String date,
+                                 String serviceType,
+                                 Long serviceCentreId,
+                                 String centreName,
+                                 String centreAddress);
     
     /**
      * Get all bookings for a specific phone number
      * @param phone Customer's phone number
      * @return List of bookings ordered by creation date (descending)
      */
-    List<Booking> getBookingsByPhone(String phone);
+    List<BookingResponseDto> getBookingsByPhone(String phone);
     
     /**
      * Get all bookings for a specific email address
@@ -50,20 +58,27 @@ public interface BookingService {
      * @param email Customer's email address
      * @return List of bookings ordered by creation date (descending)
      */
-    List<Booking> getBookingsByEmail(String email);
+    List<BookingResponseDto> getBookingsByEmail(String email);
     
     /**
      * Get all bookings in the system
      * @return List of all bookings ordered by creation date (descending)
      */
-    List<Booking> getAllBookings();
+    List<BookingResponseDto> getAllBookings();
     
     /**
      * Get a specific booking by ID
      * @param id Booking ID
      * @return Optional containing the booking if found
      */
-    Optional<Booking> getBookingById(Long id);
+    Optional<BookingResponseDto> getBookingById(Long id);
+
+    /**
+     * Get raw Booking entity by ID (used for invoice generation)
+     * @param id Booking ID
+     * @return Booking entity or null if not found
+     */
+    Booking getBookingEntity(Long id);
 
     // ==========================================================
     // CANCEL / REFUND Operations
@@ -118,7 +133,7 @@ public interface BookingService {
      * @param request StatusUpdateRequest with new status
      * @return Updated Booking entity
      */
-    Booking updateBookingStatus(Long id, StatusUpdateRequest request);
+    BookingResponseDto updateBookingStatus(Long id, StatusUpdateRequest request);
     
     /**
      * Upgrade booking wash type (BASIC → FOAM → PREMIUM)

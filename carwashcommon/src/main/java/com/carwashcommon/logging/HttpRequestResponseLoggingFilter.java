@@ -22,6 +22,7 @@ public class HttpRequestResponseLoggingFilter extends OncePerRequestFilter {
 
   private static final Logger log = LoggerFactory.getLogger(HttpRequestResponseLoggingFilter.class);
   private static final int MAX_BODY_CHARS = 8000;
+  private static final String TRANSACTION_ID_HEADER = "X-Transaction-Id";
 
   @Override
   protected boolean shouldNotFilter(HttpServletRequest request) {
@@ -43,7 +44,8 @@ public class HttpRequestResponseLoggingFilter extends OncePerRequestFilter {
         : new ContentCachingResponseWrapper(response);
 
     long start = System.currentTimeMillis();
-    String requestId = UUID.randomUUID().toString();
+    String transactionId = resolveTransactionId(requestWrapper);
+    responseWrapper.setHeader(TRANSACTION_ID_HEADER, transactionId);
 
     try {
       filterChain.doFilter(requestWrapper, responseWrapper);
@@ -71,13 +73,13 @@ public class HttpRequestResponseLoggingFilter extends OncePerRequestFilter {
       );
 
       log.info(
-          "HTTP_REQUEST requestId={} method={} path={} query={} headers={} body={}",
-          requestId, method, path, safe(query), requestHeaders, requestBody
+          "HTTP_REQUEST transactionId={} method={} path={} query={} headers={} body={}",
+          transactionId, method, path, safe(query), requestHeaders, requestBody
       );
 
       log.info(
-          "HTTP_RESPONSE requestId={} method={} path={} status={} durationMs={} headers={} body={}",
-          requestId, method, path, status, durationMs, responseHeaders, responseBody
+          "HTTP_RESPONSE transactionId={} method={} path={} status={} durationMs={} headers={} body={}",
+          transactionId, method, path, status, durationMs, responseHeaders, responseBody
       );
 
       responseWrapper.copyBodyToResponse();
@@ -89,6 +91,7 @@ public class HttpRequestResponseLoggingFilter extends OncePerRequestFilter {
     putIfPresent(headers, "content-type", request.getHeader("Content-Type"));
     putIfPresent(headers, "user-agent", request.getHeader("User-Agent"));
     putIfPresent(headers, "x-forwarded-for", request.getHeader("X-Forwarded-For"));
+    putIfPresent(headers, "x-transaction-id", request.getHeader(TRANSACTION_ID_HEADER));
     putIfPresent(headers, "authorization", maskAuthorization(request.getHeader("Authorization")));
     return headers;
   }
@@ -97,7 +100,16 @@ public class HttpRequestResponseLoggingFilter extends OncePerRequestFilter {
     Map<String, String> headers = new LinkedHashMap<>();
     putIfPresent(headers, "content-type", response.getHeader("Content-Type"));
     putIfPresent(headers, "cache-control", response.getHeader("Cache-Control"));
+    putIfPresent(headers, "x-transaction-id", response.getHeader(TRANSACTION_ID_HEADER));
     return headers;
+  }
+
+  private String resolveTransactionId(HttpServletRequest request) {
+    String incoming = request.getHeader(TRANSACTION_ID_HEADER);
+    if (StringUtils.hasText(incoming)) {
+      return incoming.trim();
+    }
+    return UUID.randomUUID().toString();
   }
 
   private void putIfPresent(Map<String, String> target, String key, String value) {
