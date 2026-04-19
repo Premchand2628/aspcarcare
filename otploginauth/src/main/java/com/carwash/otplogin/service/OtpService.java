@@ -25,6 +25,9 @@ public class OtpService {
     private static final int MAX_ATTEMPTS = 5;
     private final JavaMailSender mailSender;
 
+    @org.springframework.beans.factory.annotation.Value("${spring.mail.from}")
+    private String mailFrom;
+
     // mobileNumber -> OtpData
     private final ConcurrentMap<String, OtpData> otpStore = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, Instant> passwordResetVerifiedStore = new ConcurrentHashMap<>();
@@ -169,6 +172,7 @@ public class OtpService {
 
     private void sendEmailOtp(String email, String otp) {
         SimpleMailMessage msg = new SimpleMailMessage();
+        msg.setFrom(mailFrom);
         msg.setTo(email);
         msg.setSubject("ASP Car Care - OTP");
         msg.setText("Your OTP is: " + otp + " (valid 5 minutes)");
