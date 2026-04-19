@@ -10,6 +10,8 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,12 +38,14 @@ public class MembershipService {
   // READ
   // =========================
 
+  @Cacheable(value = "membership", key = "'latest:' + #phone")
   public Optional<Membership> getLatestByPhone(String phone) {
     if (phone == null || phone.isBlank()) return Optional.empty();
     MDC.put("event", "business_start");
     return membershipRepository.findTopByPhoneOrderByUpdatedAtDesc(phone.trim());
   }
 
+  @Cacheable(value = "membership", key = "'active:' + #phone")
   public Optional<Membership> getLatestActiveByPhone(String phone) {
     if (phone == null || phone.isBlank()) return Optional.empty();
     MDC.put("event", "business_start");
@@ -52,6 +56,7 @@ public class MembershipService {
   // CREATE / UPDATE
   // =========================
 
+  @CacheEvict(value = "membership", allEntries = true)
   public Membership createMembership(MembershipCreateRequest request) {
     MDC.put("event", "business_start");
 
@@ -144,6 +149,7 @@ public class MembershipService {
     return saved;
   }
 
+  @CacheEvict(value = "membership", allEntries = true)
   public Membership updateStatus(String membershipId, String value) {
     MDC.put("event", "business_start");
 
@@ -207,6 +213,7 @@ public class MembershipService {
     return buildResponse(m, original, false, BigDecimal.ZERO, original, "No free left and discount period ended.");
   }
 
+  @CacheEvict(value = "membership", allEntries = true)
   @Transactional
   public MembershipBenefitResponse applyBenefit(String phone, BigDecimal amount, String washType, String bookingTxnId) {
     MDC.put("event", "business_start");
@@ -242,6 +249,7 @@ public class MembershipService {
     return previewBenefit(phone, original, washType);
   }
 
+  @CacheEvict(value = "membership", allEntries = true)
   @Transactional
   public MembershipBenefitResponse consumeFreeDirect(Long membershipDbId, String washType, BigDecimal amount, String transactionId) {
     MDC.put("event", "business_start");

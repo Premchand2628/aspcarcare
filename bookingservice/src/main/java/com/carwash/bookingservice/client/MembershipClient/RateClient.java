@@ -1,6 +1,7 @@
 package com.carwash.bookingservice.client.MembershipClient;
 
 import org.slf4j.MDC;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -35,6 +36,7 @@ public class RateClient {
     return "BASIC";
   }
 
+  @Cacheable(value = "rateAmounts", key = "#carType + ':' + #washType")
   @SuppressWarnings("unchecked")
   public BigDecimal getAmount(String carType, String washType) {
     String vt = normalizeVehicleType(carType);

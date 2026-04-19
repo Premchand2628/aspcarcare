@@ -33,6 +33,25 @@ public class JwtTokenService {
                 .setSubject(subjectPhone)
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(exp))
+                .claim("type", "access")
+                .signWith(signingKey(), SignatureAlgorithm.HS256);
+
+        if (claims != null && !claims.isEmpty()) {
+            b.addClaims(claims);
+        }
+
+        return b.compact();
+    }
+
+    public String generateRefreshToken(String subjectPhone, Map<String, Object> claims) {
+        Instant now = Instant.now();
+        Instant exp = now.plus(props.getRefreshTokenDays(), ChronoUnit.DAYS);
+
+        JwtBuilder b = Jwts.builder()
+                .setSubject(subjectPhone)
+                .setIssuedAt(Date.from(now))
+                .setExpiration(Date.from(exp))
+                .claim("type", "refresh")
                 .signWith(signingKey(), SignatureAlgorithm.HS256);
 
         if (claims != null && !claims.isEmpty()) {

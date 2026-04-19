@@ -21,6 +21,10 @@ spring:
                - "http://127.0.0.1:3000"       # Add this
                - "http://localhost:3001"
                - "http://127.0.0.1:3001"
+               - "http://localhost:3002"
+               - "http://127.0.0.1:3002"
+               - "http://localhost:3003"
+               - "http://127.0.0.1:3003"
                - "http://192.168.1.233:3000"
                - "http://192.168.1.233:8080"
                - "https://garth-clannish-michelle.ngrok-free.dev"
@@ -36,6 +40,17 @@ spring:
             allowCredentials: true
 
       routes:
+        # ---------- ADMIN ROUTES (must be before other routes) ----------
+        - id: admin-staff-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/admin/staff/**,/admin/users/**
+
+        - id: admin-booking-stats
+          uri: http://localhost:8082
+          predicates:
+            - Path=/admin/stats/**
+
         # ---------- AUTH USER SERVICE (8081) ----------
         - id: auth-user-service
           uri: http://localhost:8081
@@ -70,7 +85,7 @@ spring:
         - id: carwash-rates-service
           uri: http://localhost:8086
           predicates:
-            - Path=/rates/**,/carwashrates/**,/api/deal-prices/**
+            - Path=/rates/**,/carwashrates/**,/deal-prices/**,/services/**
             
         # ---------- REFERRAL COUPON SERVICE (8088) ----------
         - id: coupon-service
@@ -161,7 +176,7 @@ spring:
         - id: carwash-rates-service
           uri: http://localhost:9086
           predicates:
-            - Path=/rates/**,/carwashrates/**,/api/deal-prices/**
+            - Path=/rates/**,/carwashrates/**,/deal-prices/**,/services/**
         - id: coupon-service
           uri: http://localhost:9088
           predicates:
@@ -245,7 +260,7 @@ spring:
         - id: carwash-rates-service
           uri: http://localhost:10086
           predicates:
-            - Path=/rates/**,/carwashrates/**,/api/deal-prices/**
+            - Path=/rates/**,/carwashrates/**,/deal-prices/**,/services/**
         - id: coupon-service
           uri: http://localhost:10088
           predicates:

@@ -158,6 +158,18 @@ public interface BookingService {
      * @throws IllegalArgumentException if invalid date format or unavailable slot
      */
     ApiResponse updateBooking(Long id, UpdateBookingRequest request);
+
+    // ==========================================================
+    // CENTRE-SPECIFIC Operations (for CentreApp — match by centre name)
+    // ==========================================================
+
+    List<BookingResponseDto> getActiveBookingsForCentre(String centreName);
+
+    Map<String, Object> getStatsForCentre(String centreName);
+
+    List<BookingResponseDto> searchBookingsForCentre(String centreName, String phone);
+
+    List<BookingResponseDto> getHistoryForCentre(String centreName, int page, int limit);
 }//package com.carwash.bookingservice.service;
 //
 //import java.util.List;

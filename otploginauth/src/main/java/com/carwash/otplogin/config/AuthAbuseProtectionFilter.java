@@ -58,6 +58,18 @@ public class AuthAbuseProtectionFilter extends OncePerRequestFilter {
     @Value("${app.security.rate-limit.google-login.window-seconds:300}")
     private int googleLoginWindowSeconds;
 
+    @Value("${app.security.rate-limit.email-login.max-requests:10}")
+    private int emailLoginMaxRequests;
+
+    @Value("${app.security.rate-limit.email-login.window-seconds:600}")
+    private int emailLoginWindowSeconds;
+
+    @Value("${app.security.rate-limit.admin-login.max-requests:10}")
+    private int adminLoginMaxRequests;
+
+    @Value("${app.security.rate-limit.admin-login.window-seconds:600}")
+    private int adminLoginWindowSeconds;
+
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String uri = request.getRequestURI();
@@ -118,7 +130,8 @@ public class AuthAbuseProtectionFilter extends OncePerRequestFilter {
 
         if ("/auth/login/send-otp".equals(uri)
                 || "/auth/signup/send-otp".equals(uri)
-                || "/auth/password/forgot/send-otp".equals(uri)) {
+                || "/auth/password/forgot/send-otp".equals(uri)
+                || "/auth/send-otp-generic".equals(uri)) {
             return new RatePolicy("send-otp", sendOtpMaxRequests, sendOtpWindowSeconds);
         }
 
@@ -126,8 +139,24 @@ public class AuthAbuseProtectionFilter extends OncePerRequestFilter {
             return new RatePolicy("verify-otp", verifyOtpMaxRequests, verifyOtpWindowSeconds);
         }
 
+        if ("/auth/check-phone".equals(uri)) {
+            return new RatePolicy("verify-otp", verifyOtpMaxRequests, verifyOtpWindowSeconds);
+        }
+
         if ("/auth/login/google".equals(uri)) {
             return new RatePolicy("google-login", googleLoginMaxRequests, googleLoginWindowSeconds);
+        }
+
+        if ("/auth/login/email".equals(uri)) {
+            return new RatePolicy("email-login", emailLoginMaxRequests, emailLoginWindowSeconds);
+        }
+
+        if ("/auth/login/facebook".equals(uri)) {
+            return new RatePolicy("google-login", googleLoginMaxRequests, googleLoginWindowSeconds);
+        }
+
+        if ("/auth/admin/login".equals(uri) || "/auth/staff/login".equals(uri)) {
+            return new RatePolicy("admin-login", adminLoginMaxRequests, adminLoginWindowSeconds);
         }
 
         return null;
@@ -153,18 +182,10 @@ public class AuthAbuseProtectionFilter extends OncePerRequestFilter {
     }
 
     private String clientIp(HttpServletRequest request) {
-        String forwarded = request.getHeader("X-Forwarded-For");
-        if (forwarded != null && !forwarded.isBlank()) {
-            int commaIdx = forwarded.indexOf(',');
-            return commaIdx > 0 ? forwarded.substring(0, commaIdx).trim() : forwarded.trim();
-        }
-
-        String realIp = request.getHeader("X-Real-IP");
-        if (realIp != null && !realIp.isBlank()) {
-            return realIp.trim();
-        }
-
-        return request.getRemoteAddr() != null ? request.getRemoteAddr() : "unknown";
+        // Always prefer the direct remote address to prevent X-Forwarded-For spoofing.
+        // Only use forwarded headers if you have a trusted reverse proxy stripping/setting them.
+        String remoteAddr = request.getRemoteAddr();
+        return remoteAddr != null ? remoteAddr : "unknown";
     }
 
     private void writeError(HttpServletResponse response, int status, String message) throws IOException {

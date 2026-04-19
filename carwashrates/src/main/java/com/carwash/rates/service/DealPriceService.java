@@ -4,6 +4,8 @@ import com.carwash.rates.dto.DealPriceDTO;
 import com.carwash.rates.entity.DealPrice;
 import com.carwash.rates.repository.DealPriceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,6 +32,7 @@ public class DealPriceService {
     }
     
     // Get all deal prices
+    @Cacheable(value = "dealPrices", key = "'all'")
     public List<DealPriceDTO> getAllDealPrices() {
         return dealPriceRepository.findAll()
             .stream()
@@ -38,6 +41,7 @@ public class DealPriceService {
     }
     
     // Get deal prices by service type
+    @Cacheable(value = "dealPrices", key = "'serviceType:' + #serviceType")
     public List<DealPriceDTO> getDealPricesByServiceType(String serviceType) {
         return dealPriceRepository.findByDealServiceType(serviceType)
             .stream()
@@ -46,6 +50,7 @@ public class DealPriceService {
     }
     
     // Get deal prices by wash type
+    @Cacheable(value = "dealPrices", key = "'washType:' + #washType")
     public List<DealPriceDTO> getDealPricesByWashType(String washType) {
         return dealPriceRepository.findByDealWashType(washType)
             .stream()
@@ -54,6 +59,7 @@ public class DealPriceService {
     }
 
     // Get deal prices by car type
+    @Cacheable(value = "dealPrices", key = "'carType:' + #carType")
     public List<DealPriceDTO> getDealPricesByCarType(String carType) {
         return dealPriceRepository.findByDealCarType(carType)
             .stream()
@@ -62,6 +68,7 @@ public class DealPriceService {
     }
     
     // Get deal prices by service type and wash type
+    @Cacheable(value = "dealPrices", key = "'st:' + #serviceType + ':wt:' + #washType")
     public List<DealPriceDTO> getDealPricesByServiceTypeAndWashType(String serviceType, String washType) {
         return dealPriceRepository.findByDealServiceTypeAndDealWashType(serviceType, washType)
             .stream()
@@ -70,6 +77,7 @@ public class DealPriceService {
     }
 
     // Get deal prices by service type and car type
+    @Cacheable(value = "dealPrices", key = "'st:' + #serviceType + ':ct:' + #carType")
     public List<DealPriceDTO> getDealPricesByServiceTypeAndCarType(String serviceType, String carType) {
         return dealPriceRepository.findByDealServiceTypeAndDealCarType(serviceType, carType)
             .stream()
@@ -78,6 +86,7 @@ public class DealPriceService {
     }
 
     // Get deal prices by service type, wash type and car type
+    @Cacheable(value = "dealPrices", key = "'st:' + #serviceType + ':wt:' + #washType + ':ct:' + #carType")
     public List<DealPriceDTO> getDealPricesByServiceTypeAndWashTypeAndCarType(String serviceType, String washType, String carType) {
         return dealPriceRepository.findByDealServiceTypeAndDealWashTypeAndDealCarType(serviceType, washType, carType)
             .stream()
@@ -86,6 +95,7 @@ public class DealPriceService {
     }
     
     // Get deal price by ID
+    @Cacheable(value = "dealPrices", key = "'id:' + #id")
     public DealPriceDTO getDealPriceById(Long id) {
         return dealPriceRepository.findById(id)
             .map(this::convertToDTO)
@@ -93,12 +103,14 @@ public class DealPriceService {
     }
     
     // Create new deal price
+    @CacheEvict(value = "dealPrices", allEntries = true)
     public DealPriceDTO createDealPrice(DealPrice dealPrice) {
         DealPrice saved = dealPriceRepository.save(dealPrice);
         return convertToDTO(saved);
     }
     
     // Update deal price
+    @CacheEvict(value = "dealPrices", allEntries = true)
     public DealPriceDTO updateDealPrice(Long id, DealPrice dealPrice) {
         return dealPriceRepository.findById(id)
             .map(existing -> {
@@ -117,6 +129,7 @@ public class DealPriceService {
     }
     
     // Delete deal price
+    @CacheEvict(value = "dealPrices", allEntries = true)
     public boolean deleteDealPrice(Long id) {
         if (dealPriceRepository.existsById(id)) {
             dealPriceRepository.deleteById(id);

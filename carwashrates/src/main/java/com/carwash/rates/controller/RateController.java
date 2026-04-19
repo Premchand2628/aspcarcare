@@ -13,7 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,7 +24,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/rates")
-@CrossOrigin(origins = "*")
 public class RateController {
 
     private static final Logger log = LoggerFactory.getLogger(RateController.class);
@@ -48,6 +50,7 @@ public class RateController {
     // GET DISTINCT VEHICLE TYPES
     // ==========================================================
     @GetMapping("/vehicle-types")
+    @Cacheable(value = "vehicleTypes")
     public ResponseEntity<List<String>> getVehicleTypes() {
         return ResponseEntity.ok(rateRepository.findDistinctActiveVehicleTypes());
     }
@@ -56,6 +59,7 @@ public class RateController {
     // GET DISTINCT WASH LEVELS
     // ==========================================================
     @GetMapping("/wash-levels")
+    @Cacheable(value = "washLevels")
     public ResponseEntity<List<String>> getWashLevels() {
         return ResponseEntity.ok(rateRepository.findDistinctActiveWashLevels());
     }
@@ -64,6 +68,7 @@ public class RateController {
     // GET ALL
     // ==========================================================
     @GetMapping("/all")
+    @Cacheable(value = "rates", key = "'all'")
     public ResponseEntity<?> getAllRates() {
 
         final long start = System.nanoTime();
@@ -94,6 +99,7 @@ public class RateController {
     // GET SINGLE RATE
     // ==========================================================
     @GetMapping
+    @Cacheable(value = "rates", key = "#vehicleType + ':' + #washLevel")
     public ResponseEntity<RateResponse> getRate(
             @RequestParam String vehicleType,
             @RequestParam String washLevel
@@ -171,6 +177,7 @@ public class RateController {
     // GET MATRIX
     // ==========================================================
     @GetMapping("/matrix")
+    @Cacheable(value = "rates", key = "'matrix'")
     public List<RateResponse> getMatrix() {
 
         final long start = System.nanoTime();
@@ -210,7 +217,9 @@ public class RateController {
     // ==========================================================
     // UPSERT
     // ==========================================================
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
+    @CacheEvict(value = {"rates", "vehicleTypes", "washLevels"}, allEntries = true)
     public ResponseEntity<?> upsert(@Valid @RequestBody RateUpsertRequest req) {
 
         final long start = System.nanoTime();

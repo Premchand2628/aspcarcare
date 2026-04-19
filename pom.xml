@@ -13,6 +13,7 @@
     <jjwt.version>0.11.5</jjwt.version>
     <logstash.encoder.version>7.4</logstash.encoder.version>
     <json.version>20240303</json.version>
+    <caffeine.version>3.1.8</caffeine.version>
     <maven.compiler.release>${java.version}</maven.compiler.release>
   </properties>
   <!-- ✅ Import Spring Boot + Spring Cloud BOM once -->
@@ -62,6 +63,11 @@
         <groupId>org.json</groupId>
         <artifactId>json</artifactId>
         <version>${json.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.ben-manes.caffeine</groupId>
+        <artifactId>caffeine</artifactId>
+        <version>${caffeine.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

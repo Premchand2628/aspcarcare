@@ -6,9 +6,9 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ public class OtpService {
     private final ConcurrentMap<String, OtpData> otpStore = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, Instant> passwordResetVerifiedStore = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, Instant> emailUpdateVerifiedStore = new ConcurrentHashMap<>();
-    private final Random random = new Random();
+    private final SecureRandom random = new SecureRandom();
 
     public String generateAndSendOtp(String mobileNumber) {
         String otp = generateOtpValue();

@@ -65,6 +65,8 @@ public class EmailService {
                 return "Booking Cancelled - ASP Car Care ✕";
             case "UPGRADED":
                 return "Booking Upgraded - ASP Car Care 🚀";
+            case "COMPLETED":
+                return "Service Completed - No Objection Certificate - ASP Car Care ✅";
             default:
                 return "Booking Update - ASP Car Care";
         }
@@ -84,6 +86,8 @@ public class EmailService {
                 return buildCancellationEmail(request);
             case "UPGRADED":
                 return buildUpgradeEmail(request);
+            case "COMPLETED":
+                return buildCompletionNocEmail(request);
             default:
                 return buildDefaultEmail(request);
         }
@@ -279,6 +283,70 @@ public class EmailService {
                 "</div>" +
                 "<div class='footer'>" +
                 "<p>Thank you for choosing ASP Car Care!</p>" +
+                "</div>" +
+                "</div>" +
+                "</body></html>";
+    }
+
+    private String buildCompletionNocEmail(EmailRequest request) {
+        String amount = request.getAmount() != null ? String.format("%.2f", request.getAmount()) : "0.00";
+        String todayDate = java.time.LocalDate.now().toString();
+        
+        return "<!DOCTYPE html>" +
+                "<html><head><meta charset='UTF-8'>" +
+                "<style>" +
+                "body { font-family: 'Segoe UI', Arial; line-height: 1.6; color: #333; background-color: #f5f5f5; margin: 0; padding: 20px; }" +
+                ".container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }" +
+                ".header { background: linear-gradient(135deg, #2E7D32 0%, #43A047 100%); color: white; padding: 30px; text-align: center; }" +
+                ".header h1 { margin: 0; font-size: 26px; }" +
+                ".header p { margin: 5px 0 0 0; opacity: 0.9; font-size: 14px; }" +
+                ".content { padding: 30px; }" +
+                ".greeting { font-size: 18px; color: #333; margin-bottom: 20px; }" +
+                ".noc-box { background: #E8F5E9; border: 2px solid #2E7D32; padding: 20px; border-radius: 10px; margin: 20px 0; }" +
+                ".noc-title { text-align: center; font-size: 20px; font-weight: 700; color: #2E7D32; margin-bottom: 15px; }" +
+                ".details-box { background: #f9f9f9; border-left: 4px solid #2E7D32; padding: 20px; border-radius: 8px; margin: 20px 0; }" +
+                ".detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #e0e0e0; }" +
+                ".detail-row:last-child { border-bottom: none; }" +
+                ".detail-label { font-weight: 600; color: #2E7D32; }" +
+                ".detail-value { color: #555; text-align: right; }" +
+                ".message { color: #666; line-height: 1.8; margin: 20px 0; }" +
+                ".noc-statement { background: #FFF3E0; border-left: 4px solid #FF8C00; padding: 15px; border-radius: 6px; margin: 20px 0; font-size: 14px; color: #555; }" +
+                ".footer { background: #f5f5f5; padding: 20px; text-align: center; font-size: 12px; color: #999; border-top: 1px solid #e0e0e0; }" +
+                ".emoji { font-size: 24px; margin-bottom: 10px; }" +
+                "</style>" +
+                "</head><body>" +
+                "<div class='container'>" +
+                "<div class='header'>" +
+                "<div class='emoji'>✅</div>" +
+                "<h1>Service Completed</h1>" +
+                "<p>No Objection Certificate (NOC)</p>" +
+                "</div>" +
+                "<div class='content'>" +
+                "<p class='greeting'>Dear <strong>" + (request.getFirstName() != null ? request.getFirstName() : "Customer") + "</strong>,</p>" +
+                "<p class='message'>Your car wash service has been successfully completed. Below is your No Objection Certificate (NOC) for your records.</p>" +
+                "<div class='noc-box'>" +
+                "<div class='noc-title'>NO OBJECTION CERTIFICATE</div>" +
+                "<p style='text-align:center; color:#555; font-size:14px; margin:0;'>Date: " + todayDate + "</p>" +
+                "</div>" +
+                "<div class='details-box'>" +
+                "<div class='detail-row'><span class='detail-label'>Booking ID</span><span class='detail-value'>#" + request.getBookingId() + "</span></div>" +
+                "<div class='detail-row'><span class='detail-label'>Wash Type</span><span class='detail-value'>" + request.getWashType() + "</span></div>" +
+                "<div class='detail-row'><span class='detail-label'>Car</span><span class='detail-value'>" + request.getCarNumber() + " (" + request.getCarType() + ")</span></div>" +
+                "<div class='detail-row'><span class='detail-label'>Service Date</span><span class='detail-value'>" + request.getBookingDate() + "</span></div>" +
+                "<div class='detail-row'><span class='detail-label'>Time Slot</span><span class='detail-value'>" + request.getTimeSlot() + "</span></div>" +
+                "<div class='detail-row'><span class='detail-label'>Amount Paid</span><span class='detail-value'><strong>₹" + amount + "</strong></span></div>" +
+                "</div>" +
+                "<div class='noc-statement'>" +
+                "<strong>Declaration:</strong> This is to certify that the car wash service for the above-mentioned vehicle has been completed satisfactorily. " +
+                "The vehicle has been inspected and handed over in good condition. The customer acknowledges that the service was performed as agreed " +
+                "and has no objections regarding the quality of service rendered by ASP Car Care." +
+                "</div>" +
+                "<p class='message'>If you have any concerns or feedback about the service, please contact us within 24 hours at <strong>support@aspcarcare.com</strong>.</p>" +
+                "<p class='message'>Thank you for choosing ASP Car Care. We hope to serve you again!</p>" +
+                "</div>" +
+                "<div class='footer'>" +
+                "<p>This is an auto-generated NOC. No signature is required.</p>" +
+                "<p>&copy; 2026 ASP Car Care. All rights reserved.</p>" +
                 "</div>" +
                 "</div>" +
                 "</body></html>";

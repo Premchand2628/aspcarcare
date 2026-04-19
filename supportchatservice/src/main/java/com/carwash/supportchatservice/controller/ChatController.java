@@ -9,6 +9,7 @@ import com.carwash.supportchatservice.repository.ChatSessionRepository;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -18,7 +19,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/chat")
-@CrossOrigin(origins = "*")
 public class ChatController {
 
     private final ChatMessageRepository chatRepo;
@@ -32,6 +32,7 @@ public class ChatController {
 
     /* ========== 1) START CHAT SESSION (optional) ========== */
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/start")
     public ResponseEntity<StartChatResponse> startChat(@RequestBody StartChatRequest req) {
         if (req.getPhone() == null || req.getPhone().isBlank()) {
@@ -84,6 +85,7 @@ public class ChatController {
 
     /* ========== 2) USER SENDING MESSAGE ========== */
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/user-message")
     public ResponseEntity<ChatMessage> userMessage(
             @RequestBody ChatMessageRequest req,
@@ -123,6 +125,7 @@ public class ChatController {
 
     /* ========== 3) ADMIN SENDING MESSAGE ========== */
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/admin-message")
     public ResponseEntity<ChatMessage> adminMessage(
             @RequestBody ChatMessageRequest req,
@@ -177,6 +180,7 @@ public class ChatController {
 
     /* ========== 4) POLLING (same as before) ========== */
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/messages")
     public ResponseEntity<List<ChatMessage>> getMessages(
             @RequestParam String phone,
@@ -190,6 +194,7 @@ public class ChatController {
 
     /* ========== 5) MARK SESSION ACTIVE WHEN ADMIN CLICKS ========== */
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/sessions/activate")
     public ResponseEntity<Void> activateSession(@RequestBody ActivateSessionRequest req) {
         if (req.getPhone() == null || req.getPhone().isBlank()) {
@@ -216,6 +221,7 @@ public class ChatController {
 
     /* ========== 6) END SESSION (USER or ADMIN) ========== */
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/end")
     public ResponseEntity<Void> endChat(@RequestBody EndChatRequest req) {
     	System.out.println("[END CHAT] phone=" + req.getPhone()
@@ -250,6 +256,7 @@ public class ChatController {
 
     /* ========== 7) USER CHAT HISTORY (30 days) ========== */
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/history")
     public ResponseEntity<List<ChatSessionHistoryDto>> getHistory(@RequestParam String phone) {
         LocalDateTime since = LocalDateTime.now().minusDays(30);
@@ -283,6 +290,7 @@ public class ChatController {
 
     /* ========== 8) ADMIN – ACTIVE & CLOSED SESSIONS (30 days) ========== */
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/sessions/active")
     public ResponseEntity<List<ChatSession>> getActiveSessions() {
         LocalDateTime since = LocalDateTime.now().minusDays(30);
@@ -294,6 +302,7 @@ public class ChatController {
         return ResponseEntity.ok(list);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/sessions/closed")
     public ResponseEntity<List<ChatSession>> getClosedSessions() {
         LocalDateTime since = LocalDateTime.now().minusDays(30);
@@ -304,6 +313,7 @@ public class ChatController {
 
         return ResponseEntity.ok(list);
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/sessions/closed/search")
     public ResponseEntity<List<ChatSession>> searchClosedSessions(
             @RequestParam(required = false) String phone,

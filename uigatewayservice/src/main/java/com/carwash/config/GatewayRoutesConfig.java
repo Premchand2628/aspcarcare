@@ -36,6 +36,13 @@ public class GatewayRoutesConfig {
     @Bean
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
         return builder.routes()
+                // Admin routes (must be before other routes)
+                .route("admin-staff-service", r -> r
+                        .path("/admin/staff/**", "/admin/users/**")
+                        .uri(authServiceUrl))
+                .route("admin-booking-stats", r -> r
+                        .path("/admin/stats/**")
+                        .uri(bookingServiceUrl))
                 .route("auth-user-service", r -> r
                         .path("/users/**", "/auth/**", "/otp/**")
                         .uri(authServiceUrl))
@@ -52,7 +59,7 @@ public class GatewayRoutesConfig {
                         .path("/memberships/**")
                         .uri(membershipServiceUrl))
                 .route("carwash-rates-service", r -> r
-                        .path("/rates/**", "/carwashrates/**", "/api/deal-prices/**")
+                        .path("/rates/**", "/carwashrates/**", "/deal-prices/**", "/services/**")
                         .uri(ratesServiceUrl))
                 .route("coupon-service", r -> r
                         .path("/coupons/**")

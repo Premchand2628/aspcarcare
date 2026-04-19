@@ -14,7 +14,7 @@ public class DealPricesPublicSecurityConfig {
     @Order(1)
     public SecurityFilterChain dealPricesPublicSecurityFilterChain(HttpSecurity http) throws Exception {
         http
-                .securityMatcher("/api/**")
+                .securityMatcher("/deal-prices/**", "/services/**")
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());

@@ -1,5 +1,6 @@
 package com.carwash.supportchatservice.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -9,7 +10,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/agent-chat")
-@CrossOrigin(origins = "*")
 public class AgentChatNotificationController {
 
     // Simple in-memory store (per app instance)
@@ -30,6 +30,7 @@ public class AgentChatNotificationController {
      * Admin polls this endpoint.
      * Returns and clears all pending notifications.
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/pending")
     public List<AgentChatNotification> getPending() {
         synchronized (pending) {

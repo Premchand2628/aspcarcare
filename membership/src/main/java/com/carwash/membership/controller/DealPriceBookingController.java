@@ -10,6 +10,7 @@ import io.jsonwebtoken.Claims;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +25,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/memberships/deal-price-bookings")
-@CrossOrigin(origins = "*")
 public class DealPriceBookingController {
 
   private final DealPriceBookingService dealPriceBookingService;
@@ -58,6 +58,7 @@ public class DealPriceBookingController {
     return ResponseEntity.ok(bookings);
   }
 
+  @Deprecated // Unused — redundant alias of /me
   @GetMapping
   public ResponseEntity<?> getBookings(Authentication authentication) {
     return getMyBookings(authentication);
@@ -83,6 +84,7 @@ public class DealPriceBookingController {
     return ResponseEntity.ok(bookings);
   }
 
+  @PreAuthorize("hasRole('ADMIN')")
   @PostMapping("/redeem")
   public ResponseEntity<?> redeemSubscription(@Valid @RequestBody DealPriceBookingRedeemRequest request) {
     try {
@@ -102,6 +104,7 @@ public class DealPriceBookingController {
     }
   }	
 
+  @PreAuthorize("hasRole('ADMIN')")
   @PostMapping("/redeem/revert")
   public ResponseEntity<?> revertRedeemedSubscription(@RequestBody DealPriceBookingRevertRequest request) {
     try {

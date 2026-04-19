@@ -29,8 +29,14 @@ public class SecurityAutoConfig {
 
   @Bean
   @ConditionalOnMissingBean
-  public JwtAuthenticationFilter jwtAuthenticationFilter(JwtTokenService tokenService) {
-    return new JwtAuthenticationFilter(tokenService);
+  public TokenBlacklistService tokenBlacklistService() {
+    return new TokenBlacklistService();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public JwtAuthenticationFilter jwtAuthenticationFilter(JwtTokenService tokenService, TokenBlacklistService blacklistService) {
+    return new JwtAuthenticationFilter(tokenService, blacklistService);
   }
 
   @Bean
@@ -41,18 +47,24 @@ public class SecurityAutoConfig {
       .csrf(csrf -> csrf.disable())
       .cors(Customizer.withDefaults())
       .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+      .headers(headers -> headers
+        .frameOptions(frame -> frame.deny())
+        .contentTypeOptions(cto -> {})
+        .httpStrictTransportSecurity(hsts -> hsts
+          .includeSubDomains(true)
+          .maxAgeInSeconds(31536000))
+        .cacheControl(cache -> {})
+      )
       .authorizeHttpRequests(auth -> auth
         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
         .requestMatchers("/auth/**", "/otp/**", "/auth/password/forgot/send-otp").permitAll()
         .requestMatchers(HttpMethod.POST, "/users/signup").permitAll()
-        .requestMatchers(HttpMethod.GET, "/rates/**", "/carwashrates/**", "/api/deal-prices/**").permitAll()
+        .requestMatchers(HttpMethod.GET, "/rates/**", "/carwashrates/**", "/deal-prices/**", "/services/**").permitAll()
         .requestMatchers(HttpMethod.GET, "/centres/**", "/quotations/**").permitAll()
-        .requestMatchers(HttpMethod.POST, "/memberships/deal-price-bookings/redeem").permitAll()
-        .requestMatchers(HttpMethod.GET, "/memberships/deal-price-bookings/**").permitAll()
+        .requestMatchers(HttpMethod.GET, "/bookings/availability").permitAll()
         .requestMatchers(HttpMethod.GET, "/memberships").permitAll()
         .requestMatchers(HttpMethod.GET, "/memberships/*").permitAll()
         .requestMatchers("/error").permitAll()
-        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
         .requestMatchers("/actuator/health", "/actuator/info").permitAll()
         .anyRequest().authenticated()
       )

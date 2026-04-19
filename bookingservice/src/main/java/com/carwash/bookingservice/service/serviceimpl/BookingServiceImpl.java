@@ -568,7 +568,18 @@ public class BookingServiceImpl implements BookingService {
                 .centreName(fixCentreNameForHome(booking.getServiceType(), booking.getCentreName()))
                 .build();
 
-        return BookingResponseDto.fromEntity(bookingRepository.save(updated));
+        Booking saved = bookingRepository.save(updated);
+
+        // Send NOC email when service is completed
+        if ("COMPLETED".equals(newStatus)) {
+            try {
+                sendCompletionNocEmail(saved);
+            } catch (Exception ex) {
+                log.warn("Failed to send NOC email for booking ID: {}", saved.getId(), ex);
+            }
+        }
+
+        return BookingResponseDto.fromEntity(saved);
     }
  // BookingServiceImpl.java
     @Override
@@ -1206,5 +1217,81 @@ public class BookingServiceImpl implements BookingService {
                 .build();
         
         emailService.sendBookingEmail(emailRequest);
+    }
+
+    private void sendCompletionNocEmail(Booking booking) {
+        Optional<User> userOpt = userRepository.findByPhone(booking.getPhone());
+        if (!userOpt.isPresent()) return;
+        
+        User user = userOpt.get();
+        if (user.getEmail() == null || user.getEmail().trim().isEmpty()) return;
+        
+        EmailRequest emailRequest = EmailRequest.builder()
+                .toEmail(user.getEmail())
+                .firstName(user.getFirstName())
+                .bookingId(booking.getId())
+                .washType(booking.getWashType())
+                .carNumber(booking.getCarNumber())
+                .carType(booking.getCarType())
+                .bookingDate(booking.getBookingDate().toString())
+                .timeSlot(booking.getTimeSlot())
+                .amount(booking.getPayableAmount().doubleValue())
+                .action("COMPLETED")
+                .build();
+        
+        emailService.sendBookingEmail(emailRequest);
+    }
+
+    // ==========================================================
+    // CENTRE-SPECIFIC Operations (for CentreApp — match by centre name)
+    // ==========================================================
+
+    @Override
+    public List<BookingResponseDto> getActiveBookingsForCentre(String centreName) {
+        List<String> activeStatuses = List.of("CONFIRMED", "IN_SERVICING");
+        List<Booking> bookings = bookingRepository
+                .findByCentreNameAndStatusIn(centreName, activeStatuses);
+        return bookings.stream()
+                .map(BookingResponseDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Map<String, Object> getStatsForCentre(String centreName) {
+        long pending = bookingRepository.countByCentreNameAndStatus(centreName, "CONFIRMED");
+        long inProgress = bookingRepository.countByCentreNameAndStatus(centreName, "IN_SERVICING");
+        long completed = bookingRepository.countByCentreNameAndStatusIn(
+                centreName, List.of("COMPLETED", "CLOSED"));
+        long total = pending + inProgress + completed;
+
+        Map<String, Object> stats = new LinkedHashMap<>();
+        stats.put("total", total);
+        stats.put("pending", pending);
+        stats.put("inProgress", inProgress);
+        stats.put("completed", completed);
+        return stats;
+    }
+
+    @Override
+    public List<BookingResponseDto> searchBookingsForCentre(String centreName, String phone) {
+        List<String> excludeStatuses = List.of("CANCELLED", "PENDING");
+        List<Booking> bookings = bookingRepository
+                .findByCentreNameAndPhoneExcludingStatuses(centreName, phone, excludeStatuses);
+        return bookings.stream()
+                .map(BookingResponseDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BookingResponseDto> getHistoryForCentre(String centreName, int page, int limit) {
+        List<String> doneStatuses = List.of("COMPLETED", "CLOSED");
+        List<Booking> all = bookingRepository
+                .findByCentreNameAndDoneStatuses(centreName, doneStatuses);
+        int start = (page - 1) * limit;
+        if (start >= all.size()) return Collections.emptyList();
+        int end = Math.min(start + limit, all.size());
+        return all.subList(start, end).stream()
+                .map(BookingResponseDto::fromEntity)
+                .collect(Collectors.toList());
     }
 }

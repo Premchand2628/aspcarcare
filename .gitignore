@@ -1,4 +1,17 @@
 /.metadata/
+**/target/
+*.class
+*.jar
+*.log
+.m2repo/
+
+# IDE
+.idea/
+*.iml
+.factorypath
+.settings/
+.project
+.classpath
 
 # Environment variables (secrets)
 .env

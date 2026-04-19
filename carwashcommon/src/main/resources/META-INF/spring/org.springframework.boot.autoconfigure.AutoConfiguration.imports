@@ -1,2 +1,3 @@
 com.carwashcommon.security.SecurityAutoConfig
 com.carwashcommon.logging.HttpLoggingAutoConfig
+com.carwashcommon.cache.CacheAutoConfig

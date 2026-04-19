@@ -13,7 +13,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/coupons")
-@CrossOrigin(origins = "*")
 public class ReferralCouponController {
 
     private final ReferralCouponService service;
@@ -57,6 +56,16 @@ public class ReferralCouponController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden");
         }
 
+        Map<String, Object> details = service.referralDetails(resolvedPhone);
+        return ResponseEntity.ok(details);
+    }
+
+    @GetMapping("/referral-details/me")
+    public ResponseEntity<?> referralDetailsForMe(Authentication authentication) {
+        String resolvedPhone = resolvePhone(authentication);
+        if (resolvedPhone == null || resolvedPhone.isBlank()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+        }
         Map<String, Object> details = service.referralDetails(resolvedPhone);
         return ResponseEntity.ok(details);
     }

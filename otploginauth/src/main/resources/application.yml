@@ -38,6 +38,9 @@ server:
 
 jwt:
   secret: ${JWT_SECRET}
+
+admin:
+  secret-key: ${ADMIN_SECRET_KEY:}
   access-token-minutes: 120
 
 carwash:

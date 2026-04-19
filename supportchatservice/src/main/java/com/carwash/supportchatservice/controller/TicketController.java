@@ -8,13 +8,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/tickets")
-@CrossOrigin(origins = "*")
 public class TicketController {
 
     private final SupportTicketRepository ticketRepository;
@@ -29,6 +29,7 @@ public class TicketController {
         this.mailSender = mailSender;
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping
     public ResponseEntity<CreateTicketResponse> createTicket(
             @RequestBody CreateTicketRequest req) {
@@ -99,6 +100,7 @@ public class TicketController {
      * Admin API to fetch all tickets, newest first.
      * Used by admin.html -> /tickets/admin/all
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/all")
     public ResponseEntity<List<SupportTicket>> getAllTicketsForAdmin() {
         List<SupportTicket> list = ticketRepository.findAllByOrderByCreatedAtDesc();
