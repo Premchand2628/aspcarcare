@@ -221,6 +221,8 @@ spring:
         corsConfigurations:
           "[/**]":
             allowedOrigins:
+              - "https://aspcarcare.com"
+              - "https://www.aspcarcare.com"
               - "http://localhost:10080"
               - "http://127.0.0.1:10080"
               - "http://localhost:3000"
