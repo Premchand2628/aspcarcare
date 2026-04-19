@@ -99,6 +99,20 @@
       <scope>runtime</scope>
     </dependency>
 
+    <!-- ===================================================== -->
+    <!-- ROUTING DATASOURCE (compile only, services provide runtime) -->
+    <!-- ===================================================== -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jdbc</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.zaxxer</groupId>
+      <artifactId>HikariCP</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
     <!-- Caching -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
