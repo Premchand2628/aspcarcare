@@ -23,6 +23,9 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
+    @org.springframework.beans.factory.annotation.Value("${spring.mail.from}")
+    private String mailFrom;
+
     public void sendBookingEmail(EmailRequest request) {
         try {
             String htmlContent = buildEmail(request);
@@ -40,14 +43,10 @@ public class EmailService {
         helper.setTo(toEmail);
         helper.setSubject(subject);
         try {
-			helper.setFrom("noreply@aspcarcare.com", "ASP Car Care");
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (MessagingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+            helper.setFrom(mailFrom, "ASP Car Care");
+        } catch (UnsupportedEncodingException e) {
+            logger.error("Failed to set from address", e);
+        }
         helper.setText(htmlContent, true);
 
         mailSender.send(message);
