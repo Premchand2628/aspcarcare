@@ -2,3 +2,4 @@ com.carwashcommon.security.SecurityAutoConfig
 com.carwashcommon.logging.HttpLoggingAutoConfig
 com.carwashcommon.cache.CacheAutoConfig
 com.carwashcommon.routing.RoutingDataSourceAutoConfig
+com.carwashcommon.web.WebErrorAutoConfig
