@@ -1,5 +1,6 @@
 package com.carwash.paymentservice.controller;
 
+import com.carwash.paymentservice.configuration.PhonePeConfig;
 import com.carwash.paymentservice.dto.PhonePeInitiateRequest;
 import com.carwash.paymentservice.dto.PhonePeInitiateResponse;
 import com.carwash.paymentservice.entity.PendingPayment;
@@ -15,7 +16,10 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.time.LocalDateTime;
+import java.util.HexFormat;
 import java.util.Map;
 import java.util.Optional;
 
@@ -30,14 +34,17 @@ public class PhonePePaymentController {
     private final PhonePePaymentService phonePePaymentService;
     private final PendingPaymentRepository pendingRepo;
     private final ObjectMapper objectMapper;
+    private final PhonePeConfig phonePeConfig;
     private final RestTemplate restTemplate = new RestTemplate();
 
     public PhonePePaymentController(PhonePePaymentService phonePePaymentService,
                                     PendingPaymentRepository pendingRepo,
-                                    ObjectMapper objectMapper) {
+                                    ObjectMapper objectMapper,
+                                    PhonePeConfig phonePeConfig) {
         this.phonePePaymentService = phonePePaymentService;
         this.pendingRepo = pendingRepo;
         this.objectMapper = objectMapper;
+        this.phonePeConfig = phonePeConfig;
     }
 
     // ==========================================================
@@ -143,8 +150,8 @@ public class PhonePePaymentController {
     }
 
     // --------- CALLBACK (404 is happening here) ---------
-    @PostMapping("/callback")
-    public ResponseEntity<String> callback(@RequestBody Map<String, Object> body,
+    @PostMapping(value = "/callback", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> callback(@RequestBody String rawBody,
                                            @RequestHeader Map<String, String> headers) {
 
         final long start = System.nanoTime();
@@ -156,10 +163,51 @@ public class PhonePePaymentController {
         MDC.put("method", "POST");
         MDC.put("event", "request_received");
 
+        log.info("PhonePe callback received");
+
+        // -----------------------------------------------------------------
+        // 1. Verify X-VERIFY signature BEFORE parsing or trusting any field.
+        //    Format: sha256(rawBody + saltKey) + "###" + saltIndex
+        //    If this fails, we reject 401 -- attacker cannot forge success.
+        // -----------------------------------------------------------------
+        String xVerify = null;
+        if (headers != null) {
+            // header lookup is case-insensitive for HTTP, but the Map here is case-sensitive
+            for (Map.Entry<String, String> e : headers.entrySet()) {
+                if ("x-verify".equalsIgnoreCase(e.getKey())) {
+                    xVerify = e.getValue();
+                    break;
+                }
+            }
+        }
+        if (!verifyPhonePeSignature(rawBody, xVerify)) {
+            MDC.put("event", "response_sent");
+            MDC.put("result", "FAILED");
+            MDC.put("httpStatus", "401");
+            MDC.put("reason", "invalid X-VERIFY signature");
+            MDC.put("elapsedMs", String.valueOf(elapsedMs(start)));
+            log.warn("PhonePe callback rejected: invalid or missing X-VERIFY signature");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid signature");
+        }
+
+        // Parse body only after signature verified.
+        Map<String, Object> body;
+        try {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> parsed = objectMapper.readValue(rawBody, Map.class);
+            body = parsed;
+        } catch (Exception parseEx) {
+            MDC.put("event", "response_sent");
+            MDC.put("result", "FAILED");
+            MDC.put("httpStatus", "400");
+            MDC.put("reason", "Malformed JSON");
+            MDC.put("elapsedMs", String.valueOf(elapsedMs(start)));
+            log.warn("PhonePe callback malformed JSON");
+            return ResponseEntity.badRequest().body("Malformed body");
+        }
+
         // helpful: PhonePe code if present
         MDC.put("phonepeCode", safeStr(body == null ? null : body.get("code")));
-
-        log.info("PhonePe callback received");
 
         try {
             MDC.put("event", "business_start");
@@ -367,6 +415,34 @@ public class PhonePePaymentController {
 
             ex.printStackTrace();
             return ResponseEntity.internalServerError().body("ERROR");
+        }
+    }
+
+    /**
+     * Verify PhonePe S2S webhook X-VERIFY header.
+     * X-VERIFY format: sha256(rawRequestBody + saltKey) + "###" + saltIndex
+     * Fail-closed: missing header, missing salt config, or mismatch => reject.
+     */
+    private boolean verifyPhonePeSignature(String rawBody, String xVerify) {
+        if (rawBody == null || xVerify == null || xVerify.isBlank()) {
+            return false;
+        }
+        String saltKey = phonePeConfig.getSaltKey();
+        String saltIndex = phonePeConfig.getSaltIndex();
+        if (saltKey == null || saltKey.isBlank() || saltIndex == null || saltIndex.isBlank()) {
+            log.error("PhonePe salt key/index not configured; rejecting webhook");
+            return false;
+        }
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] digest = md.digest((rawBody + saltKey).getBytes(StandardCharsets.UTF_8));
+            String expected = HexFormat.of().formatHex(digest) + "###" + saltIndex;
+            byte[] a = expected.getBytes(StandardCharsets.UTF_8);
+            byte[] b = xVerify.trim().getBytes(StandardCharsets.UTF_8);
+            return MessageDigest.isEqual(a, b);
+        } catch (Exception e) {
+            log.error("PhonePe signature verification error", e);
+            return false;
         }
     }
 

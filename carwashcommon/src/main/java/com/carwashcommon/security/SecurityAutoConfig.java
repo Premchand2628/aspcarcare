@@ -59,7 +59,7 @@ public class SecurityAutoConfig {
         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
         .requestMatchers("/auth/**", "/otp/**", "/auth/password/forgot/send-otp").permitAll()
         .requestMatchers(HttpMethod.POST, "/users/signup").permitAll()
-        .requestMatchers(HttpMethod.GET, "/rates/**", "/carwashrates/**", "/deal-prices/**", "/services/**").permitAll()
+        .requestMatchers(HttpMethod.GET, "/rates/**", "/carwashrates/**", "/services/**").permitAll()
         .requestMatchers(HttpMethod.GET, "/centres/**", "/quotations/**").permitAll()
         .requestMatchers(HttpMethod.GET, "/bookings/availability").permitAll()
         .requestMatchers(HttpMethod.GET, "/memberships").permitAll()

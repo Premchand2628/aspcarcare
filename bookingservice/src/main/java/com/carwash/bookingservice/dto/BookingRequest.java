@@ -58,7 +58,11 @@ public class BookingRequest {
   @Size(max = 100, message = "Transaction id is too long")
   private String transactionId;
 
-  // ✅ Optional: UI-calculated base amount (original before membership discount)
+  // ⚠️ DEPRECATED: ignored server-side. The authoritative base amount is
+  // always resolved from the rates service via RateClient (see
+  // BookingServiceImpl#resolveOriginalAmount). Retained only for backward
+  // wire-compatibility with older UI builds — do NOT trust its value.
+  @Deprecated
   @PositiveOrZero(message = "Base amount cannot be negative")
   private BigDecimal baseAmount;
   private Boolean waterProvided;

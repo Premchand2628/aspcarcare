@@ -130,8 +130,8 @@ public class User {
 	public String toString() {
 		return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + ", age="
 				+ age + ", phone=" + phone + ", address=" + address + ", carNumber=" + carNumber
-				+ ", carAddressDefaultFlag=" + carAddressDefaultFlag + ", password=" + password + ", createdAt="
-				+ createdAt + "]";
+				+ ", carAddressDefaultFlag=" + carAddressDefaultFlag + ", password=***"
+				+ ", createdAt=" + createdAt + "]";
 	}
 
    

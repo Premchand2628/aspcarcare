@@ -15,14 +15,34 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 public class HttpRequestResponseLoggingFilter extends OncePerRequestFilter {
 
   private static final Logger log = LoggerFactory.getLogger(HttpRequestResponseLoggingFilter.class);
-  private static final int MAX_BODY_CHARS = 8000;
+  private static final int MAX_BODY_CHARS = 2048;
   private static final String TRANSACTION_ID_HEADER = "X-Transaction-Id";
+
+  // Paths whose request/response bodies must NEVER be logged (OTP, passwords, payment payloads, admin ops).
+  private static final List<String> BODY_LOG_DENY_PREFIXES = List.of(
+      "/auth/",
+      "/payments/",
+      "/admin/",
+      "/staff/",
+      "/users/me/password"
+  );
+
+  // JSON field-name pattern whose values will be masked everywhere else.
+  // Matches   "otp":"1234"   "otp" : "1234"   "otp":1234  (numbers or strings).
+  private static final Pattern SENSITIVE_JSON_FIELD = Pattern.compile(
+      "(?i)(\"(?:otp|password|newPassword|confirmPassword|currentPassword|token|refreshToken|accessToken|" +
+          "mobileNumber|phone|email|cardNumber|cvv|saltKey|clientSecret|jwt|secret|authorization)\"\\s*:\\s*)" +
+          "(\"[^\"]*\"|-?\\d+(?:\\.\\d+)?)"
+  );
+  private static final String MASKED_VALUE = "\"***\"";
 
   @Override
   protected boolean shouldNotFilter(HttpServletRequest request) {
@@ -56,20 +76,23 @@ public class HttpRequestResponseLoggingFilter extends OncePerRequestFilter {
       String path = requestWrapper.getRequestURI();
       String query = requestWrapper.getQueryString();
       int status = responseWrapper.getStatus();
+      boolean sensitivePath = isSensitivePath(path);
 
       Map<String, String> requestHeaders = collectRequestHeaders(requestWrapper);
       Map<String, String> responseHeaders = collectResponseHeaders(responseWrapper);
 
-      String requestBody = extractBody(
+      String requestBody = bodyForLog(
           requestWrapper.getContentAsByteArray(),
           requestWrapper.getCharacterEncoding(),
-          requestWrapper.getContentType()
+          requestWrapper.getContentType(),
+          sensitivePath
       );
 
-      String responseBody = extractBody(
+      String responseBody = bodyForLog(
           responseWrapper.getContentAsByteArray(),
           responseWrapper.getCharacterEncoding(),
-          responseWrapper.getContentType()
+          responseWrapper.getContentType(),
+          sensitivePath
       );
 
       log.info(
@@ -118,11 +141,28 @@ public class HttpRequestResponseLoggingFilter extends OncePerRequestFilter {
     }
   }
 
-  private String extractBody(byte[] content, String encoding, String contentType) {
+  private boolean isSensitivePath(String path) {
+    if (path == null) return false;
+    for (String prefix : BODY_LOG_DENY_PREFIXES) {
+      if (path.startsWith(prefix)) return true;
+    }
+    return false;
+  }
+
+  /**
+   * Returns a body suitable for logging:
+   *  - empty string for empty bodies
+   *  - "&lt;redacted&gt;" for any path in the sensitive deny-list
+   *  - "&lt;non-text-payload&gt;" for binary
+   *  - masked + truncated JSON/text otherwise
+   */
+  private String bodyForLog(byte[] content, String encoding, String contentType, boolean sensitivePath) {
     if (content == null || content.length == 0) {
       return "";
     }
-
+    if (sensitivePath) {
+      return "<redacted>";
+    }
     if (!isLoggableContentType(contentType)) {
       return "<non-text-payload>";
     }
@@ -135,10 +175,16 @@ public class HttpRequestResponseLoggingFilter extends OncePerRequestFilter {
     }
 
     String body = new String(content, charset);
+    body = maskSensitiveJsonFields(body);
     if (body.length() > MAX_BODY_CHARS) {
       return body.substring(0, MAX_BODY_CHARS) + "...(truncated)";
     }
     return body;
+  }
+
+  private String maskSensitiveJsonFields(String body) {
+    if (body == null || body.isEmpty()) return body;
+    return SENSITIVE_JSON_FIELD.matcher(body).replaceAll("$1" + MASKED_VALUE);
   }
 
   private boolean isLoggableContentType(String contentType) {
