@@ -923,6 +923,12 @@ public class BookingServiceImpl implements BookingService {
         Object pctObj = benefit == null ? null : benefit.get("discountPercent");
         if (pctObj != null) pct = new BigDecimal(String.valueOf(pctObj));
 
+        // SECURITY: clamp untrusted percent/payable so a tampered membership
+        // preview payload cannot force negative totals or over-100% discounts.
+        BigDecimal originalSafe = original == null ? BigDecimal.ZERO : original;
+        pct = pct.max(BigDecimal.ZERO).min(new BigDecimal("100"));
+        payable = payable.max(BigDecimal.ZERO).min(originalSafe);
+
         Long membershipId = null;
         Object midObj = benefit == null ? null : benefit.get("membershipDbId");
         if (midObj != null) {
@@ -988,15 +994,18 @@ public class BookingServiceImpl implements BookingService {
     }
     
     private BigDecimal resolveOriginalAmount(BookingRequest req) {
-        if (req.getBaseAmount() != null && req.getBaseAmount().compareTo(BigDecimal.ZERO) >= 0) {
-            return req.getBaseAmount();
-        }
-
+        // SECURITY: never trust req.getBaseAmount() — it is supplied by the
+        // client and was historically used to bypass server-side pricing. The
+        // authoritative price comes from the rates service; fall back to the
+        // car-type default only if the rates call fails.
         try {
-            return rateClient.getAmount(req.getCarType(), req.getWashType());
+            BigDecimal amt = rateClient.getAmount(req.getCarType(), req.getWashType());
+            if (amt != null && amt.compareTo(BigDecimal.ZERO) >= 0) return amt;
         } catch (Exception e) {
-            return BigDecimal.valueOf(getBaseAmountForCarType(req.getCarType()));
+            log.warn("RateClient lookup failed for carType={} washType={}: {}",
+                    req.getCarType(), req.getWashType(), e.getMessage());
         }
+        return BigDecimal.valueOf(getBaseAmountForCarType(req.getCarType()));
     }
 
     private Long fixCentreIdForHome(String serviceType, Long centreId) {
