@@ -11,6 +11,7 @@ public class ServiceCentreDto {
     private String area;
     private String address;
     private BigDecimal rating;
+    private BigDecimal basePrice;
     private String mapsUrl;
     private Double lat;
     private Double lng;
@@ -23,6 +24,7 @@ public class ServiceCentreDto {
         dto.area = c.getArea();
         dto.address = c.getAddress();
         dto.rating = c.getRating();
+        dto.basePrice = c.getBasePrice();
         dto.mapsUrl = c.getMapsUrl();
         dto.lat = c.getLatitude();
         dto.lng = c.getLongitude();
@@ -35,6 +37,7 @@ public class ServiceCentreDto {
         c.setArea(this.area);
         c.setAddress(this.address);
         c.setRating(this.rating);
+        c.setBasePrice(this.basePrice);
         c.setMapsUrl(this.mapsUrl);
         c.setLatitude(this.lat);
         c.setLongitude(this.lng);
@@ -56,6 +59,9 @@ public class ServiceCentreDto {
 
     public BigDecimal getRating() { return rating; }
     public void setRating(BigDecimal rating) { this.rating = rating; }
+
+    public BigDecimal getBasePrice() { return basePrice; }
+    public void setBasePrice(BigDecimal basePrice) { this.basePrice = basePrice; }
 
     public String getMapsUrl() { return mapsUrl; }
     public void setMapsUrl(String mapsUrl) { this.mapsUrl = mapsUrl; }
