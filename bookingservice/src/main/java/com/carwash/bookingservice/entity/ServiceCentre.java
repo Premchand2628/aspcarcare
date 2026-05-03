@@ -36,6 +36,9 @@ public class ServiceCentre {
     @Column(precision = 2, scale = 1)
     private BigDecimal rating;        // e.g., 4.8
 
+    @Column(name = "base_price", precision = 10, scale = 2)
+    private BigDecimal basePrice;     // optional starting price displayed on /select-center
+
     @Column(name = "maps_url", columnDefinition = "TEXT")
     private String mapsUrl;       // Google Maps share link
 
