@@ -24,6 +24,14 @@ public class ServiceCentre {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /**
+     * Human-readable business code (e.g. ASP-MIY-500049).
+     * Auto-generated from name+area+pincode at create time. UNIQUE.
+     * Numeric `id` remains the FK target across the system.
+     */
+    @Column(name = "centre_code", length = 40, unique = true)
+    private String centreCode;
+
     @Column(nullable = false, length = 200)
     private String name;
 
@@ -33,8 +41,20 @@ public class ServiceCentre {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String address;
 
+    @Column(length = 10)
+    private String pincode;
+
+    @Column(length = 80)
+    private String city;
+
+    @Column(length = 80)
+    private String state;
+
     @Column(precision = 2, scale = 1)
     private BigDecimal rating;        // e.g., 4.8
+
+    @Column(name = "base_price", precision = 10, scale = 2)
+    private BigDecimal basePrice;     // optional starting price displayed on /select-center
 
     @Column(name = "maps_url", columnDefinition = "TEXT")
     private String mapsUrl;       // Google Maps share link
