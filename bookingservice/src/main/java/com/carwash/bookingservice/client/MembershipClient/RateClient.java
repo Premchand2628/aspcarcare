@@ -39,10 +39,25 @@ public class RateClient {
   @Cacheable(value = "rateAmounts", key = "#carType + ':' + #washType")
   @SuppressWarnings("unchecked")
   public BigDecimal getAmount(String carType, String washType) {
+    return getAmount(null, carType, washType);
+  }
+
+  /**
+   * Centre-aware lookup. Falls back to default rate when centreId is null/0
+   * or no override exists for that centre.
+   */
+  @Cacheable(value = "rateAmounts", key = "(#centreId == null ? 'GLOBAL' : #centreId) + ':' + #carType + ':' + #washType")
+  @SuppressWarnings("unchecked")
+  public BigDecimal getAmount(Long centreId, String carType, String washType) {
     String vt = normalizeVehicleType(carType);
     String wl = normalizeWashLevel(washType);
 
-    String url = BASE + "?vehicleType=" + enc(vt) + "&washLevel=" + enc(wl);
+    String url;
+    if (centreId != null && centreId > 0) {
+      url = BASE + "/centre/" + centreId + "/price?vehicleType=" + enc(vt) + "&washLevel=" + enc(wl);
+    } else {
+      url = BASE + "?vehicleType=" + enc(vt) + "&washLevel=" + enc(wl);
+    }
 
     // ✅ Propagate MDC -> headers (correlation + txn)
     HttpHeaders headers = new HttpHeaders();
@@ -62,7 +77,8 @@ public class RateClient {
     ResponseEntity<Map> res = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
 
     if (!res.getStatusCode().is2xxSuccessful() || res.getBody() == null) {
-      throw new RuntimeException("Rate not found for vehicleType=" + vt + ", washLevel=" + wl);
+      throw new RuntimeException("Rate not found for centreId=" + centreId
+          + ", vehicleType=" + vt + ", washLevel=" + wl);
     }
 
     Object amountObj = res.getBody().get("amount");
