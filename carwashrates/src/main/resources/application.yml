@@ -8,7 +8,16 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      idle-timeout: 600000
+      keepalive-time: 30000
+      connection-timeout: 3000
+      initialization-fail-timeout: 1
+      pool-name: CarwashRatesHikariCP
   jpa:
+    open-in-view: false
     hibernate:
       ddl-auto: none
     show-sql: false
@@ -16,6 +25,10 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc.batch_size: 30
+        query.in_clause_parameter_padding: true
+  main:
+    lazy-initialization: false
 
 server:
   address: 0.0.0.0
