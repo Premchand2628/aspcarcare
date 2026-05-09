@@ -104,6 +104,20 @@ public class BookingServiceImpl implements BookingService {
 
         Map<String, Boolean> slotMap = new LinkedHashMap<>();
         List<String> slotsToCheck = homeService ? HOME_TIME_SLOTS : TIME_SLOTS;
+
+        // Safety net: for non-HOME services, a centre identifier MUST be provided.
+        // Otherwise we'd pool-count bookings across all centres and incorrectly
+        // mark slots unavailable everywhere when one centre is busy.
+        boolean nonHomeWithoutCentre = !homeService
+                && serviceCentreId == null
+                && normalizedCentreName == null;
+        if (nonHomeWithoutCentre) {
+            for (String slot : slotsToCheck) {
+                slotMap.put(slot, Boolean.TRUE);
+            }
+            return slotMap;
+        }
+
         for (String slot : slotsToCheck) {
             long bookedCount;
             if (homeService) {
@@ -123,10 +137,8 @@ public class BookingServiceImpl implements BookingService {
                         normalizedCentreName,
                         normalizedAddress
                 );
-            } else if (normalizedCentreName != null) {
-                bookedCount = bookingRepository.countForAvailabilityByCentreName(d, slot, st, normalizedCentreName);
             } else {
-                bookedCount = bookingRepository.countForAvailability(d, slot, st);
+                bookedCount = bookingRepository.countForAvailabilityByCentreName(d, slot, st, normalizedCentreName);
             }
             slotMap.put(slot, bookedCount == 0L);
         }
@@ -999,11 +1011,11 @@ public class BookingServiceImpl implements BookingService {
         // authoritative price comes from the rates service; fall back to the
         // car-type default only if the rates call fails.
         try {
-            BigDecimal amt = rateClient.getAmount(req.getCarType(), req.getWashType());
+            BigDecimal amt = rateClient.getAmount(req.getServiceCentreId(), req.getCarType(), req.getWashType());
             if (amt != null && amt.compareTo(BigDecimal.ZERO) >= 0) return amt;
         } catch (Exception e) {
-            log.warn("RateClient lookup failed for carType={} washType={}: {}",
-                    req.getCarType(), req.getWashType(), e.getMessage());
+            log.warn("RateClient lookup failed for centreId={} carType={} washType={}: {}",
+                    req.getServiceCentreId(), req.getCarType(), req.getWashType(), e.getMessage());
         }
         return BigDecimal.valueOf(getBaseAmountForCarType(req.getCarType()));
     }
