@@ -28,6 +28,8 @@ public interface ServiceCentreRepository extends JpaRepository<ServiceCentre, Lo
     );
     @Query("select distinct c.area from ServiceCentre c where c.active = true order by c.area")
     List<String> findDistinctAreas();
+
+    boolean existsByCentreCode(String centreCode);
 }
 
 
