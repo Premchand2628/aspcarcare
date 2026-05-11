@@ -17,8 +17,3 @@
 .env
 env.properties
 !.env.example
-
-# JWT keys (never commit)
-jwt-keys-local/
-*.pem
-

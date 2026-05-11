@@ -14,7 +14,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
-    show-sql: false
+    show-sql: true
     properties:
       hibernate:
         format_sql: true
@@ -37,12 +37,7 @@ server:
   port: 8081
 
 jwt:
-  secret: ${JWT_SECRET:}
-  issuer: ${JWT_ISSUER:}
-  algorithm: ${JWT_ALGORITHM:HS256}
-  # RSA PEMs: newlines are fine in a YAML block scalar. Supply via env.
-  private-key: ${JWT_PRIVATE_KEY:}
-  public-key: ${JWT_PUBLIC_KEY:}
+  secret: ${JWT_SECRET}
 
 admin:
   secret-key: ${ADMIN_SECRET_KEY:}
@@ -69,6 +64,7 @@ app:
       send-otp:
         max-requests: 5
         window-seconds: 600
+        dev-bypass-enabled: false
       verify-otp:
         max-requests: 12
         window-seconds: 600

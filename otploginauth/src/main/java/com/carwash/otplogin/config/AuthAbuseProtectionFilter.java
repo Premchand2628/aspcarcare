@@ -43,6 +43,9 @@ public class AuthAbuseProtectionFilter extends OncePerRequestFilter {
     @Value("${app.security.rate-limit.send-otp.window-seconds:600}")
     private int sendOtpWindowSeconds;
 
+    @Value("${app.security.rate-limit.send-otp.dev-bypass-enabled:false}")
+    private boolean sendOtpDevBypassEnabled;
+
     @Value("${app.security.rate-limit.verify-otp.max-requests:12}")
     private int verifyOtpMaxRequests;
 
@@ -97,7 +100,7 @@ public class AuthAbuseProtectionFilter extends OncePerRequestFilter {
         }
 
         RatePolicy policy = ratePolicy(requestToUse);
-        if (rateLimitEnabled && policy != null) {
+        if (rateLimitEnabled && policy != null && !(sendOtpDevBypassEnabled && "send-otp".equals(policy.keyPrefix))) {
             String key = policy.keyPrefix + "|" + clientIp(requestToUse);
             if (!allowRequest(key, policy.maxRequests, policy.windowSeconds)) {
                 response.setHeader("Retry-After", String.valueOf(policy.windowSeconds));
@@ -179,21 +182,8 @@ public class AuthAbuseProtectionFilter extends OncePerRequestFilter {
     }
 
     private String clientIp(HttpServletRequest request) {
-        // Behind nginx reverse proxy: request.getRemoteAddr() is 127.0.0.1, which
-        // would collapse every user's rate-limit bucket into a single global key
-        // and let one client exhaust the quota for everyone. Use the first IP in
-        // X-Forwarded-For (set by nginx) when present. Only nginx is allowed to
-        // set this header — Spring Boot binds to 0.0.0.0 but the firewall only
-        // exposes 80/443 via nginx, so direct connections from untrusted clients
-        // cannot reach the Spring port.
-        String xff = request.getHeader("X-Forwarded-For");
-        if (xff != null && !xff.isBlank()) {
-            int comma = xff.indexOf(',');
-            String first = (comma >= 0 ? xff.substring(0, comma) : xff).trim();
-            if (!first.isEmpty()) return first;
-        }
-        String xri = request.getHeader("X-Real-IP");
-        if (xri != null && !xri.isBlank()) return xri.trim();
+        // Always prefer the direct remote address to prevent X-Forwarded-For spoofing.
+        // Only use forwarded headers if you have a trusted reverse proxy stripping/setting them.
         String remoteAddr = request.getRemoteAddr();
         return remoteAddr != null ? remoteAddr : "unknown";
     }
