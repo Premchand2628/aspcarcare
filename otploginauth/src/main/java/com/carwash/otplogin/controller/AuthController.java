@@ -17,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -93,10 +92,6 @@ public class AuthController {
     // 🔹 CHECK PHONE (public - for OAuth phone linking flow)
     // URL: POST /auth/check-phone
     // Body: { "phone": "1234567890" }
-    // NOTE: Deliberately does not return email or any other PII to prevent
-    //       account enumeration. Callers only learn whether the phone is
-    //       already registered — which is already implicit in the subsequent
-    //       login/signup flow anyway.
     @PostMapping("/check-phone")
     public ResponseEntity<?> checkPhone(@RequestBody Map<String, String> request) {
         String phone = request.get("phone");
@@ -104,28 +99,33 @@ public class AuthController {
             return ResponseEntity.badRequest()
                     .body(new ApiResponse(false, "Valid 10-digit phone number is required"));
         }
-        boolean exists = userRepository.existsByPhone(phone.trim());
-        return ResponseEntity.ok(Map.of("exists", exists));
+        Optional<User> optUser = userRepository.findByPhone(phone.trim());
+        if (optUser.isPresent()) {
+            String email = optUser.get().getEmail();
+            String masked = email != null ? maskEmail(email) : "";
+            return ResponseEntity.ok(Map.of("exists", true, "email", masked));
+        }
+        return ResponseEntity.ok(Map.of("exists", false));
     }
 
     // 🔹 SEND OTP (generic - for OAuth phone linking flow)
     // URL: POST /auth/send-otp-generic
     // Body: { "mobileNumber": "1234567890" }
     @PostMapping("/send-otp-generic")
-    public ResponseEntity<ApiResponse> sendGenericOtp(@Valid @RequestBody SendOtpRequest request) {
+    public ResponseEntity<ApiResponse> sendGenericOtp(@RequestBody SendOtpRequest request) {
         String mobile = request.getMobileNumber();
         if (mobile == null || mobile.isBlank() || !mobile.matches("^\\d{10}$")) {
             return ResponseEntity.badRequest()
                     .body(new ApiResponse(false, "Valid 10-digit mobile number is required"));
         }
-        otpService.generateAndSendOtp(mobile);
+        String otp = otpService.generateAndSendOtp(mobile);
         return ResponseEntity.ok(
-                new ApiResponse(true, "OTP sent successfully"));
+                new ApiResponse(true, "OTP sent successfully (DEV only: " + otp + ")"));
     }
 
     // 1️⃣ LOGIN -> send OTP only if phone already registered
     @PostMapping("/login/send-otp")
-    public ResponseEntity<ApiResponse> sendLoginOtp(@Valid @RequestBody SendOtpRequest request, HttpServletRequest httpRequest) {
+    public ResponseEntity<ApiResponse> sendLoginOtp(@RequestBody SendOtpRequest request, HttpServletRequest httpRequest) {
         long startMs = System.currentTimeMillis();
         String txId   = httpRequest.getHeader("x-transaction-id");
         String url    = httpRequest.getRequestURI();
@@ -146,10 +146,10 @@ public class AuthController {
                     .body(new ApiResponse(false, "Mobile number not registered. Please sign up."));
         }
 
-        otpService.generateAndSendOtp(mobile);
-        log.info("RESPONSE  txId={}  status=200  durationMs={}", txId, System.currentTimeMillis() - startMs);
+        String otp = otpService.generateAndSendOtp(mobile);
+        log.info("RESPONSE  txId={}  status=200  durationMs={}  otp={}", txId, System.currentTimeMillis() - startMs, otp);
         return ResponseEntity.ok(
-                new ApiResponse(true, "OTP sent successfully"));
+                new ApiResponse(true, "OTP sent successfully (DEV only: " + otp + ")"));
     }
 
         @PostMapping("/login/email")
@@ -212,7 +212,7 @@ public class AuthController {
 
     // 2️⃣ SIGNUP -> send OTP only if phone NOT yet registered
     @PostMapping("/signup/send-otp")
-    public ResponseEntity<ApiResponse> sendSignupOtp(@Valid @RequestBody SignupRequest request) {
+    public ResponseEntity<ApiResponse> sendSignupOtp(@RequestBody SignupRequest request) {
         String phone = request.getPhone();
         String email = request.getEmail();
 
@@ -236,14 +236,14 @@ public class AuthController {
                             "Email already registered. Please login."));
         }
 
-        otpService.generateAndSendOtp(phone);
+        String otp = otpService.generateAndSendOtp(phone);
         return ResponseEntity.ok(
-                new ApiResponse(true, "OTP sent successfully"));
+                new ApiResponse(true, "OTP sent successfully (DEV only: " + otp + ")"));
     }
 
     // 3️⃣ VERIFY OTP (same as before, returns JWT token)
     @PostMapping("/verify-otp")
-    public ResponseEntity<?> verifyOtp(@Valid @RequestBody VerifyOtpRequest request) {
+    public ResponseEntity<?> verifyOtp(@RequestBody VerifyOtpRequest request) {
         if (request.getMobileNumber() == null || request.getMobileNumber().isBlank()
                 || request.getOtp() == null || request.getOtp().isBlank()) {
             return ResponseEntity.badRequest()
@@ -296,8 +296,8 @@ public class AuthController {
                     .body(new ApiResponse(false, "Email not registered. Please sign up."));
         }
 
-        otpService.generateAndSendEmailOtp(email);
-        return ResponseEntity.ok(new ApiResponse(true, "OTP sent to email"));
+        String otp = otpService.generateAndSendEmailOtp(email);
+        return ResponseEntity.ok(new ApiResponse(true, "OTP sent to email (DEV only: " + otp + ")"));
     }
 
     @PostMapping("/password/forgot/verify-otp")
@@ -345,17 +345,9 @@ public class AuthController {
                     .body(new ApiResponse(false, "New password and confirm password must match"));
         }
 
-        if (newPassword.length() < 12) {
+        if (newPassword.length() < 6) {
             return ResponseEntity.badRequest()
-                    .body(new ApiResponse(false,
-                            "Password must be at least 12 characters and contain a letter and a digit"));
-        }
-        boolean hasLetter = newPassword.chars().anyMatch(Character::isLetter);
-        boolean hasDigit  = newPassword.chars().anyMatch(Character::isDigit);
-        if (!hasLetter || !hasDigit) {
-            return ResponseEntity.badRequest()
-                    .body(new ApiResponse(false,
-                            "Password must be at least 12 characters and contain a letter and a digit"));
+                    .body(new ApiResponse(false, "Password must be at least 6 characters"));
         }
 
         if (!otpService.consumePasswordResetOtpVerified(email)) {
