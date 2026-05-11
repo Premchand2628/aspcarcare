@@ -14,7 +14,7 @@ spring:
       globalcors:
         corsConfigurations:
           "[/**]":
-            allowedOriginPatterns:
+            allowedOrigins:
                - "http://localhost:8080"
                - "http://127.0.0.1:8080"
                - "http://localhost:3000"       # Add this
@@ -27,9 +27,7 @@ spring:
                - "http://127.0.0.1:3003"
                - "http://192.168.1.233:3000"
                - "http://192.168.1.233:8080"
-               - "https://*.ngrok-free.dev"
-               - "https://*.ngrok-free.app"
-               - "https://*.ngrok.io"
+               - "https://garth-clannish-michelle.ngrok-free.dev"
 
             allowedMethods:
               - GET
