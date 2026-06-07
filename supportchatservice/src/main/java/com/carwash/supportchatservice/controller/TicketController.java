@@ -15,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/tickets")
+@CrossOrigin(origins = "*")
 public class TicketController {
 
     private final SupportTicketRepository ticketRepository;
@@ -29,7 +30,6 @@ public class TicketController {
         this.mailSender = mailSender;
     }
 
-    @PreAuthorize("isAuthenticated()")
     @PostMapping
     public ResponseEntity<CreateTicketResponse> createTicket(
             @RequestBody CreateTicketRequest req) {

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 @RestController
 @Slf4j
@@ -51,9 +52,7 @@ public class StaffAuthController {
                     .body(Map.of("success", false, "message", "Admin login not configured"));
         }
 
-        if (!java.security.MessageDigest.isEqual(
-                adminSecretKey.getBytes(java.nio.charset.StandardCharsets.UTF_8),
-                providedKey.getBytes(java.nio.charset.StandardCharsets.UTF_8))) {
+        if (!adminSecretKey.equals(providedKey)) {
             log.warn("Admin login failed: invalid secret key");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("success", false, "message", "Invalid secret key"));

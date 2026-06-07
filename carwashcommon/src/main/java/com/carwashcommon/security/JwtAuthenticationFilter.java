@@ -21,15 +21,9 @@
 	public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	
 	    private final JwtTokenService tokenService;
-	    private final TokenBlacklistService tokenBlacklistService;
 	
 	    public JwtAuthenticationFilter(JwtTokenService tokenService) {
-	        this(tokenService, null);
-	    }
-	
-	    public JwtAuthenticationFilter(JwtTokenService tokenService, TokenBlacklistService tokenBlacklistService) {
 	        this.tokenService = tokenService;
-	        this.tokenBlacklistService = tokenBlacklistService;
 	    }
 	
 	    @Override
@@ -55,24 +49,6 @@
 	            try {
 	                Jws<Claims> jws = tokenService.parseAndValidate(token);
 	                Claims claims = jws.getBody();
-	
-	                // Reject refresh tokens used as access tokens
-	                if ("refresh".equals(claims.get("type"))) {
-	                    SecurityContextHolder.clearContext();
-	                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-	                    response.setContentType("application/json");
-	                    response.getWriter().write("{\"success\":false,\"message\":\"Refresh token cannot be used for API access\"}");
-	                    return;
-	                }
-	
-	                // Check token blacklist (logout)
-	                if (tokenBlacklistService != null && tokenBlacklistService.isBlacklisted(token)) {
-	                    SecurityContextHolder.clearContext();
-	                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-	                    response.setContentType("application/json");
-	                    response.getWriter().write("{\"success\":false,\"message\":\"Token has been revoked\"}");
-	                    return;
-	                }
 	
 	                String phone = claims.getSubject();
 	

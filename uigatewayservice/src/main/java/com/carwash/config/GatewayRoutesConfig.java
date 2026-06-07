@@ -59,7 +59,7 @@ public class GatewayRoutesConfig {
                         .path("/memberships/**")
                         .uri(membershipServiceUrl))
                 .route("carwash-rates-service", r -> r
-                        .path("/rates/**", "/carwashrates/**", "/deal-prices/**", "/services/**")
+                        .path("/rates/**", "/carwashrates/**", "/api/deal-prices/**")
                         .uri(ratesServiceUrl))
                 .route("coupon-service", r -> r
                         .path("/coupons/**")

@@ -32,6 +32,7 @@ import io.jsonwebtoken.Claims;
 
 @RestController
 @RequestMapping("/bookings")
+@CrossOrigin(origins = "*")
 public class BookingController {
 
     private final BookingService bookingService;
@@ -91,13 +92,8 @@ public class BookingController {
     @PreAuthorize("hasRole('USER')")
     @PutMapping("/{id:\\d+}/upgrade")
     public ResponseEntity<?> upgradeBooking(@PathVariable Long id,
-                                            @RequestBody UpgradeBookingRequest request,
-                                            Authentication authentication) {
+                                            @RequestBody UpgradeBookingRequest request) {
         try {
-            Booking booking = bookingService.getBookingEntity(id);
-            if (booking == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, "Booking not found"));
-            String phone = resolvePhone(authentication);
-            if (phone == null || !phone.equals(booking.getPhone())) return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiResponse(false, "Forbidden"));
             ApiResponse resp = bookingService.upgradeBooking(id, request);
             return ResponseEntity.ok(resp);
         } catch (NoSuchElementException e) {
@@ -118,13 +114,8 @@ public class BookingController {
     @PreAuthorize("hasRole('USER')")
     @PutMapping("/{id:\\d+}")
     public ResponseEntity<?> updateBooking(@PathVariable Long id, 
-                                          @RequestBody UpdateBookingRequest request,
-                                          Authentication authentication) {
+                                          @RequestBody UpdateBookingRequest request) {
         try {
-            Booking booking = bookingService.getBookingEntity(id);
-            if (booking == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, "Booking not found"));
-            String phone = resolvePhone(authentication);
-            if (phone == null || !phone.equals(booking.getPhone())) return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiResponse(false, "Forbidden"));
             ApiResponse response = bookingService.updateBooking(id, request);
             return ResponseEntity.ok(response);
         } catch (NoSuchElementException e) {
@@ -176,7 +167,6 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.getBookingsByPhone(resolvedPhone));
     }
 
-    @Deprecated // Unused — no frontend or admin UI calls this endpoint
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/by-email")
     public ResponseEntity<?> getBookingsByEmail(@RequestParam String email, Authentication authentication) {
@@ -228,23 +218,11 @@ public class BookingController {
 
     @PreAuthorize("hasAnyRole('USER', 'CENTRE_STAFF', 'ADMIN')")
     @GetMapping("/{id:\\d+}")
-    public ResponseEntity<?> getBookingById(@PathVariable Long id, Authentication authentication) {
-        var opt = bookingService.getBookingById(id);
-        if (opt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ApiResponse(false, "Booking not found"));
-        }
-        // Staff/Admin bypass ownership check
-        if (authentication != null && authentication.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_CENTRE_STAFF"))) {
-            return ResponseEntity.ok(opt.get());
-        }
-        Booking booking = bookingService.getBookingEntity(id);
-        String phone = resolvePhone(authentication);
-        if (phone == null || !phone.equals(booking.getPhone())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiResponse(false, "Forbidden"));
-        }
-        return ResponseEntity.ok(opt.get());
+    public ResponseEntity<?> getBookingById(@PathVariable Long id) {
+        return bookingService.getBookingById(id)
+                .<ResponseEntity<?>>map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ApiResponse(false, "Booking not found")));
     }
 
     // ==========================================================
@@ -252,12 +230,8 @@ public class BookingController {
     // ==========================================================
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/{id:\\d+}/cancel-quote")
-    public ResponseEntity<?> getCancelQuote(@PathVariable Long id, Authentication authentication) {
+    public ResponseEntity<?> getCancelQuote(@PathVariable Long id) {
         try {
-            Booking booking = bookingService.getBookingEntity(id);
-            if (booking == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, "Booking not found"));
-            String phone = resolvePhone(authentication);
-            if (phone == null || !phone.equals(booking.getPhone())) return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiResponse(false, "Forbidden"));
             RefundQuoteResponse resp = bookingService.getCancelQuote(id);
             return ResponseEntity.ok(resp);
         } catch (NoSuchElementException e) {
@@ -272,12 +246,8 @@ public class BookingController {
     // ==========================================================
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/{id:\\d+}/cancel-confirm")
-    public ResponseEntity<?> cancelConfirm(@PathVariable Long id, Authentication authentication) {
+    public ResponseEntity<?> cancelConfirm(@PathVariable Long id) {
         try {
-            Booking booking = bookingService.getBookingEntity(id);
-            if (booking == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, "Booking not found"));
-            String phone = resolvePhone(authentication);
-            if (phone == null || !phone.equals(booking.getPhone())) return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiResponse(false, "Forbidden"));
             ApiResponse resp = bookingService.cancelConfirm(id);
             return ResponseEntity.ok(resp);
         } catch (NoSuchElementException e) {
@@ -355,14 +325,9 @@ public class BookingController {
     // ==========================================================
     // PAYMENT SUCCESS
     // ==========================================================
-    @PreAuthorize("hasRole('USER')")
     @PutMapping("/{id:\\d+}/payment-success")
-    public ResponseEntity<ApiResponse> paymentSuccess(@PathVariable Long id, Authentication authentication) {
+    public ResponseEntity<ApiResponse> paymentSuccess(@PathVariable Long id) {
         try {
-            Booking booking = bookingService.getBookingEntity(id);
-            if (booking == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, "Booking not found"));
-            String phone = resolvePhone(authentication);
-            if (phone == null || !phone.equals(booking.getPhone())) return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiResponse(false, "Forbidden"));
             return ResponseEntity.ok(bookingService.markPaymentSuccess(id));
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, "Booking not found"));

@@ -85,7 +85,7 @@ spring:
         - id: carwash-rates-service
           uri: http://localhost:8086
           predicates:
-            - Path=/rates/**,/carwashrates/**,/deal-prices/**,/services/**
+            - Path=/rates/**,/carwashrates/**,/api/deal-prices/**
             
         # ---------- REFERRAL COUPON SERVICE (8088) ----------
         - id: coupon-service
@@ -176,7 +176,7 @@ spring:
         - id: carwash-rates-service
           uri: http://localhost:9086
           predicates:
-            - Path=/rates/**,/carwashrates/**,/deal-prices/**,/services/**
+            - Path=/rates/**,/carwashrates/**,/api/deal-prices/**
         - id: coupon-service
           uri: http://localhost:9088
           predicates:
@@ -221,10 +221,6 @@ spring:
         corsConfigurations:
           "[/**]":
             allowedOrigins:
-              - "https://aspcarcare.com"
-              - "https://www.aspcarcare.com"
-              - "https://qa.aspcarcare.com"
-              - "https://stg.aspcarcare.com"
               - "http://localhost:10080"
               - "http://127.0.0.1:10080"
               - "http://localhost:3000"
@@ -264,7 +260,7 @@ spring:
         - id: carwash-rates-service
           uri: http://localhost:10086
           predicates:
-            - Path=/rates/**,/carwashrates/**,/deal-prices/**,/services/**
+            - Path=/rates/**,/carwashrates/**,/api/deal-prices/**
         - id: coupon-service
           uri: http://localhost:10088
           predicates:

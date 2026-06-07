@@ -12,6 +12,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/admin/stats")
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminStatsController {

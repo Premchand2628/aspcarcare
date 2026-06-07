@@ -2,19 +2,13 @@ package com.carwash.otplogin.service;
 
 import com.carwash.otplogin.model.OtpData;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.HexFormat;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +16,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class OtpService {
-
-    private static final Logger log = LoggerFactory.getLogger(OtpService.class);
 
     private static final int OTP_LENGTH = 6;
     private static final Duration OTP_EXPIRY = Duration.ofMinutes(5);
@@ -33,15 +25,7 @@ public class OtpService {
     private static final int MAX_ATTEMPTS = 5;
     private final JavaMailSender mailSender;
 
-    @org.springframework.beans.factory.annotation.Value("${spring.mail.from}")
-    private String mailFrom;
-
-    // Server-side secret used to HMAC-hash OTPs before they touch memory.
-    // Re-uses jwt.secret so no new config / no new secret rotation burden.
-    @org.springframework.beans.factory.annotation.Value("${jwt.secret}")
-    private String otpHashSecret;
-
-    // mobileNumber -> OtpData   (stored value is HMAC-SHA256 hex, never plaintext)
+    // mobileNumber -> OtpData
     private final ConcurrentMap<String, OtpData> otpStore = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, Instant> passwordResetVerifiedStore = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, Instant> emailUpdateVerifiedStore = new ConcurrentHashMap<>();
@@ -52,11 +36,11 @@ public class OtpService {
         Instant now = Instant.now();
         Instant expiresAt = now.plus(OTP_EXPIRY);
 
-        OtpData data = new OtpData(hashOtp(otp), expiresAt, now);
+        OtpData data = new OtpData(otp, expiresAt, now);
         otpStore.put(mobileNumber, data);
 
-        // TODO: Integrate with SMS API. OTP value is never logged.
-        log.debug("OTP generated for subject hash={}", Integer.toHexString(mobileNumber.hashCode()));
+        // TODO: Integrate with SMS/Email API
+        System.out.println("DEBUG OTP for " + mobileNumber + " = " + otp);
 
         return otp;
     }
@@ -95,35 +79,13 @@ public class OtpService {
 
         data.incrementAttempts();
 
-        if (constantTimeEquals(data.getOtp(), hashOtp(otp))) {
+        if (data.getOtp().equals(otp)) {
             // Successful verification -> clean up
             otpStore.remove(mobileNumber);
             return VerifyResult.SUCCESS;
         } else {
             return VerifyResult.INVALID;
         }
-    }
-
-    private String hashOtp(String otp) {
-        try {
-            Mac mac = Mac.getInstance("HmacSHA256");
-            mac.init(new SecretKeySpec(
-                    otpHashSecret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
-            byte[] digest = mac.doFinal(otp.getBytes(StandardCharsets.UTF_8));
-            return HexFormat.of().formatHex(digest);
-        } catch (Exception e) {
-            throw new IllegalStateException("OTP hashing failed", e);
-        }
-    }
-
-    private boolean constantTimeEquals(String a, String b) {
-        if (a == null || b == null) return false;
-        byte[] ba = a.getBytes(StandardCharsets.UTF_8);
-        byte[] bb = b.getBytes(StandardCharsets.UTF_8);
-        if (ba.length != bb.length) return false;
-        int r = 0;
-        for (int i = 0; i < ba.length; i++) r |= ba[i] ^ bb[i];
-        return r == 0;
     }
 
     private String generateOtpValue() {
@@ -148,7 +110,7 @@ public class OtpService {
         Instant now = Instant.now();
         Instant expiresAt = now.plus(OTP_EXPIRY);
 
-        OtpData data = new OtpData(hashOtp(otp), expiresAt, now);
+        OtpData data = new OtpData(otp, expiresAt, now);
         otpStore.put(email, data);
 
         sendEmailOtp(email, otp);
@@ -207,7 +169,6 @@ public class OtpService {
 
     private void sendEmailOtp(String email, String otp) {
         SimpleMailMessage msg = new SimpleMailMessage();
-        msg.setFrom(mailFrom);
         msg.setTo(email);
         msg.setSubject("ASP Car Care - OTP");
         msg.setText("Your OTP is: " + otp + " (valid 5 minutes)");

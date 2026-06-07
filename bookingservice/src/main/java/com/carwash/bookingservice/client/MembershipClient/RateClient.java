@@ -38,7 +38,7 @@ public class RateClient {
 
   @Cacheable(value = "rateAmounts", key = "#carType + ':' + #washType")
   @SuppressWarnings("unchecked")
-  public BigDecimal getAmount(Long serviceCentreId, String carType, String washType) {
+  public BigDecimal getAmount(String carType, String washType) {
     String vt = normalizeVehicleType(carType);
     String wl = normalizeWashLevel(washType);
 

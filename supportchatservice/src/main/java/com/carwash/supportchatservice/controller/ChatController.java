@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/chat")
+@CrossOrigin(origins = "*")
 public class ChatController {
 
     private final ChatMessageRepository chatRepo;
@@ -32,7 +33,6 @@ public class ChatController {
 
     /* ========== 1) START CHAT SESSION (optional) ========== */
 
-    @PreAuthorize("isAuthenticated()")
     @PostMapping("/start")
     public ResponseEntity<StartChatResponse> startChat(@RequestBody StartChatRequest req) {
         if (req.getPhone() == null || req.getPhone().isBlank()) {
@@ -85,7 +85,6 @@ public class ChatController {
 
     /* ========== 2) USER SENDING MESSAGE ========== */
 
-    @PreAuthorize("isAuthenticated()")
     @PostMapping("/user-message")
     public ResponseEntity<ChatMessage> userMessage(
             @RequestBody ChatMessageRequest req,
@@ -180,7 +179,6 @@ public class ChatController {
 
     /* ========== 4) POLLING (same as before) ========== */
 
-    @PreAuthorize("isAuthenticated()")
     @GetMapping("/messages")
     public ResponseEntity<List<ChatMessage>> getMessages(
             @RequestParam String phone,
@@ -221,7 +219,6 @@ public class ChatController {
 
     /* ========== 6) END SESSION (USER or ADMIN) ========== */
 
-    @PreAuthorize("isAuthenticated()")
     @PostMapping("/end")
     public ResponseEntity<Void> endChat(@RequestBody EndChatRequest req) {
     	System.out.println("[END CHAT] phone=" + req.getPhone()
@@ -256,7 +253,6 @@ public class ChatController {
 
     /* ========== 7) USER CHAT HISTORY (30 days) ========== */
 
-    @PreAuthorize("isAuthenticated()")
     @GetMapping("/history")
     public ResponseEntity<List<ChatSessionHistoryDto>> getHistory(@RequestParam String phone) {
         LocalDateTime since = LocalDateTime.now().minusDays(30);

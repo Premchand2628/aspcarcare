@@ -35,8 +35,8 @@ public class SecurityAutoConfig {
 
   @Bean
   @ConditionalOnMissingBean
-  public JwtAuthenticationFilter jwtAuthenticationFilter(JwtTokenService tokenService, TokenBlacklistService blacklistService) {
-    return new JwtAuthenticationFilter(tokenService, blacklistService);
+  public JwtAuthenticationFilter jwtAuthenticationFilter(JwtTokenService tokenService) {
+    return new JwtAuthenticationFilter(tokenService);
   }
 
   @Bean

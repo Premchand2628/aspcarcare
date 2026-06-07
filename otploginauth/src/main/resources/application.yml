@@ -97,13 +97,5 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/ASPCare_prod
 
-# QA/STG routing (activates RoutingDataSourceAutoConfig)
-routing:
-  qa:
-    datasource:
-      url: ${QA_DB_URL}
-      username: ${QA_DB_USERNAME}
-      password: ${QA_DB_PASSWORD}
-
 server:
   port: 10081

@@ -104,20 +104,6 @@ public class BookingServiceImpl implements BookingService {
 
         Map<String, Boolean> slotMap = new LinkedHashMap<>();
         List<String> slotsToCheck = homeService ? HOME_TIME_SLOTS : TIME_SLOTS;
-
-        // Safety net: for non-HOME services, a centre identifier MUST be provided.
-        // Otherwise we'd pool-count bookings across all centres and incorrectly
-        // mark slots unavailable everywhere when one centre is busy.
-        boolean nonHomeWithoutCentre = !homeService
-                && serviceCentreId == null
-                && normalizedCentreName == null;
-        if (nonHomeWithoutCentre) {
-            for (String slot : slotsToCheck) {
-                slotMap.put(slot, Boolean.TRUE);
-            }
-            return slotMap;
-        }
-
         for (String slot : slotsToCheck) {
             long bookedCount;
             if (homeService) {
@@ -137,8 +123,10 @@ public class BookingServiceImpl implements BookingService {
                         normalizedCentreName,
                         normalizedAddress
                 );
-            } else {
+            } else if (normalizedCentreName != null) {
                 bookedCount = bookingRepository.countForAvailabilityByCentreName(d, slot, st, normalizedCentreName);
+            } else {
+                bookedCount = bookingRepository.countForAvailability(d, slot, st);
             }
             slotMap.put(slot, bookedCount == 0L);
         }
@@ -935,12 +923,6 @@ public class BookingServiceImpl implements BookingService {
         Object pctObj = benefit == null ? null : benefit.get("discountPercent");
         if (pctObj != null) pct = new BigDecimal(String.valueOf(pctObj));
 
-        // SECURITY: clamp untrusted percent/payable so a tampered membership
-        // preview payload cannot force negative totals or over-100% discounts.
-        BigDecimal originalSafe = original == null ? BigDecimal.ZERO : original;
-        pct = pct.max(BigDecimal.ZERO).min(new BigDecimal("100"));
-        payable = payable.max(BigDecimal.ZERO).min(originalSafe);
-
         Long membershipId = null;
         Object midObj = benefit == null ? null : benefit.get("membershipDbId");
         if (midObj != null) {
@@ -1006,18 +988,15 @@ public class BookingServiceImpl implements BookingService {
     }
     
     private BigDecimal resolveOriginalAmount(BookingRequest req) {
-        // SECURITY: never trust req.getBaseAmount() — it is supplied by the
-        // client and was historically used to bypass server-side pricing. The
-        // authoritative price comes from the rates service; fall back to the
-        // car-type default only if the rates call fails.
-        try {
-            BigDecimal amt = rateClient.getAmount(req.getServiceCentreId(), req.getCarType(), req.getWashType());
-            if (amt != null && amt.compareTo(BigDecimal.ZERO) >= 0) return amt;
-        } catch (Exception e) {
-            log.warn("RateClient lookup failed for centreId={} carType={} washType={}: {}",
-                    req.getServiceCentreId(), req.getCarType(), req.getWashType(), e.getMessage());
+        if (req.getBaseAmount() != null && req.getBaseAmount().compareTo(BigDecimal.ZERO) >= 0) {
+            return req.getBaseAmount();
         }
-        return BigDecimal.valueOf(getBaseAmountForCarType(req.getCarType()));
+
+        try {
+            return rateClient.getAmount(req.getCarType(), req.getWashType());
+        } catch (Exception e) {
+            return BigDecimal.valueOf(getBaseAmountForCarType(req.getCarType()));
+        }
     }
 
     private Long fixCentreIdForHome(String serviceType, Long centreId) {

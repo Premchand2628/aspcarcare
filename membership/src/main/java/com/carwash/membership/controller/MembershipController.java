@@ -23,6 +23,7 @@ import io.jsonwebtoken.Claims;
 
 @RestController
 @RequestMapping("/memberships")
+@CrossOrigin(origins = "*")
 public class MembershipController {
 
   @Value("${spring.datasource.url}")
@@ -70,7 +71,6 @@ public class MembershipController {
       return ResponseEntity.ok(memberships);
   }
 
-  @Deprecated // Unused — use /active/me instead
   @GetMapping("/active/by-phone")
   public ResponseEntity<Membership> getActiveByPhone(@RequestParam("phone") String phone, Authentication authentication) {
     String resolvedPhone = resolvePhone(authentication);
@@ -138,7 +138,6 @@ public class MembershipController {
     }
   }
 
-  @Deprecated // Unused — no frontend or admin UI calls this endpoint
   @GetMapping("/benefits/preview")
   public ResponseEntity<MembershipBenefitResponse> previewBenefit(@RequestParam String phone,
                                                                   @RequestParam BigDecimal amount,
@@ -146,7 +145,6 @@ public class MembershipController {
     return ResponseEntity.ok(membershipService.previewBenefit(phone, amount, washType));
   }
 
-  @PreAuthorize("hasRole('ADMIN')")
   @PostMapping("/benefits/apply")
   public ResponseEntity<MembershipBenefitResponse> applyBenefit(@RequestParam String phone,
                                                                 @RequestParam BigDecimal amount,
@@ -155,7 +153,6 @@ public class MembershipController {
     return ResponseEntity.ok(membershipService.applyBenefit(phone, amount, washType, bookingTxnId));
   }
 
-  @PreAuthorize("hasRole('ADMIN')")
   @PostMapping("/{membershipDbId}/consume-free")
   public ResponseEntity<MembershipBenefitResponse> consumeFreeDirect(@PathVariable Long membershipDbId,
                                                                      @RequestParam String washType,

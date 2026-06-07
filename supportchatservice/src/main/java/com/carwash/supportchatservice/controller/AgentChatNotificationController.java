@@ -10,6 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/agent-chat")
+@CrossOrigin(origins = "*")
 public class AgentChatNotificationController {
 
     // Simple in-memory store (per app instance)

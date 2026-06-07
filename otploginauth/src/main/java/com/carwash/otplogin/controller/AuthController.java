@@ -7,15 +7,12 @@ import com.carwash.otplogin.service.JwtService;
 import com.carwash.otplogin.service.OtpService;
 import com.carwash.otplogin.service.OtpService.VerifyResult;
 import com.carwashcommon.security.JwtTokenService;
-import com.carwashcommon.security.TokenBlacklistService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -36,13 +33,11 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/auth")
@@ -54,7 +49,6 @@ public class AuthController {
     private final JwtTokenService jwtTokenService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final TokenBlacklistService tokenBlacklistService;
 
     @Value("${google.client.id:}")
     private String googleClientId;
@@ -65,15 +59,7 @@ public class AuthController {
     @Value("${facebook.app.secret:}")
     private String facebookAppSecret;
 
-    @Value("${auth.lockout.max-attempts:5}")
-    private int lockoutMaxAttempts;
 
-    @Value("${auth.lockout.duration-minutes:15}")
-    private int lockoutDurationMinutes;
-
-    // In-memory account lockout tracking
-    private record LockoutInfo(AtomicInteger failedAttempts, long lockUntilEpochMs) {}
-    private final ConcurrentHashMap<String, LockoutInfo> lockoutMap = new ConcurrentHashMap<>();
 
     @GetMapping("/ping")
     public String ping() {
@@ -161,17 +147,8 @@ public class AuthController {
         }
 
         String email = request.getEmail().trim().toLowerCase();
-
-        // Account lockout check
-        LockoutInfo lockout = lockoutMap.get(email);
-        if (lockout != null && lockout.lockUntilEpochMs() > System.currentTimeMillis()) {
-            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
-                .body(new ApiResponse(false, "Account temporarily locked. Try again later."));
-        }
-
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isEmpty()) {
-            recordFailedLogin(email);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(new ApiResponse(false, "Invalid email or password"));
         }
@@ -180,13 +157,9 @@ public class AuthController {
         String encodedPassword = user.getPassword();
         if (encodedPassword == null || encodedPassword.isBlank()
             || !passwordEncoder.matches(request.getPassword(), encodedPassword)) {
-            recordFailedLogin(email);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(new ApiResponse(false, "Invalid email or password"));
         }
-
-        // Successful login — clear lockout
-        lockoutMap.remove(email);
 
         Map<String, Object> claims = new java.util.HashMap<>();
         claims.put("roles", Collections.singletonList("USER"));
@@ -195,13 +168,11 @@ public class AuthController {
         }
 
         String jwtToken = jwtTokenService.generateAccessToken(email, claims);
-        String refreshToken = jwtTokenService.generateRefreshToken(email, claims);
 
         return ResponseEntity.ok(Map.of(
             "success", true,
             "message", "Email login successful",
             "token", jwtToken,
-            "refreshToken", refreshToken,
             "data", Map.of(
                 "email", user.getEmail() == null ? "" : user.getEmail(),
                 "firstName", user.getFirstName() == null ? "" : user.getFirstName(),
@@ -243,7 +214,7 @@ public class AuthController {
 
     // 3️⃣ VERIFY OTP (same as before, returns JWT token)
     @PostMapping("/verify-otp")
-    public ResponseEntity<?> verifyOtp(@RequestBody VerifyOtpRequest request) {
+    public ResponseEntity<ApiResponse> verifyOtp(@RequestBody VerifyOtpRequest request) {
         if (request.getMobileNumber() == null || request.getMobileNumber().isBlank()
                 || request.getOtp() == null || request.getOtp().isBlank()) {
             return ResponseEntity.badRequest()
@@ -259,13 +230,13 @@ public class AuthController {
             claims.put("roles", List.of("USER"));
             claims.put("phone", request.getMobileNumber());
             String jwt = jwtTokenService.generateAccessToken(request.getMobileNumber(), claims);
-            String refresh = jwtTokenService.generateRefreshToken(request.getMobileNumber(), claims);
 
-            yield ResponseEntity.ok(Map.of(
-                    "success", true,
-                    "message", "OTP verified, login successful",
-                    "data", jwt,
-                    "refreshToken", refresh
+            System.out.println("JWT: " + jwt);
+
+            yield ResponseEntity.ok(new ApiResponse(
+                    true,
+                    "OTP verified, login successful",
+                    jwt
             ));
         }
             case INVALID -> ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -406,14 +377,12 @@ public class AuthController {
                 claims.put("phone", user.getPhone());
             }
             String jwtToken = jwtTokenService.generateAccessToken(email, claims);
-            String refreshToken = jwtTokenService.generateRefreshToken(email, claims);
             
             // Return response with token and user data
             return ResponseEntity.ok(Map.of(
                     "success", true,
                     "message", "Google login successful",
                     "token", jwtToken,
-                    "refreshToken", refreshToken,
                     "data", Map.of(
                             "email", user.getEmail(),
                             "firstName", user.getFirstName(),
@@ -532,13 +501,11 @@ public class AuthController {
                 claims.put("phone", user.getPhone());
             }
             String jwtToken = jwtTokenService.generateAccessToken(email, claims);
-            String refreshToken = jwtTokenService.generateRefreshToken(email, claims);
 
             return ResponseEntity.ok(Map.of(
                     "success", true,
                     "message", "Facebook login successful",
                     "token", jwtToken,
-                    "refreshToken", refreshToken,
                     "data", Map.of(
                             "email", user.getEmail(),
                             "firstName", user.getFirstName(),
@@ -598,82 +565,6 @@ public class AuthController {
             return null;
         } catch (Exception e) {
             return null;
-        }
-    }
-
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request) {
-        String header = request.getHeader("Authorization");
-        if (header == null || !header.startsWith("Bearer ")) {
-            return ResponseEntity.badRequest().body(new ApiResponse(false, "No token provided"));
-        }
-        String token = header.substring(7);
-        try {
-            Jws<Claims> parsed = jwtTokenService.parseAndValidate(token);
-            Date exp = parsed.getBody().getExpiration();
-            tokenBlacklistService.blacklist(token, exp.toInstant().getEpochSecond());
-            return ResponseEntity.ok(new ApiResponse(true, "Logged out successfully"));
-        } catch (Exception e) {
-            return ResponseEntity.ok(new ApiResponse(true, "Logged out"));
-        }
-    }
-
-    @PostMapping("/refresh")
-    public ResponseEntity<?> refreshToken(HttpServletRequest request) {
-        String header = request.getHeader("Authorization");
-        if (header == null || !header.startsWith("Bearer ")) {
-            return ResponseEntity.badRequest().body(new ApiResponse(false, "Refresh token required"));
-        }
-        String token = header.substring(7);
-        try {
-            Jws<Claims> parsed = jwtTokenService.parseAndValidate(token);
-            Claims claims = parsed.getBody();
-            String type = claims.get("type", String.class);
-            if (!"refresh".equals(type)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ApiResponse(false, "Not a refresh token"));
-            }
-            if (tokenBlacklistService.isBlacklisted(token)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ApiResponse(false, "Token has been revoked"));
-            }
-            // Blacklist old refresh token (rotation)
-            tokenBlacklistService.blacklist(token, claims.getExpiration().toInstant().getEpochSecond());
-
-            String subject = claims.getSubject();
-            Map<String, Object> newClaims = new java.util.HashMap<>();
-            @SuppressWarnings("unchecked")
-            List<String> roles = claims.get("roles", List.class);
-            if (roles != null) newClaims.put("roles", roles);
-            String phone = claims.get("phone", String.class);
-            if (phone != null) newClaims.put("phone", phone);
-
-            String accessToken = jwtTokenService.generateAccessToken(subject, newClaims);
-            String newRefreshToken = jwtTokenService.generateRefreshToken(subject, newClaims);
-
-            return ResponseEntity.ok(Map.of(
-                "success", true,
-                "token", accessToken,
-                "refreshToken", newRefreshToken
-            ));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new ApiResponse(false, "Invalid or expired refresh token"));
-        }
-    }
-
-    private void recordFailedLogin(String email) {
-        LockoutInfo info = lockoutMap.compute(email, (k, existing) -> {
-            if (existing == null || existing.lockUntilEpochMs() < System.currentTimeMillis()) {
-                LockoutInfo fresh = new LockoutInfo(new AtomicInteger(1), 0L);
-                return fresh;
-            }
-            existing.failedAttempts().incrementAndGet();
-            return existing;
-        });
-        if (info.failedAttempts().get() >= lockoutMaxAttempts) {
-            long lockUntil = System.currentTimeMillis() + (long) lockoutDurationMinutes * 60 * 1000;
-            lockoutMap.put(email, new LockoutInfo(info.failedAttempts(), lockUntil));
         }
     }
 }
