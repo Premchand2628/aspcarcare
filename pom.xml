@@ -80,11 +80,11 @@
   </repositories>
   <modules>
     <module>carwashcommon</module>
+    <module>otploginauth</module>
     <module>bookingservice</module>
     <module>carwashrates</module>
     <module>invitation</module>
     <module>membership</module>
-    <module>otploginauth</module>
     <module>paymentservice</module>
     <module>supportchatservice</module>
     <module>uigatewayservice</module>
