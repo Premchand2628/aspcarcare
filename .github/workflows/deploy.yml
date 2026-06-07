@@ -24,9 +24,15 @@ jobs:
 
       - name: Prepare JARs for deployment
         run: |
+          echo "=== JARs built ==="
+          find . -path "*/target/*.jar" | sort
           mkdir -p deploy
           cp uigatewayservice/target/uigatewayservice-*.jar deploy/uigatewayservice.jar
-          cp otploginauth/target/otploginauth-*-exec.jar deploy/otploginauth.jar
+          # Use find to pick up exec jar regardless of exact name pattern
+          find otploginauth/target -name "*.jar" ! -name "original-*" | sort
+          OTP_JAR=$(find otploginauth/target -name "*exec*.jar" -o -name "otploginauth-*.jar" ! -name "original-*" | grep -v "original" | tail -1)
+          echo "Deploying otploginauth: $OTP_JAR"
+          cp "$OTP_JAR" deploy/otploginauth.jar
           cp bookingservice/target/bookingservice-*.jar deploy/bookingservice.jar
           cp carwashrates/target/carwashrates-*.jar deploy/carwashrates.jar
           cp membership/target/membership-*.jar deploy/membership.jar
