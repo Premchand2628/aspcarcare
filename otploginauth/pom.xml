@@ -93,14 +93,10 @@
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
           <mainClass>com.carwash.otplogin.AuthuserApplication</mainClass>
+          <!-- classifier=exec means Spring Boot creates otploginauth-*-exec.jar (executable fat jar)
+               AND keeps the original otploginauth-*.jar as a plain jar importable by other modules -->
+          <classifier>exec</classifier>
         </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>repackage</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>

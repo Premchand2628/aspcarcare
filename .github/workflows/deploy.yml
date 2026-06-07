@@ -26,7 +26,7 @@ jobs:
         run: |
           mkdir -p deploy
           cp uigatewayservice/target/uigatewayservice-*.jar deploy/uigatewayservice.jar
-          cp otploginauth/target/otploginauth-*.jar deploy/otploginauth.jar
+          cp otploginauth/target/otploginauth-*-exec.jar deploy/otploginauth.jar
           cp bookingservice/target/bookingservice-*.jar deploy/bookingservice.jar
           cp carwashrates/target/carwashrates-*.jar deploy/carwashrates.jar
           cp membership/target/membership-*.jar deploy/membership.jar
